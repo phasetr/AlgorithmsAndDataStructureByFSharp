@@ -1,4 +1,7 @@
-# Motivation
+# Algorithms and Data Structures by the F# language
+
+## Motivation
+
 I'd like to write codes for algorithms and data structures **by F#**.
 
 We have many many books for them in **imperative or objective-oriented** languages,
@@ -26,13 +29,21 @@ Some comments are here.
 
 Hence I decide to write codes by myself.
 
-# References
+## References
+
 I know their names, but I do not read them thoroughly.
 
-- https://github.com/vkostyukov/scalacaster
+- [vkostyukov, Scalacaster](https://github.com/vkostyukov/scalacaster)
 - Rabhi, Lapalme, Algorithms A Functional Programming Approach
 - Heineman, Pollice, Selkow, Algorithms in a Nutshell
 - Richard Bird, Pearls of Functional Algorithm Design
+- Chris Okazaki, Purely functional data structures
 - Skiena, The Algorithm Design Manual
 - [Advanced Data Structures](https://en.wikibooks.org/wiki/F_Sharp_Programming/Advanced_Data_Structures)
 - (In Japanese) 紀平拓男、春日伸弥、プログラミングの宝箱 アルゴリズムとデータ構造 第 2 版
+- [PENSE-MOI](http://lepensemoi.free.fr/index.php/tag/data-structure):
+  This site describes the F# implementation of the algorithms in Chris Okazaki's "Purely functional data structures".
+
+## F# official
+
+- [FSharpx.collections](https://github.com/fsprojects/FSharpx.Collections/tree/master/src/FSharpx.Collections)
