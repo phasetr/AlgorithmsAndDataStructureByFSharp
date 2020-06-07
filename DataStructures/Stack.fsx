@@ -1,3 +1,4 @@
+// From Rabhi-Lapalme
 module Stack =
     type 'a Stack =
         | EmptyStk
@@ -21,7 +22,6 @@ module Stack =
         function
         | EmptyStk -> true
         | _ -> false
-// From Rabhi-Lapalme
 
 // test
 open Stack

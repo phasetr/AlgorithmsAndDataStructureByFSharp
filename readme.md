@@ -1,4 +1,4 @@
-# Algorithms and Data Structures by the F# language
+# Algorithms and Data Structures by (mainly) the F# language
 
 ## Motivation
 
@@ -29,22 +29,53 @@ Some comments are here.
 
 Hence I decide to write codes by myself.
 
+For my study and seminars I also contains programms by several languages other than F#,
+e.g., C++, Python.
+
+## Directory Structure
+
+- AtCoder: Codes for the contests in [AtCoder](https://atcoder.jp/).
+- DataStructures: Codes for data structures.
+  I added comments for referenced sites, pages, book pages.
+- Book-AlgorithmsAndDataStructuresForProgrammingContests:
+  Codes for [this book](https://tatsu-zine.com/books/algorithm-and-datastructure).
+
 ## References
 
 I know their names, but I do not read them thoroughly.
 
-- [vkostyukov, Scalacaster](https://github.com/vkostyukov/scalacaster)
+- <https://github.com/vkostyukov/scalacaster>
 - Rabhi, Lapalme, Algorithms A Functional Programming Approach
 - Heineman, Pollice, Selkow, Algorithms in a Nutshell
 - Richard Bird, Pearls of Functional Algorithm Design
-- Chris Okazaki, Purely functional data structures
 - Skiena, The Algorithm Design Manual
 - [Advanced Data Structures](https://en.wikibooks.org/wiki/F_Sharp_Programming/Advanced_Data_Structures)
 - (In Japanese) 紀平拓男、春日伸弥、プログラミングの宝箱 アルゴリズムとデータ構造 第 2 版
+- (In Japanese) 渡部有隆, Ozy(協力), 秋葉 拓哉(協力), プログラミングコンテスト攻略のためのアルゴリズムとデータ構造, [for buying pdf](https://tatsu-zine.com/books/algorithm-and-datastructure)
+  - [Support site (in Japanese)](https://book.mynavi.jp/support/pc/5295/)
+  - [AOJ](http://judge.u-aizu.ac.jp/)
 - [PENSE-MOI](http://lepensemoi.free.fr/index.php/tag/data-structure):
   This site describes the F# implementation of the algorithms in Chris Okazaki's "Purely functional data structures".
 - [FsProCon, AtCoder](https://github.com/natsukium/FsProCon/tree/master/src)
+- [F# : Advanced Data Structures](https://en.wikibooks.org/wiki/F_Sharp_Programming/Advanced_Data_Structures)
 
 ## F# official
 
 - [FSharpx.collections](https://github.com/fsprojects/FSharpx.Collections/tree/master/src/FSharpx.Collections)
+
+## For AtCoder
+
+### Benchmark (people)
+- [cojna (Haskeller)](https://atcoder.jp/users/cojna/history)
+
+### VSCode C++ setting (in Japanese)
+
+- [reference site (in Japanese)](https://qiita.com/2019Shun/items/5ab290a4117a00e373b6)
+- build: `Ctrl+Shift+B`
+- debug: `F5`
+
+#### install tools for ubuntu
+
+```sh
+sudo apt install build-essential gdb -y
+```

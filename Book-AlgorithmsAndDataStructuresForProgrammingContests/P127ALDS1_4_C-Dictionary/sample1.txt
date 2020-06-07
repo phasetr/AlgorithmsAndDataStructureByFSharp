@@ -1,0 +1,7 @@
+6
+insert AAA
+insert AAC
+find AAA
+find CCC
+insert CCC
+find CCC
