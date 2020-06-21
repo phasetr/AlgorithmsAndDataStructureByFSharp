@@ -29,7 +29,7 @@ Some comments are here.
 
 Hence I decide to write codes by myself.
 
-For my study and seminars I also contains programms by several languages other than F#,
+For my study and seminars I also contains programs by several languages other than F#,
 e.g., C++, Python.
 
 ## Directory Structure
@@ -39,11 +39,26 @@ e.g., C++, Python.
   I added comments for referenced sites, pages, book pages.
 - Book-AlgorithmsAndDataStructuresForProgrammingContests:
   Codes for [this book](https://tatsu-zine.com/books/algorithm-and-datastructure).
+- Library: Codes for important processes.
 
 ## References
 
 I know their names, but I do not read them thoroughly.
 
+### F# references
+
+- [F# を知ってほしい (in Japanese), by cannorin](https://qiita.com/cannorin/items/59d79cc9a3b64c761cd4)
+- [docs.microsoft.com](https://docs.microsoft.com/en-us/dotnet/fsharp/)
+  - [msdn, visual fsharp](https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/visual-fsharp)
+- [F# for fun and profit](https://fsharpforfunandprofit.com/)
+- [Wikibook: F# Programming](https://en.wikibooks.org/wiki/F_Sharp_Programming)
+- [Functional Programming Patterns](https://www.slideshare.net/ScottWlaschin/fp-patterns-ndc-london2014)
+  - Descriptions on "Pattern: Chaining callbacks with continuation" from P.85 helps me very much.
+  - `Monadic Bind`
+
+### Algorithms and data structures
+
+- [Project Euler](https://projecteuler.net/)
 - <https://github.com/vkostyukov/scalacaster>
 - Rabhi, Lapalme, Algorithms A Functional Programming Approach
 - Heineman, Pollice, Selkow, Algorithms in a Nutshell
@@ -55,9 +70,13 @@ I know their names, but I do not read them thoroughly.
   - [Support site (in Japanese)](https://book.mynavi.jp/support/pc/5295/)
   - [AOJ](http://judge.u-aizu.ac.jp/)
 - [PENSE-MOI](http://lepensemoi.free.fr/index.php/tag/data-structure):
-  This site describes the F# implementation of the algorithms in Chris Okazaki's "Purely functional data structures".
+  This site describes the F# implementation of the algorithms in Chris Okasaki's "Purely functional data structures".
 - [FsProCon, AtCoder](https://github.com/natsukium/FsProCon/tree/master/src)
 - [F# : Advanced Data Structures](https://en.wikibooks.org/wiki/F_Sharp_Programming/Advanced_Data_Structures)
+- [Open Data Structures](http://opendatastructures.org/)
+  - [日本語ページ](https://sites.google.com/view/open-data-structures-ja)
+  - [日本語ソースコード](https://github.com/spinute/ods)
+- [幾何の計算にコンピュータを使う 易しくない 計算幾何学](https://www.nakanihon.co.jp/gijyutsu/Shimada/Computational%20geometry/index.html)
 
 ## F# official
 
@@ -65,7 +84,32 @@ I know their names, but I do not read them thoroughly.
 
 ## For AtCoder
 
+### URLs
+
+- [AtCoder code search](https://twitter.com/rsk0315_h4x/status/1273556940912603145)
+  - F# mono 4.0: 3512
+  - F# .NET Core 3.10.201: 4022
+  - F# mono 10.2.3: 4023
+  - Haskell GHC 7.10.3: 3014
+  - Haskell GHC 8.8.3: 4027
+- [AtCoder に登録したら次にやること ～ これだけ解けば十分闘える！過去問精選 10 問 ～](https://qiita.com/drken/items/fd4e5e3630d0f5859067)
+  - [F# 編](https://qiita.com/kuuso1/items/606b75c172cafa1d07f6)
+- [C++: 解説放送で作ったライブラリ集](https://github.com/atcoder-live/library)
+- [AtCoder testcases](https://www.dropbox.com/sh/nx3tnilzqz7df8a/AAAYlTq2tiEHl5hsESw6-yfLa?dl=0)
+- [atcoder-tools](https://github.com/kyuridenamida/atcoder-tools)
+- [AtCoder Problems](https://kenkoooo.com/atcoder)
+  - [AtCoder Problems Training](https://kenkoooo.com/atcoder/#/training)
+
+### Project making
+
+```sh
+mkdir "dirname"
+cd "dirname"
+dotnet new console -n "run" -lang F#
+```
+
 ### Benchmark (people)
+
 - [cojna (Haskeller)](https://atcoder.jp/users/cojna/history)
 
 ### VSCode C++ setting (in Japanese)
