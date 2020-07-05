@@ -47,6 +47,7 @@ I know their names, but I do not read them thoroughly.
 
 ### F# references
 
+- [Core Library Reference](https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/fsharp-core-library-reference)
 - [F# を知ってほしい (in Japanese), by cannorin](https://qiita.com/cannorin/items/59d79cc9a3b64c761cd4)
 - [docs.microsoft.com](https://docs.microsoft.com/en-us/dotnet/fsharp/)
   - [msdn, visual fsharp](https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/visual-fsharp)
@@ -82,44 +83,22 @@ I know their names, but I do not read them thoroughly.
 
 - [FSharpx.collections](https://github.com/fsprojects/FSharpx.Collections/tree/master/src/FSharpx.Collections)
 
-## For AtCoder
+## memo
 
-### URLs
+### Useful pages in fsharpforfunandprofit.com
 
-- [AtCoder code search](https://twitter.com/rsk0315_h4x/status/1273556940912603145)
-  - F# mono 4.0: 3512
-  - F# .NET Core 3.10.201: 4022
-  - F# mono 10.2.3: 4023
-  - Haskell GHC 7.10.3: 3014
-  - Haskell GHC 8.8.3: 4027
-- [AtCoder に登録したら次にやること ～ これだけ解けば十分闘える！過去問精選 10 問 ～](https://qiita.com/drken/items/fd4e5e3630d0f5859067)
-  - [F# 編](https://qiita.com/kuuso1/items/606b75c172cafa1d07f6)
-- [C++: 解説放送で作ったライブラリ集](https://github.com/atcoder-live/library)
-- [AtCoder testcases](https://www.dropbox.com/sh/nx3tnilzqz7df8a/AAAYlTq2tiEHl5hsESw6-yfLa?dl=0)
-- [atcoder-tools](https://github.com/kyuridenamida/atcoder-tools)
-- [AtCoder Problems](https://kenkoooo.com/atcoder)
-  - [AtCoder Problems Training](https://kenkoooo.com/atcoder/#/training)
+- [Understanding map and apply-A toolset for working with elevated worlds](https://fsharpforfunandprofit.com/posts/elevated-world/)
 
-### Project making
+### Jargon Alert
 
-```sh
-mkdir "dirname"
-cd "dirname"
-dotnet new console -n "run" -lang F#
-```
+From the book Domain Modeling Made Functional by Wlaschin.
 
-### Benchmark (people)
-
-- [cojna (Haskeller)](https://atcoder.jp/users/cojna/history)
-
-### VSCode C++ setting (in Japanese)
-
-- [reference site (in Japanese)](https://qiita.com/2019Shun/items/5ab290a4117a00e373b6)
-- build: `Ctrl+Shift+B`
-- debug: `F5`
-
-#### install tools for ubuntu
-
-```sh
-sudo apt install build-essential gdb -y
-```
+- In the error-handling context,
+  the bind function converts a Result-generating function into a two-track function.
+  It’s used to chain Result-generating functions "in series."
+  More generally, the bind function is a key component of a monad.
+- In the error-handling context,
+  the map function converts a one-track function into a two-track function.
+- The monadic approach to composition refers to combining functions in series
+  using bind.
+- The applicative approach to composition refers to combining results in parallel.

@@ -4,26 +4,26 @@ Rabhi-Lapalme P94
 
 module SetByUnorderedListWithoutDuplicates =
     [<RequireQualifiedAccess>]
-    type 'a Set = { Set: 'a list }
+    type 'a Set = Set of 'a list
 
-    let emptySet = { Set.Set = [] }
+    let emptySet = Set.Set []
 
-    let setEmpty { Set.Set = xs } =
+    let setEmpty (Set.Set xs) =
         match xs with
         | [] -> true
         | _ -> false
 
-    let inSet x { Set.Set = xs } =
+    let inSet x (Set.Set xs) =
         match xs with
         | [] -> false
         | _ -> List.contains x xs
 
     /// Different from SetByListWithDuplicates
-    let addSet x ({ Set.Set = xs } as s) =
-        if inSet x s then s else { Set.Set = x :: xs }
+    let addSet x ((Set.Set xs) as s) =
+        if inSet x s then s else Set.Set(x :: xs)
 
     /// Different from SetByListWithDuplicates
-    let delSet x ({ Set.Set = xs }) = { Set.Set = List.filter ((<>) x) xs }
+    let delSet x (Set.Set xs) = Set.Set(List.filter ((<>) x) xs)
 
     /// From Haskell http://hackage.haskell.org/package/base-4.14.0.0/docs/src/Data.OldList.html#delete
     let rec deleteBy f x xs =
@@ -35,12 +35,15 @@ module SetByUnorderedListWithoutDuplicates =
     let rec delete (x: 'a when 'a: equality) xs = deleteBy (=) x xs
 
 
+
+
 // test
 open SetByUnorderedListWithoutDuplicates
 
 emptySet |> printfn "%A"
 emptySet |> setEmpty |> printfn "%A"
 emptySet |> addSet 1 |> printfn "%A"
+emptySet |> addSet 1 |> setEmpty |> printfn "%A"
 
 let set =
     emptySet

@@ -3,27 +3,27 @@ Rabhi-Lapalme P.93
 We can easily implement `addSet` but `delSet` requires to check the whole list,
 which is expensive.
 *)
+
 module SetByListWithDuplicates =
     [<RequireQualifiedAccess>]
-    type 'a Set = { Set: 'a list }
+    type 'a Set = Set of 'a list
 
-    let emptySet = { Set.Set = [] }
+    let emptySet = Set.Set []
 
-    let setEmpty { Set.Set = xs } =
+    let setEmpty (Set.Set xs) =
         match xs with
         | [] -> true
         | _ -> false
 
-    let inSet x { Set.Set = xs } =
+    let inSet x (Set.Set xs) =
         match xs with
         | [] -> false
         | _ -> List.contains x xs
 
-    let addSet x ({ Set.Set = xs }) =
-        { Set.Set = x :: xs }
+    let addSet x (Set.Set xs) = Set.Set(x :: xs)
 
-    let delSet x ({ Set.Set = xs }) =
-        { Set.Set = List.filter ((<>) x) xs }
+    let delSet x (Set.Set xs) = Set.Set(List.filter ((<>) x) xs)
+
 
 // test
 open SetByListWithDuplicates

@@ -9,13 +9,13 @@ Items are held in a sorted list.
 
 module PQueue =
     [<RequireQualifiedAccess>]
-    type 'a PQueue = { PQ: 'a list }
+    type 'a PQueue = PQ of 'a list
 
-    let emptyPQ = { PQueue.PQ = [] }
+    let emptyPQ = PQueue.PQ []
 
-    let pqEmpty { PQueue.PQ = xs } =
-        match xs with
-        | [] -> true
+    let pqEmpty x =
+        match x with
+        | PQueue.PQ [] -> true
         | _ -> false
 
     let rec insert x q =
@@ -23,17 +23,18 @@ module PQueue =
         | x, [] -> [ x ]
         | x, (e :: r' as r) -> if x <= e then x :: r else e :: insert x r'
 
-    let enPQ x { PQueue.PQ = q } = { PQueue.PQ = insert x q }
+    let enPQ x (PQueue.PQ q) = PQueue.PQ(insert x q)
 
-    let dePQ { PQueue.PQ = q } =
+    let dePQ (PQueue.PQ q) =
         match q with
         | [] -> failwith "dePQ: empty priority queue"
-        | x :: xs -> { PQueue.PQ = xs }
+        | x :: xs -> PQueue.PQ xs
 
-    let frontPQ { PQueue.PQ = q } =
+    let frontPQ (PQueue.PQ q) =
         match q with
         | [] -> failwith "frontPQ: empty priority queue"
         | x :: xs -> x
+
 
 // test
 open PQueue

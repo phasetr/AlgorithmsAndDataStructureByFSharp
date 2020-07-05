@@ -9,22 +9,22 @@ In the worst case, these operations take a linear number of steps.
 
 module SetByOrderedListWithoutDuplicates =
     [<RequireQualifiedAccess>]
-    type 'a Set = { Set: 'a list }
+    type 'a Set = Set of 'a list
 
-    let emptySet = { Set.Set = [] }
+    let emptySet = Set.Set []
 
-    let setEmpty { Set.Set = xs } =
+    let setEmpty (Set.Set xs) =
         match xs with
         | [] -> true
         | _ -> false
 
     /// Different from SetBYUnorderdListWithoutDuplicates
-    let inSet x { Set.Set = xs } =
+    let inSet x (Set.Set xs) =
         List.takeWhile (fun y -> y <= x) xs
         |> List.contains x
 
     /// Different from SetByListWithDuplicates
-    let addSet x ({ Set.Set = xs } as s) =
+    let addSet x (Set.Set xs) =
         let rec add x xs =
             match xs with
             | [] -> [ x ]
@@ -33,10 +33,10 @@ module SetByOrderedListWithoutDuplicates =
                 elif x = y then s
                 else y :: (add x ys)
 
-        { Set.Set = add x xs }
+        Set.Set(add x xs)
 
     /// Different from SetByListWithDuplicates
-    let delSet x ({ Set.Set = xs }) =
+    let delSet x (Set.Set xs) =
         let rec del x xs =
             match xs with
             | [] -> []
@@ -45,7 +45,7 @@ module SetByOrderedListWithoutDuplicates =
                 elif x = y then ys
                 else y :: (del x ys)
 
-        { Set.Set = del x xs }
+        Set.Set(del x xs)
 
 
 
@@ -55,6 +55,7 @@ open SetByOrderedListWithoutDuplicates
 emptySet |> printfn "%A"
 emptySet |> setEmpty |> printfn "%A"
 emptySet |> addSet 1 |> printfn "%A"
+emptySet |> addSet 1 |> setEmpty |> printfn "%A"
 
 let set =
     emptySet
