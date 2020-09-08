@@ -40,6 +40,7 @@ e.g., C++, Python.
 - Book-AlgorithmsAndDataStructuresForProgrammingContests:
   Codes for [this book](https://tatsu-zine.com/books/algorithm-and-datastructure).
 - Library: Codes for important processes.
+- ProjectEuler: Codes for [Project Euler](https://projecteuler.net/)
 
 ## References
 
@@ -78,6 +79,7 @@ I know their names, but I do not read them thoroughly.
   - [日本語ページ](https://sites.google.com/view/open-data-structures-ja)
   - [日本語ソースコード](https://github.com/spinute/ods)
 - [幾何の計算にコンピュータを使う 易しくない 計算幾何学](https://www.nakanihon.co.jp/gijyutsu/Shimada/Computational%20geometry/index.html)
+- [nobsun/ProjectEuler](https://github.com/nobsun/ProjectEuler) by Haskell
 
 ## F# official
 
