@@ -9,22 +9,17 @@
 // 2 桁の数の積からなる最大の回文数は 9009 = 91 x 99 である。
 // 3 桁の数の積からなる最大の回文数を求めよ。
 
+// 01.fsx の回文判定がださすぎるので書き換え
+
+// 回文判定関数
+let rev =
+    Seq.toArray >> Array.rev >> System.String
+
 // 二重ループで出てくる i, j の積を取り、回文数ならその値を返し、それ以外は 0 を返す
 let local i j =
     let num = i * j
     let numStr = num |> string
-    let halfLength = numStr.Length / 2
-
-    let firstHalf =
-        if numStr.Length % 2 = 0 then numStr.[0..(halfLength - 1)] else numStr.[0..halfLength]
-
-    let lastHalf =
-        numStr.[halfLength..]
-        |> Seq.toArray
-        |> Array.rev
-        |> System.String
-
-    if firstHalf = lastHalf then num else 0
+    if numStr = (rev numStr) then num else 0
 
 // 本体関数 solve 中の fold で使う関数。
 // 計算した量 loc とある i の時点で最大だった値を比較して大きい方を返す。

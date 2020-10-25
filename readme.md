@@ -48,7 +48,7 @@ I know their names, but I do not read them thoroughly.
 
 ### F# references
 
-- [Core Library Reference](https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/fsharp-core-library-reference)
+- [GitHub: F# Core Library Documentation (community edition)](https://fsharp.github.io/fsharp-core-docs)
 - [F# を知ってほしい (in Japanese), by cannorin](https://qiita.com/cannorin/items/59d79cc9a3b64c761cd4)
 - [docs.microsoft.com](https://docs.microsoft.com/en-us/dotnet/fsharp/)
   - [msdn, visual fsharp](https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/visual-fsharp)
@@ -80,6 +80,7 @@ I know their names, but I do not read them thoroughly.
   - [日本語ソースコード](https://github.com/spinute/ods)
 - [幾何の計算にコンピュータを使う 易しくない 計算幾何学](https://www.nakanihon.co.jp/gijyutsu/Shimada/Computational%20geometry/index.html)
 - [nobsun/ProjectEuler](https://github.com/nobsun/ProjectEuler) by Haskell
+- [TheAlgorithms / Python](https://github.com/TheAlgorithms/Python)
 
 ## F# official
 

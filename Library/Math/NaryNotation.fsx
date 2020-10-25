@@ -1,6 +1,3 @@
-/// 自然数のべき乗
-pown 2 3 |> printfn "%d" // 2^3
-
 /// n 進法 n-ary notation
 /// 使える文字の都合で n < 26 を仮定するが、本質的ではない
 /// 参考：https://webbibouroku.com/Blog/Article/haskell-nstring
