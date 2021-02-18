@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  jupyter:
+    build: .
+    container_name: jup
+    ports:
+      - 8001:8888
+    volumes:
+      - .:/home/jovyan/work
+    command: jupyter-notebook --ip=0.0.0.0 --allow-root --NotebookApp.token=''

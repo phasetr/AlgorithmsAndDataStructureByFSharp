@@ -8,9 +8,7 @@ let rec qsort1 =
     | first :: rest ->
         let smaller, larger = List.partition ((>=) first) rest
         List.concat
-            [ qsort1 smaller
-              [ first ]
-              qsort1 larger ]
+            [ qsort1 smaller; [ first ]; qsort1 larger ]
 
 // test
 printfn "%A" (qsort1 [ 1; 5; 23; 18; 9; 1; 3 ]) // [1; 1; 3; 5; 9; 18; 23]

@@ -10,6 +10,4 @@ module PriorityQueueByHeap =
     let frontPQ (PQ h) = Heap.findHeap h
     let dePQ (PQ h) = PQ(Heap.delHeap h)
 
-open PriorityQueueByHeap
-
-emptyPQ |> printfn "%A"
+PriorityQueueByHeap.emptyPQ |> printfn "%A"

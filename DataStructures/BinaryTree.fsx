@@ -29,8 +29,6 @@ module Tree =
             elif item < hd then TreeNode(hd, insert item l, r)
             else TreeNode(hd, l, insert item r)
 
-
-
 open Tree
 
 type BinaryTree<'a when 'a: comparison>(inner: 'a Tree) =

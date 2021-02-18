@@ -1,0 +1,20 @@
+TEN = MULTIPLY[TWO][FIVE]
+B = TEN
+FF = INCREMENT[B]
+I = INCREMENT[FF]
+U = INCREMENT[I]
+ZED = INCREMENT[U]
+
+FIZZ     = UNSHIFT[UNSHIFT[UNSHIFT[UNSHIFT[EMPTY][ZED]][ZED]][I]][FF]
+BUZZ     = UNSHIFT[UNSHIFT[UNSHIFT[UNSHIFT[EMPTY][ZED]][ZED]][U]][B]
+FIZZBUZZ = UNSHIFT[UNSHIFT[UNSHIFT[UNSHIFT[BUZZ][ZED]][ZED]][I]][FF]
+
+def to_char(c)
+  '0123456789BFiuz'.slice(to_integer(c))
+end
+
+def to_string(s)
+  to_array(s).map { |c| to_char(c) }.join
+end
+
+

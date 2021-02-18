@@ -13,4 +13,4 @@ intToNString n x
 
 main :: IO ()
 main =
-    print $ map (ntTtring 2) [1,2,3,4,5,9,10]
+    print $ map (intToNString 2) [1,2,3,4,5,9,10]

@@ -59,7 +59,7 @@ module Tree =
         | E -> ()
         | T (c, l, x, r) ->
             print (spaces + 4) r
-            printfn "%s %A%A" (System.String(' ', spaces)) c x
+            printfn "     %A%A" c x
             print (spaces + 4) l
 
 type BinaryTree<'a when 'a : comparison>(inner: 'a Tree) =
