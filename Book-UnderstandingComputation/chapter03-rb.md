@@ -28,6 +28,16 @@ def del_obj
     Object.send(:remove_const, :DFARulebook)
   rescue => e
   end
+
+  begin
+    Object.send(:remove_const, :DFA)
+  rescue => e
+  end
+
+  begin
+    Object.send(:remove_const, :DFADesign)
+  rescue => e
+  end
 end
 ```
 
@@ -110,3 +120,99 @@ rulebook.next_state(2, 'b') == 3
 ```
 
 #### P.68 規則集ができたら
+現在の状態を記録し, 受理状態かどうか報告するDFAオブジェクトを作る.
+
+##### dfa_rule02.rb
+```ruby
+del_obj
+dfa = "./chapter03-rb/dfa_rule02.rb"
+load dfa
+```
+
+```ruby
+DFA.new(1, [1, 3], rulebook).accepting? == true
+```
+
+```ruby
+DFA.new(1, [3], rulebook).accepting? == false
+```
+
+#### P.68 メソッド追加
+- 入力から一文字読み, 規則集に応じて現在の状態を変えるメソッドを追加する.
+
+##### dfa_rule03.rb
+DFAに文字を与えて出力が変わるのを観察する.
+
+```ruby
+del_obj
+dfa = "./chapter03-rb/dfa_rule03.rb"
+load dfa
+```
+
+```ruby
+dfa = DFA.new(1, [3], rulebook); dfa.accepting? == false
+```
+
+```ruby
+dfa.read_character('b'); dfa.accepting? == false
+```
+
+```ruby
+3.times do dfa.read_character('a') end; dfa.accepting? == false
+```
+
+```ruby
+dfa.read_character('b'); dfa.accepting? == true
+```
+
+#### P.69 メソッド追加
+与えた入力文字列をすべて読むことができる便利なメソッドを追加する.
+
+##### dfa_rule04.rb
+
+```ruby
+del_obj
+dfa = "./chapter03-rb/dfa_rule04.rb"
+load dfa
+```
+
+```ruby
+dfa = DFA.new(1, [3], rulebook); dfa.accepting? == false
+```
+
+```ruby
+dfa.read_string('baaab'); dfa.accepting? == true
+```
+
+#### P.69 DFAの設計を表現するオブジェクト
+- 一度入力を読んだDFAオブジェクトは開始状態にいる保証がない
+- 新しい入力シーケンスのチェックでそのオブジェクトが再利用できる保証がない
+- 新しい文字列をチェックするたびに前と同じ開始状態・受理状態・規則集を使って最初からDFAを生成する必要がある
+- 面倒なので特定のDFAの設計（design）を表現するオブジェクトを作る
+     - そこにDFAのコンストラクタに渡す引数を格納する
+     - 文字列をチェックするたびに使い捨てのDFAのインスタンスを自動で作る
+
+##### dfa_rule05.rb
+```ruby
+del_obj
+dfa = "./chapter03-rb/dfa_rule05.rb"
+load dfa
+```
+
+```ruby
+dfa_design = DFADesign.new(1, [3], rulebook)
+```
+
+```ruby
+dfa_design.accepts?('a') == false
+```
+
+```ruby
+dfa_design.accepts?('baa') == false
+```
+
+```ruby
+dfa_design.accepts?('baba') == true
+```
+
+## P.70 3.2 非決定性有限オートマトン
