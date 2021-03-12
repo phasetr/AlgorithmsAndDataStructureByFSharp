@@ -14,7 +14,6 @@ jupyter:
 
 # はじめに
 
-
 ## オブジェクト削除用関数
 
 ```ruby
@@ -36,6 +35,21 @@ def del_obj
 
   begin
     Object.send(:remove_const, :DFADesign)
+  rescue => e
+  end
+
+  begin
+    Object.send(:remove_const, :NFARulebook)
+  rescue => e
+  end
+
+  begin
+    Object.send(:remove_const, :NFA)
+  rescue => e
+  end
+
+  begin
+    Object.send(:remove_const, :NFADesign)
   rescue => e
   end
 end
@@ -266,3 +280,85 @@ rulebook.next_states(Set[1, 3], 'b') == Set[1, 2, 4]
 
 ##### dfa_rule07.rb
 シミュレートする機械を表現するNFAクラスを実装.
+
+```ruby
+del_obj
+dfa = "./chapter03-rb/dfa_rule07.rb"
+load dfa
+```
+
+```ruby
+NFA.new(Set[1], [4], rulebook).accepting? == false
+```
+
+```ruby
+NFA.new(Set[1, 2, 4], [4], rulebook).accepting? == true
+```
+
+##### dfa_rule08.rb
+入力から1文字読むための`#read_character`メソッドと,
+複数の文字を順番に読む`#read_string`メソッドを実装.
+
+```ruby
+del_obj
+dfa = "./chapter03-rb/dfa_rule08.rb"
+load dfa
+```
+
+```ruby
+nfa = NFA.new(Set[1], [4], rulebook)
+nfa.accepting? == false
+```
+
+```ruby
+nfa.read_character('b')
+nfa.accepting? == false
+```
+
+```ruby
+nfa.read_character('a')
+nfa.accepting? == false
+```
+
+```ruby
+nfa.read_character('b')
+nfa.accepting? == true
+```
+
+```ruby
+nfa = NFA.new(Set[1], [4], rulebook)
+```
+
+```ruby
+nfa.accepting? == false
+```
+
+```ruby
+nfa.read_string('bbbbb')
+nfa.accepting? == true
+```
+
+##### dfa_rule09.rb
+`DFA`クラスのときと同じように,
+手作業でオブジェクトを生成する代わりに`NFADesign`オブジェクトを使って,
+必要に応じて新しい`NFA`インスタンスが作れると便利.
+
+```ruby
+del_obj
+dfa = "./chapter03-rb/dfa_rule09.rb"
+load dfa
+```
+
+```ruby
+nfa_design = NFADesign.new(1, [4], rulebook)
+```
+
+```ruby
+nfa_design.accepts?('bab') == true
+```
+```ruby
+nfa_design.accepts?('bbbbb') == true
+```
+```ruby
+nfa_design.accepts?('bbabb') == false
+```
