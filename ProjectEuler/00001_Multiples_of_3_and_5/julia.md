@@ -8,9 +8,9 @@ jupyter:
       format_version: '1.2'
       jupytext_version: 1.5.1
   kernelspec:
-    display_name: Julia 1.5.2
+    display_name: Julia 1.6.0
     language: julia
-    name: julia-1.5
+    name: julia-1.6
 ---
 
 # Multiples of 3 and 5
@@ -66,7 +66,7 @@ print(fives)
 
 ```julia
 numbers = Vector{Int}(undef, 0)
-for i in 1:999 
+for i in 1:999
     if i % 3 == 0 || i % 5 == 0 append!(numbers, i) end
 end
 print(numbers)
@@ -76,7 +76,7 @@ print(numbers)
 
 ```julia
 numbers = Vector{Int}(undef, 0)
-for i in 1:999 
+for i in 1:999
     if i % 3 == 0 || i % 5 == 0 append!(numbers, i) end
 end
 sum(numbers)
@@ -256,7 +256,7 @@ div3or5(x) = x % 3 == 0 || x % 5 == 0
 
 ```julia
 numbers = Vector{Int}(undef, 0)
-for i in 1:999 
+for i in 1:999
     if i % 3 == 0 || i % 5 == 0 append!(numbers, i) end
 end
 sum(numbers)
