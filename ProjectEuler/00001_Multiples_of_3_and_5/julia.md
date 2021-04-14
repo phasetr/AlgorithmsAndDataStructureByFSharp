@@ -35,11 +35,17 @@ PythonとJuliaでプログラムを読みかえるのも大変だろうから、
 
 JuliaにはJuliaの都合があって、高速化を考えるといくつか工夫が必要だが、まずはあまり気にせず書くことにする。
 ### 方針1
-まずは1000未満の3の倍数と5の倍数を全部作ってみる。
+まずは1000未満の3の倍数と5の倍数を全部作ってみよう。ただ、1000だと結果が見づらいので、`n=30`くらいにして見やすくする。
 
 ```julia
+# 本来の値
+N = 999
+```
+
+```julia
+n = 30
 threes = Vector{Int}(undef, 0)
-for i in 1:999
+for i in 1:n
     if i % 3 == 0 append!(threes, i) end
 end
 
@@ -48,7 +54,7 @@ println(threes)
 
 ```julia
 fives = Vector{Int}(undef, 0)
-for i in 1:999
+for i in 1:n
     if i % 5 == 0 append!(fives, i) end
 end
 
@@ -66,7 +72,7 @@ print(fives)
 
 ```julia
 numbers = Vector{Int}(undef, 0)
-for i in 1:999
+for i in 1:n
     if i % 3 == 0 || i % 5 == 0 append!(numbers, i) end
 end
 print(numbers)
@@ -76,7 +82,17 @@ print(numbers)
 
 ```julia
 numbers = Vector{Int}(undef, 0)
-for i in 1:999
+for i in 1:n
+    if i % 3 == 0 || i % 5 == 0 append!(numbers, i) end
+end
+sum(numbers)
+```
+
+`n`を`N`に変えて計算してみよう。
+
+```julia
+numbers = Vector{Int}(undef, 0)
+for i in 1:N
     if i % 3 == 0 || i % 5 == 0 append!(numbers, i) end
 end
 sum(numbers)
@@ -94,7 +110,7 @@ sum(numbers)
 
 ```julia
 threes = Set{Int}()
-for i in 1:999
+for i in 1:n
     if i % 3 == 0 push!(threes, i) end
 end
 println(threes)
@@ -105,7 +121,7 @@ println(threes)
 
 ```julia
 fives = Set{Int}()
-for i in 1:999
+for i in 1:n
     if i % 5 == 0 push!(fives, i) end
 end
 print(fives)
@@ -130,7 +146,9 @@ println(numbers1 == numbers3)
 sum(numbers3)
 ```
 
-これをまとめて[解答2](#解答2)にしておこう。
+`n`の時の値は配列版と一致した。
+`N`に変えれば正しい値が出るだろう。
+まとめて[解答2](#解答2)にしておく。
 
 
 ## コードの単純化
@@ -146,14 +164,14 @@ sum(numbers3)
 
 ```julia
 threes1 = Vector{Int}(undef, 0)
-for i in 1:999
+for i in 1:n
     if i % 3 == 0 append!(threes1, i) end
 end
 print(threes1)
 ```
 
 ```julia
-threes2 = [i for i in 1:999 if i % 3 == 0]
+threes2 = [i for i in 1:n if i % 3 == 0]
 print(threes1 == threes2)
 ```
 
@@ -162,14 +180,16 @@ print(threes1 == threes2)
 あと`for`の中身が長いとそもそも書けたものではない。
 
 ```julia
-numbers = [i for i in 1:999 if i % 3 == 0 || i % 5 == 0]
+numbers = [i for i in 1:n if i % 3 == 0 || i % 5 == 0]
 sum(numbers)
 ```
 
+上のセルでは`n`で計算した。
 本来の答え（リストの和）が欲しいだけならもっと短く書ける。
+今度は`N`で計算しよう。
 
 ```julia
-sum([i for i in 1:999 if i % 3 == 0 || i % 5 == 0])
+sum([i for i in 1:N if i % 3 == 0 || i % 5 == 0])
 ```
 
 ### 高階関数
@@ -184,7 +204,7 @@ function lt5(x)
     return x < 5
 end
 
-below1000 = 1:999
+below1000 = 1:N
 lessthan5 = filter(lt5, below1000)
 println(lessthan5)
 ```
@@ -197,7 +217,7 @@ println(lessthan5)
 ```julia
 lt5(x) = x < 5
 
-below1000 = 1:999
+below1000 = 1:N
 lessthan5 = filter(lt5, below1000)
 println(lessthan5)
 ```
@@ -207,7 +227,7 @@ println(lessthan5)
 これも例を見た方が早い。
 
 ```julia
-below1000 = 1:999
+below1000 = 1:N
 lessthan5 = filter(x -> x < 5, below1000)
 print(lessthan5)
 ```
@@ -215,7 +235,7 @@ print(lessthan5)
 これを使って解答を作ってみよう。
 
 ```julia
-all = 1:999
+all = 1:N
 numbers = filter(x -> x % 3 == 0 || x % 5 == 0, all)
 sum(numbers)
 ```
@@ -223,7 +243,7 @@ sum(numbers)
 このくらいのコードなら、次のようにもっとシンプルにしてもいいだろう。
 
 ```julia
-sum(filter(x -> x % 3 == 0 || x % 5 == 0, 1:999))
+sum(filter(x -> x % 3 == 0 || x % 5 == 0, 1:N))
 ```
 
 ### パイプライン演算子
@@ -246,7 +266,7 @@ div3or5(x) = x % 3 == 0 || x % 5 == 0
 もちろん`div3or5`もラムダにできる。
 
 ```julia
-[1:999;] |> x -> filter(n -> n % 3 == 0 || n % 5 == 0, x) |> sum
+[1:N;] |> x -> filter(n -> n % 3 == 0 || n % 5 == 0, x) |> sum
 ```
 
 ## 解答

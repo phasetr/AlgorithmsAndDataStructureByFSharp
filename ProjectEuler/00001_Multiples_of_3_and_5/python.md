@@ -34,11 +34,17 @@ Find the sum of all the multiples of 3 or 5 below 1000.
 
 
 ### 方針1
-まずは1000未満の3の倍数と5の倍数を全部作ってみる。
+まずは1000未満の3の倍数と5の倍数を全部作ってみる。ただ、1000だと結果が見づらいので、`n=30`くらいにして見やすくする。
 
 ```python
+# 本来の値
+N = 1000
+```
+
+```python
+n = 30
 threes = []
-for i in range(1000):
+for i in range(n):
     if i % 3 == 0:
         threes.append(i)
 
@@ -47,7 +53,7 @@ print(threes)
 
 ```python
 fives = []
-for i in range(1000):
+for i in range(n):
     if i % 5 == 0:
         fives.append(i)
 
@@ -65,7 +71,7 @@ print(fives)
 
 ```python
 numbers = []
-for i in range(1000):
+for i in range(n):
     if i % 3 == 0 or i % 5 == 0:
         numbers.append(i)
 print(numbers)
@@ -75,7 +81,17 @@ print(numbers)
 
 ```python
 numbers = []
-for i in range(1000):
+for i in range(n):
+    if i % 3 == 0 or i % 5 == 0:
+        numbers.append(i)
+sum(numbers)
+```
+
+`n`を`N`に変えて計算してみよう。
+
+```python
+numbers = []
+for i in range(N):
     if i % 3 == 0 or i % 5 == 0:
         numbers.append(i)
 sum(numbers)
@@ -93,7 +109,7 @@ sum(numbers)
 
 ```python
 threes = set()
-for i in range(1000):
+for i in range(n):
     if i % 3 == 0:
         threes.add(i)
 print(threes)
@@ -104,7 +120,7 @@ print(threes)
 
 ```python
 fives = set()
-for i in range(1000):
+for i in range(n):
     if i % 5 == 0:
         fives.add(i)
 print(fives)
@@ -126,7 +142,9 @@ print(numbers)
 sum(numbers)
 ```
 
-これをまとめて[解答2](#解答2)にしておこう。
+`n`の時の値は配列版と一致した。
+`N`に変えれば正しい値が出るだろう。
+まとめて[解答2](#解答2)にしておこう。
 
 
 ## コードの単純化
@@ -142,14 +160,14 @@ sum(numbers)
 
 ```python
 threes1 = []
-for i in range(1000):
+for i in range(N):
     if i % 3 == 0:
         threes1.append(i)
 print(threes1)
 ```
 
 ```python
-threes2 = [i for i in range (1000) if i % 3 == 0]
+threes2 = [i for i in range (N) if i % 3 == 0]
 print(threes1 == threes2)
 ```
 
@@ -158,14 +176,14 @@ print(threes1 == threes2)
 あと`for`の中身が長いとそもそも書けたものではない。
 
 ```python
-numbers = [i for i in range(1000) if i % 3 == 0 or i % 5 == 0]
+numbers = [i for i in range(N) if i % 3 == 0 or i % 5 == 0]
 sum(numbers)
 ```
 
 本来の答え（リストの和）が欲しいだけならもっと短く書ける。
 
 ```python
-sum([i for i in range(1000) if i % 3 == 0 or i % 5 == 0])
+sum([i for i in range(N) if i % 3 == 0 or i % 5 == 0])
 ```
 
 ### 高階関数
@@ -179,7 +197,7 @@ sum([i for i in range(1000) if i % 3 == 0 or i % 5 == 0])
 def lt5(x):
     return x < 5
 
-below1000 = range(1000)
+below1000 = range(N)
 lessthan5 = filter(lt5, below1000)
 print(list(lessthan5))
 ```
@@ -192,7 +210,7 @@ print(list(lessthan5))
 これも例を見た方が早い。
 
 ```python
-below1000 = range(1000)
+below1000 = range(N)
 lessthan5 = filter(lambda x: x < 5, below1000)
 print(list(lessthan5))
 ```
@@ -200,7 +218,7 @@ print(list(lessthan5))
 これを使って解答を作ってみよう。
 
 ```python
-all = range(1000)
+all = range(N)
 numbers = filter(lambda x: x % 3 == 0 or x % 5 == 0, all)
 sum(numbers)
 ```
@@ -208,7 +226,7 @@ sum(numbers)
 このくらいのコードなら、次のようにもっとシンプルにしてもいいだろう。
 
 ```python
-sum(filter(lambda x: x % 3 == 0 or x % 5 == 0, range(1000)))
+sum(filter(lambda x: x % 3 == 0 or x % 5 == 0, range(N)))
 ```
 
 ## 解答
