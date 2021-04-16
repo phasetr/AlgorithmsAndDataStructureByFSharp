@@ -148,7 +148,7 @@ print(get_largest_prime(7) == 7)
 時間がかかるので注意。
 ```python
 %%time
-print(get_largest_prime(now_number))
+#print(get_largest_prime(now_number))
 ```
 ### 方針2
 `is_prime`, `get_primes_less_than`, `factorize`は使い回そう.
