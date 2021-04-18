@@ -88,6 +88,9 @@ I know their names, but I do not read them thoroughly.
 
 ## memo
 
+### Sample codes
+- [mathcodes](https://github.com/phasetr/mathcodes): by myself
+
 ### Useful pages in fsharpforfunandprofit.com
 
 - [Understanding map and apply-A toolset for working with elevated worlds](https://fsharpforfunandprofit.com/posts/elevated-world/)
