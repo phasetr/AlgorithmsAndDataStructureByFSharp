@@ -7,5 +7,5 @@ services:
     ports:
       - 8001:8888
     volumes:
-      - .:/home/jovyan/work
+      - .:/home/jovyan/work # /home/jovyan にすると ruby が使えないので注意
     command: jupyter-notebook --ip=0.0.0.0 --allow-root --NotebookApp.token=''
