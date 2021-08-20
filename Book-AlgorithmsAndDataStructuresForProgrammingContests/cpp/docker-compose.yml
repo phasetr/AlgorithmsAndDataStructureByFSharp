@@ -1,0 +1,8 @@
+version: '3'
+services:
+  cpp:
+    build: .
+    container_name: cpp
+    volumes:
+      - .:/home/cpp
+    tty: true
