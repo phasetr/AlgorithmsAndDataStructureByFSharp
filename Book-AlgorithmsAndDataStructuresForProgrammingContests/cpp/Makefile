@@ -24,3 +24,30 @@ hello:
 	@./a.out < 046_01.txt
 	@echo ""
 	@rm a.out
+055:
+	@g++ -std=gnu++1y -g -O0 -I/opt/boost/gcc/include -L/opt/boost/gcc/lib -o a.out 055.cpp
+	@echo ""
+	@echo "SAMPLE 1"
+	@echo "ANSWER:"
+	@echo "5 2 4 6 1 3"
+	@echo "2 5 4 6 1 3"
+	@echo "2 4 5 6 1 3"
+	@echo "2 4 5 6 1 3"
+	@echo "1 2 4 5 6 3"
+	@echo "1 2 3 4 5 6"
+	@echo ""
+	@echo "RESULT"
+	@./a.out < 055.txt
+	@echo ""
+	@rm a.out
+060:
+	@g++ -std=gnu++1y -g -O0 -I/opt/boost/gcc/include -L/opt/boost/gcc/lib -o 060.out 060.cpp
+	@echo ""
+	@echo "SAMPLE 1"
+	@echo "ANSWER"
+	@echo "1 2 3 4 5"
+	@echo "8"
+	@echo ""
+	@echo "RESULT"
+	@./060.out < 060.txt
+	@echo ""

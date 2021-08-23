@@ -3,6 +3,7 @@ services:
   cpp:
     build: .
     container_name: cpp
+    working_dir: '/home/cpp'
     volumes:
       - .:/home/cpp
     tty: true

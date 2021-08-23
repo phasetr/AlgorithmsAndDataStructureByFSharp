@@ -1,4 +1,12 @@
 # README
+## 対応
+ファイル名はそれが載っているページ数を表す.
+
+- 040: Top 3, ソートして上から三つ取る
+- 046: ALDS 1_1_D: Maximum Profit, 最大利益を取る
+- 055: ALDS 1_1_A: Insertion Sort, 挿入ソート
+- 060: ALDS 1_2_A: Bubble Sort
+
 ## docker コマンド
 ```sh
 docker compose up -d
