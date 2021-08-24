@@ -1,0 +1,9 @@
+version: '3'
+services:
+  hs:
+    build: .
+    container_name: sh
+    working_dir: '/home/hs'
+    volumes:
+      - .:/home/hs
+    tty: true
