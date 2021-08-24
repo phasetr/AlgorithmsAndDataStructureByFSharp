@@ -51,3 +51,16 @@ hello:
 	@echo "RESULT"
 	@./060.out < 060.txt
 	@echo ""
+	@rm 060.out
+065:
+	@g++ -std=gnu++1y -g -O0 -I/opt/boost/gcc/include -L/opt/boost/gcc/lib -o 065.out 065.cpp
+	@echo ""
+	@echo "SAMPLE 1"
+	@echo "ANSWER"
+	@echo "1 2 3 4 5 6"
+	@echo "4"
+	@echo ""
+	@echo "RESULT"
+	@./065.out < 065.txt
+	@echo ""
+	@rm 065.out

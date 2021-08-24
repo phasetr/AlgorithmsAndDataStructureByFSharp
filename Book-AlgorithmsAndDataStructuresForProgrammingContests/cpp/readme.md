@@ -14,6 +14,10 @@ g++ 040.cpp -o 040.out ; ./040.out < 040.txt
 ```
 
 ```sh
+docker compose exec cpp sh -c "make 040"
+```
+
+```sh
 docker compose exec cpp sh
 cd /home/cpp/src
 make 040
