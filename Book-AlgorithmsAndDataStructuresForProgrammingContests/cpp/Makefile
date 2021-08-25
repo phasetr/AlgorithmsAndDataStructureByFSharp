@@ -64,3 +64,17 @@ hello:
 	@./065.out < 065.txt
 	@echo ""
 	@rm 065.out
+070:
+	@g++ -std=gnu++1y -g -O0 -I/opt/boost/gcc/include -L/opt/boost/gcc/lib -o 070.out 070.cpp
+	@echo ""
+	@echo "SAMPLE 1"
+	@echo "ANSWER"
+	@echo "D2 C3 H4 S4 C9"
+	@echo "Stable"
+	@echo "D2 C3 S4 H4 C9"
+	@echo "Not stable"
+	@echo ""
+	@echo "RESULT"
+	@./070.out < 070.txt
+	@echo ""
+	@rm 070.out
