@@ -78,3 +78,21 @@ hello:
 	@./070.out < 070.txt
 	@echo ""
 	@rm 070.out
+074:
+	@g++ -std=gnu++1y -g -O0 -I/opt/boost/gcc/include -L/opt/boost/gcc/lib -o 074.out 074.cpp
+	@echo ""
+	@echo "SAMPLE 1"
+	@echo "ANSWER"
+	@echo "2"
+	@echo "4 1"
+	@echo "3"
+	@echo "1"
+	@echo "2"
+	@echo "3"
+	@echo "4"
+	@echo "5"
+	@echo ""
+	@echo "RESULT"
+	@./074.out < 074.txt
+	@echo ""
+	@rm 074.out
