@@ -57,6 +57,7 @@ I know their names, but I do not read them thoroughly.
 - [Functional Programming Patterns](https://www.slideshare.net/ScottWlaschin/fp-patterns-ndc-london2014)
   - Descriptions on "Pattern: Chaining callbacks with continuation" from P.85 helps me very much.
   - `Monadic Bind`
+- [Russel, Essential Functional-First F#](https://leanpub.com/essential-fsharp)
 
 ### Algorithms and data structures
 
