@@ -21,7 +21,6 @@
    X 以上の素数のうち、最小のものを出力せよ。
    *)
 #r "nuget: FsUnit"
-open NUnit.Framework
 open FsUnit
 
 // http://www.fssnip.net/3X
