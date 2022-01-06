@@ -1,5 +1,9 @@
 /// 関数の名前をよく忘れてリファレンスを見に行くのが面倒なので、使った関数はまとめよう
 /// TODO compareWith まで対応 https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html
+#r "nuget: FsUnit"
+open NUnit.Framework
+open FsUnit
+
 module Array =
     module AllPairs =
         // Array.allPairs
@@ -610,18 +614,26 @@ module List =
 
 module Sequence =
     module Fold =
-        let s = seq { 0 .. 9 }
-        // Seq.sum s = Seq.fold (+) 0 s
-        Seq.fold (-) 0 s // -45
+      let s = seq { 0 .. 9 }
+      // Seq.sum s = Seq.fold (+) 0 s
+      Seq.fold (-) 0 s // -45
+
+    module Head =
+      let s = seq { 0 .. 9 }
+      Seq.head s |> should equal 0
 
     module Map =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
-        let s = seq { 0 .. 9 }
-        Seq.reduce (-) s // -45
+      // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
+      let s = seq { 0 .. 9 }
+      Seq.reduce (-) s // -45
 
     module Reduce =
-        let s = seq { 0 .. 9 }
-        Seq.reduce (-) s // -45
+      let s = seq { 0 .. 9 }
+      Seq.reduce (-) s // -45
+
+    module TakeWhile =
+      let s = seq { 0 .. 9}
+      Seq.takeWhile (fun x -> x < 3) |> should equal seq {0;1;2}
 
 module String =
     module Collect =

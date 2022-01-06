@@ -20,7 +20,7 @@
    出力
    X 以上の素数のうち、最小のものを出力せよ。
    *)
-#r "nuget: FsUnit, 4.1.0"
+#r "nuget: FsUnit"
 open NUnit.Framework
 open FsUnit
 
@@ -48,15 +48,31 @@ let solve n =
   |> Array.ofSeq
   |> Array.last
 
+let allPrimesLargerThanN n =
+  let rec recAllPrimes m =
+    seq { // sequences are lazy, so we can make them infinite
+          if (isPrime m && n <= m) then yield m
+          yield! recAllPrimes (m+1) // recursing
+        }
+  recAllPrimes 1 // starting from 1
+
+let solve2 n =
+  allPrimesLargerThanN n
+  |> Seq.head
+
 [<EntryPoint>]
 let main argv =
   let n = stdin.ReadLine() |> int
-  solve n |> printfn "%d"
+  solve2 n |> printfn "%d"
   0
 
 solve 20 |> should equal 23
 solve 2 |> should equal 2
 solve 99992 |> should equal 100003
+
+solve2 20 |> should equal 23
+solve2 2 |> should equal 2
+solve2 99992 |> should equal 100003
 
 module Solution1 =
   // https://atcoder.jp/contests/abc149/submissions/18539714
