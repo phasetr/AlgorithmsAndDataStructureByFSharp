@@ -613,27 +613,31 @@ module List =
         List.append l1 l2 // [0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15]
 
 module Sequence =
-    module Fold =
-      let s = seq { 0 .. 9 }
-      // Seq.sum s = Seq.fold (+) 0 s
-      Seq.fold (-) 0 s // -45
+  module Fold =
+    let s = seq { 0 .. 9 }
+    // Seq.sum s = Seq.fold (+) 0 s
+    Seq.fold (-) 0 s // -45
 
-    module Head =
-      let s = seq { 0 .. 9 }
-      Seq.head s |> should equal 0
+  module Head =
+    let s = seq { 0 .. 9 }
+    Seq.head s |> should equal 0
 
-    module Map =
-      // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
-      let s = seq { 0 .. 9 }
-      Seq.reduce (-) s // -45
+  module Map =
+    // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
+    let s = seq { 0 .. 9 }
+    Seq.reduce (-) s // -45
 
-    module Reduce =
-      let s = seq { 0 .. 9 }
-      Seq.reduce (-) s // -45
+  module Reduce =
+    let s = seq { 0 .. 9 }
+    Seq.reduce (-) s // -45
 
-    module TakeWhile =
-      let s = seq { 0 .. 9}
-      Seq.takeWhile (fun x -> x < 3) |> should equal seq {0;1;2}
+  // Seq.tail
+  let s = seq { 0 .. 3 }
+  Seq.tail s |> should equal (seq {1;2;3})
+
+  module TakeWhile =
+    let s = seq { 0 .. 9}
+    Seq.takeWhile (fun x -> x < 3) |> should equal seq {0;1;2}
 
 module String =
     module Collect =
