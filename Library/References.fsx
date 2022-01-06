@@ -1,7 +1,6 @@
 /// 関数の名前をよく忘れてリファレンスを見に行くのが面倒なので、使った関数はまとめよう
 /// TODO compareWith まで対応 https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html
 #r "nuget: FsUnit"
-open NUnit.Framework
 open FsUnit
 
 module Array =
@@ -604,40 +603,30 @@ module Array =
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
 
 module List =
-    module Append =
-        // Array にある関数は省略する
-        // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
-        // https://msdn.microsoft.com/visualfsharpdocs/conceptual/collections.list-module-%5bfsharp%5d
-        let l1 = [ 0 .. 5 ]
-        let l2 = [ 10 .. 15 ]
-        List.append l1 l2 // [0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15]
+  // Array にある関数は省略する
+  // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
+  // https://msdn.microsoft.com/visualfsharpdocs/conceptual/collections.list-module-%5bfsharp%5d
+  // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
+  List.append [0..5] [10..15] |> should equal [0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15]
 
 module Sequence =
-  module Fold =
-    let s = seq { 0 .. 9 }
-    // Seq.sum s = Seq.fold (+) 0 s
-    Seq.fold (-) 0 s // -45
 
-  module Head =
-    let s = seq { 0 .. 9 }
-    Seq.head s |> should equal 0
+  // Seq.sum s = Seq.fold (+) 0 s
+  Seq.fold (-) 0 {0..9} |> should equal -45
+
+  Seq.head (seq {0..9}) |> should equal 0
 
   module Map =
     // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
     let s = seq { 0 .. 9 }
     Seq.reduce (-) s // -45
 
-  module Reduce =
-    let s = seq { 0 .. 9 }
-    Seq.reduce (-) s // -45
+  Seq.reduce (-) (seq {0..9}) |> should equal -45
 
-  // Seq.tail
   let s = seq { 0 .. 3 }
   Seq.tail s |> should equal (seq {1;2;3})
 
-  module TakeWhile =
-    let s = seq { 0 .. 9}
-    Seq.takeWhile (fun x -> x < 3) |> should equal seq {0;1;2}
+  Seq.takeWhile (fun x -> x < 3) (seq {0..9}) |> should equal (seq {0;1;2})
 
 module String =
     module Collect =
