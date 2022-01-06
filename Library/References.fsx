@@ -82,6 +82,12 @@ module Array =
         Array.distinctBy (fun n -> n % 2) [| 0 .. 3 |] // [|0; 1|]
         Array.distinctBy<int, bool> (fun _ -> true) [||] // [||] : int []
 
+    let rec dropWhile p (xs: 'T array) =
+      match xs with
+      | [||] -> [||]
+      | _ -> if p (Array.head xs) then dropWhile p (Array.tail xs) else (Array.tail xs)
+    dropWhile (fun x -> x < 3) [|0..5|] |> should equal [|4;5|]
+
     module Empty =
         // Array.empty
         // 空の配列を生成する
@@ -609,7 +615,18 @@ module List =
   // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
   List.append [0..5] [10..15] |> should equal [0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15]
 
+  let rec dropWhile p (list: 'T list) =
+    match list with
+    | [] -> []
+    | x::xs -> if p x then dropWhile p xs else xs
+  dropWhile (fun x -> x < 3) [0..5] |> should equal [4;5]
+
 module Sequence =
+  let rec dropWhile p (xs: 'T seq) =
+    match xs with
+    | s when Seq.isEmpty s -> Seq.empty
+    | _ -> if p (Seq.head xs) then dropWhile p (Seq.tail xs) else (Seq.tail xs)
+  dropWhile (fun x -> x < 3) (seq {0..5}) |> should equal (seq {4;5})
 
   // Seq.sum s = Seq.fold (+) 0 s
   Seq.fold (-) 0 {0..9} |> should equal -45
