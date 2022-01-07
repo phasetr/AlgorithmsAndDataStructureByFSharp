@@ -4,6 +4,13 @@
 open FsUnit
 
 module Array =
+    // accessor or slice
+    let a = [| 0 .. 4 |]
+    a.[0] |> should equal 0
+    a.[0..2] |> should equal [| 0; 1; 2 |]
+    a.[1..] |> should equal [| 1; 2; 3; 4 |]
+    a.[..3] |> should equal [| 0; 1; 2; 3 |]
+
     module AllPairs =
         // Array.allPairs
         // 配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
