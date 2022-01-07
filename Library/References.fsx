@@ -16,7 +16,11 @@ module Array =
         // 配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
         // 結果となる配列の長さが膨大になる可能性があるため引数の配列の長さに注意すること.
         // 引数の配列のどちらかが空のときは結果の配列も空になる.
-        Array.allPairs [| 'a'; 'b'; 'c' |] [| 1; 2; |]
+        Array.allPairs [| 'a'; 'b'; 'c' |] [|
+            1
+            2
+        |]
+
         Array.allPairs<char, int> [| 'a'; 'b' |] [||] // [||] : (char * int) []
 
     module Append =
@@ -53,7 +57,13 @@ module Array =
         // Array.choose
         // if の結果 Option を取る関数を与えて Some(x) だけを取ってくる
         // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose
-        Array.choose (fun elem -> if elem % 2 = 0 then Some(float (elem * elem - 1)) else None) [| 1 .. 10 |]
+        Array.choose
+            (fun elem ->
+                if elem % 2 = 0 then
+                    Some(float (elem * elem - 1))
+                else
+                    None)
+            [| 1 .. 10 |]
         |> printfn "%A" // [|3.0; 15.0; 35.0; 63.0; 99.0|]
 
     module ChunkBySize =
@@ -79,8 +89,9 @@ module Array =
             if elem1 > elem2 then 1
             elif elem1 < elem2 then -1
             else 0
-        Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 4; |] // -1
-        Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 3; |] // 0
+
+        Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 4 |] // -1
+        Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 3 |] // 0
 
     module DistinctBy =
         // Array.distinctBy
@@ -90,10 +101,16 @@ module Array =
         Array.distinctBy<int, bool> (fun _ -> true) [||] // [||] : int []
 
     let rec dropWhile p (xs: 'T array) =
-      match xs with
-      | [||] -> [||]
-      | _ -> if p (Array.head xs) then dropWhile p (Array.tail xs) else (Array.tail xs)
-    dropWhile (fun x -> x < 3) [|0..5|] |> should equal [|4;5|]
+        match xs with
+        | [||] -> [||]
+        | _ ->
+            if p (Array.head xs) then
+                dropWhile p (Array.tail xs)
+            else
+                (Array.tail xs)
+
+    dropWhile (fun x -> x < 3) [| 0 .. 5 |]
+    |> should equal [| 4; 5 |]
 
     module Empty =
         // Array.empty
@@ -105,7 +122,7 @@ module Array =
         // 要素が1つだけの配列から要素を取り出す。
         // 配列の要素が複数もしくは空のときは System.ArgumentException。
         // Array.singleton は逆。
-        Array.exactlyOne [| 3 |] // 3 (Array.singletonとは逆)
+        Array.exactlyOne [| 3 |]
         //Array.exactlyOne [| 3; 2 |] // 例外発生「System.ArgumentException: 入力シーケンスに複数の要素が含まれています。」
         //Array.exactlyOne<int> [||] // 例外発生「System.ArgumentException: 入力シーケンスが空でした。」
         Array.singleton 3 // [|3|] (Array.exactlyOneとは逆)
@@ -283,9 +300,12 @@ module Array =
         // 戻り値は (最終結果のタプルの左側の要素, 次回関数実行時の第 1 引数) とする.
         // 配列の要素を末尾から取り出す Array.mapFoldBack もあるが,
         // 引数の位置などに違いがある.
-        Array.mapFold (fun x y ->
-            printfn "x = %2d, y = %1d, x * y = %3d" x y (x * y)
-            (x, x * y)) 1 [| 2 .. 5 |] //([|1; 2; 6; 24|], 120)
+        Array.mapFold
+            (fun x y ->
+                printfn "x = %2d, y = %1d, x * y = %3d" x y (x * y)
+                (x, x * y))
+            1
+            [| 2 .. 5 |] //([|1; 2; 6; 24|], 120)
         (* 途中経過 *)
         //x =  1, y = 2, x * y =   2
         //x =  2, y = 3, x * y =   6
@@ -304,17 +324,21 @@ module Array =
         // 最終結果の配列の要素は先に関数から得られたものほど後に配置される.
         // 配列の要素を先頭から順次取り出す Array.mapFold もある:
         // 引数の位置などに違いがあるので注意してください.
-        Array.mapFoldBack (fun x y ->
-            printfn "x = %1d, y = %2d, x * y = %3d" x y (x * y)
-            (y, x * y)) [| 2 .. 5 |] 1 // ([| 60; 20; 5; 1 |], 120)
-        (* 途中経過 *)
-        //x = 5, y =  1, x * y =   5
-        //x = 4, y =  5, x * y =  20
-        //x = 3, y = 20, x * y =  60
-        //x = 2, y = 60, x * y = 120
+        Array.mapFoldBack
+            (fun x y ->
+                printfn "x = %1d, y = %2d, x * y = %3d" x y (x * y)
+                (y, x * y))
+            [| 2 .. 5 |]
+            1 // ([| 60; 20; 5; 1 |], 120)
+    (* 途中経過 *)
+    //x = 5, y =  1, x * y =   5
+    //x = 4, y =  5, x * y =  20
+    //x = 3, y = 20, x * y =  60
+    //x = 2, y = 60, x * y = 120
 
     module Mapi =
         // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#mapi
+        // Haskell imap
         let array1 = [| 1; 2; 3 |]
 
         array1
@@ -341,11 +365,12 @@ module Array =
         |> Array.maxBy (fun x -> 1.0 - x * x)
         |> printfn "%A" // 0.0
 
-    module Min =
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#min
-        [| for x in -100 .. 100 -> x * x - 4 |]
-        |> Array.min
-        |> printfn "%A" // -4
+    // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#min
+    [| for x in -100 .. 100 -> x * x - 4 |]
+    |> Array.min
+    |> should equal -4
+
+    Array.min [| 1; 2; 3 |] |> should equal 1
 
     module MinBy =
         // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#minBy
@@ -358,7 +383,7 @@ module Array =
         // 隣り合う要素どうしをタプル収めた要素を持つ配列を得る.
         // 配列の要素が 1 つ以下のときの戻り値は空の配列.
         Array.pairwise [| 'a' .. 'd' |] // [|('a', 'b'); ('b', 'c'); ('c', 'd')|]
-        Array.pairwise [| 'a' |] // [||] : (char * char) []
+        Array.pairwise [| 'a' |]
         Array.pairwise<char> [||] // [||] : (char * char) []
 
     module Partition =
@@ -374,7 +399,7 @@ module Array =
         // 同じ値の要素を複数持つ配列を得る.
         // 数値が 0 以上の整数でなければ System.ArgumentException.
         Array.replicate 3 "F#" // [|"F#"; "F#"; "F#"|]
-        //Array.replicate -1 "F#"  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
+    //Array.replicate -1 "F#"  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
 
     module Scan =
         // Array.scan
@@ -388,7 +413,7 @@ module Array =
         // 要素を 1 つだけ持つ配列を得る.
         // 逆に要素が 1 つだけの配列から要素を取り出す Array.exactlyOne もある.
         Array.singleton 3 // [|3|]
-        Array.exactlyOne [| 3 |] // 3
+        Array.exactlyOne [| 3 |]
 
     module Skip =
         // Array.skip
@@ -403,11 +428,9 @@ module Array =
         // Array.skipWhile
         // 関数の戻り値が false となる位置までの要素をなくした配列を得る.
         // 逆にその位置までの要素を得られる Array.takeWhile もある.
-        Array.skipWhile (fun n -> n < 4)
-            [| 3; 2; 5; 4; 1 |] // [| 5; 4; 1 |]
+        Array.skipWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [| 5; 4; 1 |]
 
-        Array.takeWhile (fun n -> n < 4)
-            [| 3; 2; 5; 4; 1 |] // [|3; 2|]
+        Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
 
     module SortByDescending =
         // Array.sortByDescending
@@ -415,24 +438,52 @@ module Array =
         // 関数の結果は比較可能な値でなければなりません.
         // 他に配列の要素自体を並べ替える Array.sortDescending や,
         // 配列の並べ替えが昇順になる Array.sortBy もある.
-        Array.sortByDescending (fun (x, _) -> x)
-            [| (2, "dos"); (3, "tres"); (1, "uno") |] // [|(3, "tres"); (2, "dos"); (1, "uno")|]
+        Array.sortByDescending
+            (fun (x, _) -> x)
+            [| (2, "dos")
+               (3, "tres")
+               (1, "uno") |]
+        |> should
+            equal
+            [| (3, "tres")
+               (2, "dos")
+               (1, "uno") |]
 
-        Array.sortDescending [| 1 .. 5 |] // [|5; 4; 3; 2; 1|]
+        Array.sortDescending [| 1 .. 5 |]
+        |> should equal [| 5; 4; 3; 2; 1 |]
 
-        Array.sortBy (fun (x, _) -> x)
-            [| (2, "dos"); (3, "tres"); (1, "uno") |] // [|(1, "uno"); (2, "dos"); (3, "tres")|]
+        Array.sortBy
+            (fun (x, _) -> x)
+            [| (2, "dos")
+               (3, "tres")
+               (1, "uno") |]
+        |> should
+            equal
+            [| (1, "uno")
+               (2, "dos")
+               (3, "tres") |]
 
     module SortDescending =
         // Array.sortDescending
         // 配列の要素を降順で並べ替える.
         // 要素は比較可能な値でなければならない.
         // 他に昇順で並べ替える Array.sort や要素を引数にして関数を順次実行した値で並べ替える Array.sortByDescending もある.
-        Array.sortDescending [| for i in 1 .. 5 -> -i |] // [|-1; -2; -3; -4; -5|]
-        Array.sort [| for i in 1 .. 5 -> -i |] // [|-5; -4; -3; -2; -1|]
+        Array.sortDescending [| for i in 1 .. 5 -> -i |]
+        |> should equal [| -1; -2; -3; -4; -5 |]
 
-        Array.sortByDescending (fun (x, _) -> x)
-            [| (2, "dos"); (3, "tres"); (1, "uno") |] // [|(3, "tres"); (2, "dos"); (1, "uno")|]
+        Array.sort [| for i in 1 .. 5 -> -i |]
+        |> should equal [| -5; -4; -3; -2; -1 |]
+
+        Array.sortByDescending
+            (fun (x, _) -> x)
+            [| (2, "dos")
+               (3, "tres")
+               (1, "uno") |]
+        |> should
+            equal
+            [| (3, "tres")
+               (2, "dos")
+               (1, "uno") |]
 
     module SplitAt =
         // Array.splitAt
@@ -443,8 +494,8 @@ module Array =
         Array.splitAt 3 [| 'a' .. 'e' |] // ([|'a'; 'b'; 'c'|], [|'d'; 'e'|])
         Array.splitAt 0 [| 'a' .. 'e' |] // ([||], ([||], [|'a'; 'b'; 'c'; 'd'; 'e'|]))
         Array.splitAt 5 [| 'a' .. 'e' |] // ([|'a'; 'b'; 'c'; 'd'; 'e'|], [||])
-        //Array.splitAt -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
-        //Array.splitAt  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
+    //Array.splitAt -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
+    //Array.splitAt  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
 
     module SplitInto =
         // Array.splitInto
@@ -477,15 +528,14 @@ module Array =
         // Array.take -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
         // Array.take  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
         // Array.take 6 [|3; 2; 5; 4; 1|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
-        Array.takeWhile (fun n -> n < 4)
-            [| 3; 2; 5; 4; 1 |] // [|3; 2|]
+        Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
 
         Array.skip 3 [| 'a' .. 'e' |] // [|'d'; 'e'|]
         Array.take 3 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5|]
         // 要素数が配列の長さより大きいとき
         Array.truncate 6 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5; 4; 1|]
         // 要素数が負の数のとき
-        Array.truncate -1 [|3; 2; 5; 4; 1 |] // [||]
+        Array.truncate -1 [| 3; 2; 5; 4; 1 |] // [||]
 
     module TakeWhile =
         // Array.takeWhile
@@ -493,18 +543,16 @@ module Array =
         // 結果が true となる要素を持つ配列を得る.
         // 逆に結果が false となる位置から末尾までの要素を持つ配列を得られる Array.skipWhile や,
         // 先頭から指定した位置までの要素を持つ配列を得られる Array.take もある.
-        Array.takeWhile (fun n -> n < 4)
-            [| 3; 2; 5; 4; 1 |] // [|3; 2|]
-        Array.skipWhile (fun n -> n < 4)
-            [| 3; 2; 5; 4; 1 |] // [|5; 4; 1|]
+        Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
+        Array.skipWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|5; 4; 1|]
 
-        Array.take 3 [|3; 2; 5; 4; 1 |] // [|3; 2; 5|]
+        Array.take 3 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5|]
 
     module Truncate =
         // Array.truncate
         // 先頭から指定した数だけの要素を持つ配列を得る.
         // Array.take と違うのは要素数に関連する例外が発生しないこと.
-        Array.truncate 3 [|3; 2; 5; 4; 1 |] // [|3; 2; 5|]
+        Array.truncate 3 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5|]
 
     module TryFindBack =
         // Array.tryFindBack
@@ -555,7 +603,7 @@ module Array =
         Array.item 2 [| 'c'; 'a'; 'b' |] // 'b'
         (* 指定した位置に要素が存在しないとき *)
         Array.tryItem 4 [| 'c'; 'a'; 'b' |] // None
-        // Array.item 4 [| 'c'; 'a'; 'b' |] // 例外発生「 System.IndexOutOfRangeException 」
+    // Array.item 4 [| 'c'; 'a'; 'b' |] // 例外発生「 System.IndexOutOfRangeException 」
 
     module TryLast =
         // Array.tryLast
@@ -563,9 +611,9 @@ module Array =
         // 結果が option ではなく要素自身となる Array.last もあるが,
         // こちらは配列が空だと例外が起きる.
         // 配列の先頭の要素を得られる Array.tryHead もある.
-        Array.tryLast [| 3; 1; 2 |] // Somw 2
+        Array.tryLast [| 3; 1; 2 |]
         Array.tryLast<int> [||] // None
-        Array.last [| 3; 1; 2 |] // 2
+        Array.last [| 3; 1; 2 |]
 
     module Unfold =
         // Array.unfold
@@ -574,11 +622,15 @@ module Array =
         // 戻り値は次回も関数を実行するときは Some (結果となる配列の要素, 次回実行時の引数),
         // 関数の実行を終了するときは None とする.
         Array.unfold (fun n -> if n > 5 then None else Some(n, n + 1)) 1 // [|1; 2; 3; 4; 5|]
-        (* フィボナッチ数列の配列 (Array.unfold) *)
+    (* フィボナッチ数列の配列 (Array.unfold) *)
 
     module Fib =
         let fibs n =
-            Array.unfold (fun (x, y, z) -> if z > 0 then Some(x, (y, x + y, z - 1)) else None)
+            Array.unfold (fun (x, y, z) ->
+                if z > 0 then
+                    Some(x, (y, x + y, z - 1))
+                else
+                    None)
             <| (1, 1, n)
         // fibs 10 = [|1; 1; 2; 3; 5; 8; 13; 21; 34; 55|]
 
@@ -616,41 +668,84 @@ module Array =
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
 
 module List =
-  // Array にある関数は省略する
-  // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
-  // https://msdn.microsoft.com/visualfsharpdocs/conceptual/collections.list-module-%5bfsharp%5d
-  // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
-  List.append [0..5] [10..15] |> should equal [0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15]
+    // Array にある関数は省略する
+    // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
+    // https://msdn.microsoft.com/visualfsharpdocs/conceptual/collections.list-module-%5bfsharp%5d
+    // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
+    List.append [ 0 .. 5 ] [ 10 .. 15 ]
+    |> should
+        equal
+        [ 0
+          1
+          2
+          3
+          4
+          5
+          10
+          11
+          12
+          13
+          14
+          15 ]
 
-  let rec dropWhile p (list: 'T list) =
-    match list with
-    | [] -> []
-    | x::xs -> if p x then dropWhile p xs else xs
-  dropWhile (fun x -> x < 3) [0..5] |> should equal [4;5]
+    let rec dropWhile p (list: 'T list) =
+        match list with
+        | [] -> []
+        | x :: xs -> if p x then dropWhile p xs else xs
+
+    dropWhile (fun x -> x < 3) [ 0 .. 5 ]
+    |> should equal [ 4; 5 ]
 
 module Sequence =
-  let rec dropWhile p (xs: 'T seq) =
-    match xs with
-    | s when Seq.isEmpty s -> Seq.empty
-    | _ -> if p (Seq.head xs) then dropWhile p (Seq.tail xs) else (Seq.tail xs)
-  dropWhile (fun x -> x < 3) (seq {0..5}) |> should equal (seq {4;5})
+    let rec dropWhile p (xs: 'T seq) =
+        match xs with
+        | s when Seq.isEmpty s -> Seq.empty
+        | _ ->
+            if p (Seq.head xs) then
+                dropWhile p (Seq.tail xs)
+            else
+                (Seq.tail xs)
 
-  // Seq.sum s = Seq.fold (+) 0 s
-  Seq.fold (-) 0 {0..9} |> should equal -45
+    dropWhile (fun x -> x < 3) (seq { 0 .. 5 })
+    |> should
+        equal
+        (seq {
+            4
+            5
+         })
 
-  Seq.head (seq {0..9}) |> should equal 0
+    // Seq.sum s = Seq.fold (+) 0 s
+    Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
 
-  module Map =
-    // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
-    let s = seq { 0 .. 9 }
-    Seq.reduce (-) s // -45
+    Seq.head (seq { 0 .. 9 }) |> should equal 0
 
-  Seq.reduce (-) (seq {0..9}) |> should equal -45
+    module Map =
+        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
+        let s = seq { 0 .. 9 }
+        Seq.reduce (-) s // -45
 
-  let s = seq { 0 .. 3 }
-  Seq.tail s |> should equal (seq {1;2;3})
+    Seq.reduce (-) (seq { 0 .. 9 })
+    |> should equal -45
 
-  Seq.takeWhile (fun x -> x < 3) (seq {0..9}) |> should equal (seq {0;1;2})
+    let s = seq { 0 .. 3 }
+
+    Seq.tail s
+    |> should
+        equal
+        (seq {
+            1
+            2
+            3
+         })
+
+    Seq.takeWhile (fun x -> x < 3) (seq { 0 .. 9 })
+    |> should
+        equal
+        (seq {
+            0
+            1
+            2
+         })
 
 module String =
     module Collect =
@@ -659,7 +754,7 @@ module String =
         // https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d
         "Hello, World"
         |> String.collect (fun c -> sprintf "%c " c)
-        // "H e l l o ,   W o r l d "
+    // "H e l l o ,   W o r l d "
 
     module Concat =
         // concat
@@ -710,8 +805,7 @@ module String =
     module Split =
         // Split
         // 文字列を分割する「メソッド」
-        "1 2 3"
-        |> fun s -> s.Split(" ")
+        "1 2 3" |> fun s -> s.Split(" ")
 
     module SubString =
         // Substring
