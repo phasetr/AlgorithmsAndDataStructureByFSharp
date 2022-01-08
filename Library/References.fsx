@@ -214,7 +214,8 @@ module Array =
 
     module Init =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.init%5b't%5d-function-%5bfsharp%5d
-        Array.init 10 (fun i -> i * i) |> printfn "%A" // [|0; 1; 4; 9; 16; 25; 36; 49; 64; 81|]
+        Array.init 10 (fun i -> i * i)
+        |> should equal [| 0; 1; 4; 9; 16; 25; 36; 49; 64; 81 |]
 
     module IsEmpty =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.isempty%5b't%5d-function-%5bfsharp%5d
@@ -668,7 +669,6 @@ module Array =
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
 
 module List =
-    // Array にある関数は省略する
     // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
     // https://msdn.microsoft.com/visualfsharpdocs/conceptual/collections.list-module-%5bfsharp%5d
     // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
@@ -688,6 +688,22 @@ module List =
           14
           15 ]
 
+    // concat, join
+    let list1 = [1..5]
+    let list2 = [3..7]
+    list1 @ list2
+    |> should equal [1;2;3;4;5;3;4;5;6;7]
+    List.concat [list1;list2]
+    |> should equal [1;2;3;4;5;3;4;5;6;7]
+
+    // consing
+    1 :: [2;3;4] |> should equal [1;2;3;4]
+
+    // list comprehension, for
+    [for i in 1..3 do i] |> should equal [1;2;3]
+
+    // Haskell dropWhile
+    // https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile
     let rec dropWhile p (list: 'T list) =
         match list with
         | [] -> []
@@ -696,7 +712,43 @@ module List =
     dropWhile (fun x -> x < 3) [ 0 .. 5 ]
     |> should equal [ 4; 5 ]
 
+    // filter
+    [1..9]
+    |> List.filter (fun x -> x % 2 = 0)
+    |> should equal [2;4;6;8]
+
+    // fold
+    let getTotal1 items =
+        items
+        |> List.fold (fun acc (q, p) -> acc + q * p) 0
+    [(1,2); (3,4)] |> getTotal1 |> should equal 14
+
+    // forward-pipe operator
+    let getTotal2 items =
+        (0, items)
+        ||> List.fold (fun acc (q, p) -> acc + q * p)
+    [(1,2); (3,4)] |> getTotal2
+
+    // Haskell inits
+    // https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits
+    let inits xs =
+        [ 0 .. (Seq.length xs) ]
+        |> Seq.map (fun i -> Seq.take i xs)
+    //let inits xs =
+    //    Seq.mapi (fun i _ -> Seq.take i xs) xs
+    inits "abc" |> should equal [ ""; "a"; "ab"; "abc" ]
+    inits "123" |> should equal [ ""; "1"; "12"; "123" ]
+
+    // sum
+    [1..9] |> List.sum |> should equal 45
+
 module Sequence =
+    // countBy
+    type Foo = { Bar: string }
+    let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
+    inputs |> Seq.countBy (fun foo -> foo.Bar)
+    |> should equal (seq { ("a", 2); ("b", 1) })
+
     let rec dropWhile p (xs: 'T seq) =
         match xs with
         | s when Seq.isEmpty s -> Seq.empty
@@ -718,6 +770,14 @@ module Sequence =
     Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
 
     Seq.head (seq { 0 .. 9 }) |> should equal 0
+
+    // infinite list
+    Seq.initInfinite id |> Seq.take 3 |> should equal [0; 1; 2]
+    Seq.initInfinite (fun x -> x + 1)
+    |> Seq.take 3 |> should equal [1; 2; 3]
+
+    // Seq.length
+    seq [1; 2; 3] |> Seq.length |> should equal 3
 
     module Map =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
@@ -748,68 +808,178 @@ module Sequence =
          })
 
 module String =
-    module Collect =
-        // collect
-        // map と違って文字を文字列に変換する関数を使って map する
-        // https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d
-        "Hello, World"
-        |> String.collect (fun c -> sprintf "%c " c)
-    // "H e l l o ,   W o r l d "
+    // 埋め込み文字列
+    let text = "TEXT"
+    $"text: {text}" |> should equal "text: TEXT"
 
-    module Concat =
-        // concat
-        // 配列やリストの要素を連結して文字列にする
-        [| 1; 2; 3; 4; 5 |]
-        |> Array.map string
-        |> String.concat " " // "1 2 3 4 5"
+    // collect
+    // map と違って文字を文字列に変換する関数を使って map する
+    // https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d
+    "Hello, World"
+    |> String.collect (fun c -> sprintf "%c " c)
+    |> should equal "H e l l o ,   W o r l d "
 
-        [ 1; 2; 3; 4; 5 ]
-        |> List.map string
-        |> String.concat " " // "1 2 3 4 5"
+    // concat
+    // 配列やリストの要素を連結して文字列にする
+    [| 1; 2; 3; 4; 5 |]
+    |> Array.map string
+    |> String.concat " "
+    |> should equal "1 2 3 4 5"
 
-    module Exists =
-        // exists
-        // 文字列中に与えられた条件をみたす文字が存在するか
-        "Hello World!"
-        |> String.exists System.Char.IsUpper // true
+    [ 1; 2; 3; 4; 5 ]
+    |> List.map string
+    |> String.concat " "
+    |> should equal "1 2 3 4 5"
 
-    module Forall =
-        // forall
-        // 文字列中のすべての文字が条件を満たすか
-        "helloworld" |> String.forall System.Char.IsLower // true
-        "hello world" |> String.forall System.Char.IsLower // false: space がある
+    [1;2;1;2;3] |> List.distinct
+    |> should equal [1;2;3]
 
-    module Init =
-        // init
-        // インデックスに対して関数を作用させた結果の文字列を連結する
-        String.init 10 (fun i -> i.ToString()) // "0123456789"
-        String.init 26 (fun i -> sprintf "%c" (char (i + int 'A'))) // "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    // exists
+    // 文字列中に与えられた条件をみたす文字が存在するか
+    "Hello World!"
+    |> String.exists System.Char.IsUpper
+    |> should equal true
 
-    module Length =
-        // length
-        // 文字列の長さ
-        "aiueo" |> String.length // 5
+    // groupBy
+    [1;2;3;4;5;7;6;5;4;3]
+    |> List.groupBy (fun x -> x)
+    |> should equal [1,[1];2,[2];3,[3;3];4,[4;4];5,[5;5];7,[7];6,[6]]
 
-    module Map =
-        // map
-        // 各文字に作用
-        "hello, world" |> String.map System.Char.ToUpper
-    // "HELLO, WORLD"
+    // forall
+    // 文字列中のすべての文字が条件を満たすか
+    "helloworld"
+    |> String.forall System.Char.IsLower
+    |> should equal true
+    // space がある
+    "hello world"
+    |> String.forall System.Char.IsLower
+    |> should equal false
 
-    module Reverse =
-        "abcde"
-        |> Seq.toArray
-        |> Array.rev
-        |> System.String // "edcba"
+    // init
+    // インデックスに対して関数を作用させた結果の文字列を連結する
+    String.init 10 (fun i -> i.ToString())
+    |> should equal "0123456789"
+    String.init 26 (fun i -> sprintf "%c" (char (i + int 'A')))
+    |> should equal "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-    module Split =
-        // Split
-        // 文字列を分割する「メソッド」
-        "1 2 3" |> fun s -> s.Split(" ")
+    // length
+    // 文字列の長さ
+    "aiueo" |> String.length |> should equal 5
 
-    module SubString =
-        // Substring
-        // 部分文字列をとる「メソッド」
-        let s = "0123456789"
-        s.Substring(s.Length - 5) // 56789
-        s.Substring(1, 5) // 12345
+    // map
+    // 各文字に作用
+    "hello, world"
+    |> String.map System.Char.ToUpper
+    |> should equal "HELLO, WORLD"
+
+    // reverse
+    "abcde"
+    |> Seq.toArray
+    |> Array.rev
+    |> System.String
+    |> should equal"edcba"
+
+    // Split
+    // 文字列を分割する「メソッド」
+    "1 2 3" |> fun s -> s.Split(" ")
+    |> should equal [| "1"; "2"; "3"|]
+
+    // Substring
+    // 部分文字列をとる「メソッド」
+    let s = "0123456789"
+    s.Substring(s.Length - 5) |> should equal "56789"
+    s.Substring(1, 5) |> should equal "12345"
+
+module Function =
+    // forward-pipe operator
+    let getTotal2 items =
+        (0, items)
+        ||> List.fold (fun acc (q, p) -> acc + q * p)
+    [(1,2); (3,4)] |> getTotal2
+
+    // function composition
+    let twice x = 2 * x
+    let cubic x = pown x 3
+    let twiceCubic = cubic >> twice
+    twiceCubic 3 |> should equal 54
+
+module PatternMatch =
+    // match a specified type of subtypes
+    let tryDivide2: decimal -> decimal -> Result<decimal,DivideByZeroException> = fun x y ->
+        try Ok (x/y)
+        with | :? DivideByZeroException as ex -> Error ex
+
+module Type =
+    type Tax = decimal
+    type Spend = decimal
+    type Total = decimal
+    type CalcTotal = Spend -> Tax -> Total
+    let calcTotal: CalcTotal = fun spend tax ->
+        spend * tax
+    calcTotal 3.0M 1.08M |> should equal 3.24M
+
+    // Single case discriminated union
+    type ValidationError = | InputOutOfRange of string
+    type Spend = private Spend of decimal with
+        member this.Value = this |> fun (Spend value) -> value
+        static member Create input =
+            if input >= 0.0M && input <= 1000.0M then Ok (Spend input)
+            else Error (InputOutOfRange "You can only spend between 0 and 1000")
+
+    // TODO Record Type
+
+module Math =
+    // ** or power for integers
+    // a^b = pown a b
+    pown 2 3 |> should equal 8
+    pown 3 2 |> should equal 9
+
+    // ** or power for floating numbers
+    2.0 ** 3.0 |> should equal 8.0
+
+    // absolute value
+    abs 10 |> should equal 10
+    abs (-10) |> should equal 10
+
+    // ceiling, 切り上げ
+    ceil -1.4 |> should equal -1.0
+    ceil -1.5 |> should equal -1.0
+    ceil 1.4  |> should equal 2.0
+    ceil 1.5  |> should equal 2.0
+
+    // floor, 切り捨て
+    floor -1.4 |> should equal -2.0
+    floor -1.5 |> should equal -2.0
+    floor 1.4  |> should equal 1.0
+    floor 1.5  |> should equal 1.0
+
+    // round, 四捨五入
+    // どちらにも丸められる場合は偶数にする
+    round -1.4 |> should equal -1.0
+    round -1.5 |> should equal -2.0
+    round 0.4  |> should equal 0.0
+    round 0.5  |> should equal 0.0
+    round 1.4  |> should equal 1.0
+    round 1.5  |> should equal 2.0
+
+    // sign, 符号
+    sign -2 |> should equal -1
+    sign -1 |> should equal -1
+    sign 0  |> should equal 0
+    sign 1  |> should equal 1
+    sign 10  |> should equal 1
+
+module ActivePattern =
+    // 引数で受け取った値を「奇数/偶数」の識別子に分類
+    let (|Even|Odd|) input =
+        if input % 2 = 0 then Even else Odd
+
+    // アクティブパターンのパターンマッチ
+    let testNumber input =
+        match input with
+        | Even -> "even"
+        | Odd -> "odd"
+
+    testNumber 7  |> should equal "odd"
+    testNumber 11 |> should equal "odd"
+    testNumber 32 |> should equal "even"
