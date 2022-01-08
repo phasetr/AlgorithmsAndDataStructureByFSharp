@@ -928,6 +928,21 @@ module Type =
 
     // TODO Record Type
 
+module Struct =
+    [<Struct>]
+    type Coupon = { B: int; Discount: int }
+    coupon1 = {B=1; Discount=2}
+    coupon2 = {B=2; Discount=3}
+
+module Map =
+    // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html
+    let sample = Map [ (1, "a"); (2, "b") ]
+    sample |> Map.find 1 |> should equal "a"
+    sample |> Map.find 2 |> should equal "b"
+    //sample |> Map.find 3 // Error
+
+    Map.empty<int, string> |> Map.isEmpty |> should equal true
+
 module Math =
     // ** or power for integers
     // a^b = pown a b
