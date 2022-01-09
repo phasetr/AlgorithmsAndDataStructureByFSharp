@@ -669,24 +669,23 @@ module Array =
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
 
 module List =
+    // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html
     // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
-    // https://msdn.microsoft.com/visualfsharpdocs/conceptual/collections.list-module-%5bfsharp%5d
     // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
     List.append [ 0 .. 5 ] [ 10 .. 15 ]
     |> should
         equal
-        [ 0
-          1
-          2
-          3
-          4
-          5
-          10
-          11
-          12
-          13
-          14
-          15 ]
+        [ 0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15 ]
+
+    // collect, Haskell concatMap
+    [1..4] |> List.collect (fun x -> [1..x])
+    |> should equal [1; 1; 2; 1; 2; 3; 1; 2; 3; 4]
+    [1..4] |> List.map (fun x -> [1..x])
+    |> should equal [[1]; [1; 2]; [1; 2; 3]; [1; 2; 3; 4]]
+    List.collect (List.take 2) [[1;2;3]; [4;5;6]]
+    |> should equal [1;2;4;5]
+    // Haskell concatMap
+    //let concatMap f xs = List.map f xs |> List.concat
 
     // concat, join
     let list1 = [1..5]
@@ -891,23 +890,44 @@ module String =
     s.Substring(1, 5) |> should equal "12345"
 
 module Function =
-    // forward-pipe operator
+    @"forward-pipe operator"
     let getTotal2 items =
         (0, items)
         ||> List.fold (fun acc (q, p) -> acc + q * p)
     [(1,2); (3,4)] |> getTotal2
 
-    // function composition
+    @"function composition"
     let twice x = 2 * x
     let cubic x = pown x 3
     let twiceCubic = cubic >> twice
     twiceCubic 3 |> should equal 54
+
+    @"パターンマッチ・引数の場合分けによる定義,
+    Haskellでいう次のような定義
+    f [] = []
+    f x:xs = undefined
+    "
+    let rec fact1 = function
+    | 1 -> 1
+    | n -> n * fact1 (n-1)
 
 module PatternMatch =
     // match a specified type of subtypes
     let tryDivide2: decimal -> decimal -> Result<decimal,DivideByZeroException> = fun x y ->
         try Ok (x/y)
         with | :? DivideByZeroException as ex -> Error ex
+
+module Tuple =
+    // 値の取得
+    match (1, "abc") with
+    | (a,b) -> printfn "%A, %A" a b
+
+    let (a, b) = (100, 200)
+    should equal 100 a
+    should equal 200 b
+
+    fst (10, 20) |> should equal 10
+    snd (10, 20) |> should equal 20
 
 module Type =
     type Tax = decimal
@@ -944,32 +964,32 @@ module Map =
     Map.empty<int, string> |> Map.isEmpty |> should equal true
 
 module Math =
-    // ** or power for integers
-    // a^b = pown a b
+    @"** or power for integers
+    a^b = pown a b"
     pown 2 3 |> should equal 8
     pown 3 2 |> should equal 9
 
-    // ** or power for floating numbers
+    @"** or power for floating numbers"
     2.0 ** 3.0 |> should equal 8.0
 
-    // absolute value
+    @"absolute value"
     abs 10 |> should equal 10
     abs (-10) |> should equal 10
 
-    // ceiling, 切り上げ
+    @"ceiling, 切り上げ"
     ceil -1.4 |> should equal -1.0
     ceil -1.5 |> should equal -1.0
     ceil 1.4  |> should equal 2.0
     ceil 1.5  |> should equal 2.0
 
-    // floor, 切り捨て
+    @"floor, 切り捨て"
     floor -1.4 |> should equal -2.0
     floor -1.5 |> should equal -2.0
     floor 1.4  |> should equal 1.0
     floor 1.5  |> should equal 1.0
 
-    // round, 四捨五入
-    // どちらにも丸められる場合は偶数にする
+    @"round, 四捨五入
+    どちらにも丸められる場合は偶数にする"
     round -1.4 |> should equal -1.0
     round -1.5 |> should equal -2.0
     round 0.4  |> should equal 0.0
@@ -977,12 +997,25 @@ module Math =
     round 1.4  |> should equal 1.0
     round 1.5  |> should equal 2.0
 
-    // sign, 符号
+    @"sign, 符号"
     sign -2 |> should equal -1
     sign -1 |> should equal -1
     sign 0  |> should equal 0
     sign 1  |> should equal 1
     sign 10  |> should equal 1
+
+    @"順列, permutations
+    標準ライブラリある?"
+    let rec choose xs =
+        match xs with
+        | [] -> []
+        | x::xs -> (x, xs) :: List.map (fun (y, ys) -> (y, x::ys)) (choose xs)
+    let rec permutations xs =
+        match xs with
+        | [] -> [[]]
+        | xs ->
+            choose xs
+            |> concatMap (fun (y, ys) -> List.map (fun zs -> y::zs) (permutations ys))
 
 module ActivePattern =
     // 引数で受け取った値を「奇数/偶数」の識別子に分類
