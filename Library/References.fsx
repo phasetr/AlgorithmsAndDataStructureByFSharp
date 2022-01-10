@@ -728,6 +728,9 @@ module List =
         ||> List.fold (fun acc (q, p) -> acc + q * p)
     [(1,2); (3,4)] |> getTotal2
 
+    // head
+    List.head [1;2;3] |> should equal 1
+
     // Haskell inits
     // https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits
     let inits xs =
@@ -758,12 +761,7 @@ module Sequence =
                 (Seq.tail xs)
 
     dropWhile (fun x -> x < 3) (seq { 0 .. 5 })
-    |> should
-        equal
-        (seq {
-            4
-            5
-         })
+    |> should equal (seq { 4; 5 })
 
     // Seq.sum s = Seq.fold (+) 0 s
     Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
@@ -964,6 +962,11 @@ module Map =
     Map.empty<int, string> |> Map.isEmpty |> should equal true
 
 module Math =
+    @"int64 arithmetic"
+    1L+1L |> should equal 2L
+    @"float arithmetic"
+    1.0/2.0 |> should equal 0.5
+
     @"** or power for integers
     a^b = pown a b"
     pown 2 3 |> should equal 8
@@ -1031,3 +1034,10 @@ module ActivePattern =
     testNumber 7  |> should equal "odd"
     testNumber 11 |> should equal "odd"
     testNumber 32 |> should equal "even"
+
+module Literal =
+    // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/literals
+    uint64 100
+
+module Operator =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
