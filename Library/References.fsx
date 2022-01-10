@@ -744,6 +744,9 @@ module List =
     // sum
     [1..9] |> List.sum |> should equal 45
 
+    @"tail"
+    List.tail [1;2;3] |> should equal [2;3]
+
 module Sequence =
     // countBy
     type Foo = { Bar: string }
@@ -786,23 +789,10 @@ module Sequence =
 
     let s = seq { 0 .. 3 }
 
-    Seq.tail s
-    |> should
-        equal
-        (seq {
-            1
-            2
-            3
-         })
+    Seq.tail s |> should equal (seq { 1 .. 3 })
 
     Seq.takeWhile (fun x -> x < 3) (seq { 0 .. 9 })
-    |> should
-        equal
-        (seq {
-            0
-            1
-            2
-         })
+    |> should equal (seq { 0..2 })
 
 module String =
     // 埋め込み文字列
@@ -965,7 +955,7 @@ module Math =
     @"int64 arithmetic"
     1L+1L |> should equal 2L
     @"float arithmetic"
-    1.0/2.0 |> should equal 0.5
+    1.0M/2.0M |> should equal 0.5M
 
     @"** or power for integers
     a^b = pown a b"
@@ -990,6 +980,10 @@ module Math =
     floor -1.5 |> should equal -2.0
     floor 1.4  |> should equal 1.0
     floor 1.5  |> should equal 1.0
+
+    @"剰余, 余り, mod"
+    10 % 2 |> should equal 0
+    10 % 7 |> should equal 3
 
     @"round, 四捨五入
     どちらにも丸められる場合は偶数にする"
