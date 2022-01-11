@@ -1168,6 +1168,11 @@ module Literal =
     // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/literals
     uint64 100
 
+    @"bottom, undefined, ⊥, _|_
+    https://stackoverflow.com/questions/20337249/bottom-undefined-value-in-f
+    open System
+    let undefined<'T> : 'T = raise (NotImplementedException())"
+
 module Operator =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
 
