@@ -11,25 +11,20 @@ module Array =
     a.[1..] |> should equal [| 1; 2; 3; 4 |]
     a.[..3] |> should equal [| 0; 1; 2; 3 |]
 
-    module AllPairs =
-        // Array.allPairs
-        // 配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
-        // 結果となる配列の長さが膨大になる可能性があるため引数の配列の長さに注意すること.
-        // 引数の配列のどちらかが空のときは結果の配列も空になる.
-        Array.allPairs [| 'a'; 'b'; 'c' |] [|
-            1
-            2
-        |]
+    @"Array.allPairs
+    配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
+    結果となる配列の長さが膨大になる可能性があるため引数の配列の長さに注意すること.
+    引数の配列のどちらかが空のときは結果の配列も空になる."
+    Array.allPairs [| 'a'; 'b'; 'c' |] [| 1; 2 |]
+    |> should equal [|('a', 1); ('a', 2); ('b', 1); ('b', 2); ('c', 1); ('c', 2)|]
+    Array.allPairs<char, int> [| 'a'; 'b' |] [||]
+    |> should equal [||] //: (char * int) []
 
-        Array.allPairs<char, int> [| 'a'; 'b' |] [||] // [||] : (char * int) []
-
-    module Append =
-        // Array.append
-        // 配列の連結
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#append
-        let a1 = [| 0 .. 5 |]
-        let a2 = [| 10 .. 15 |]
-        Array.append a1 a2 //  [|0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15|]
+    @"Array.append
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#append
+    配列の連結"
+    Array.append [| 0 .. 5 |] [| 10 .. 15 |]
+    |> should equal [|0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15|]
 
     module Average =
         // Array.average
