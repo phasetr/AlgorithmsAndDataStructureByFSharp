@@ -155,25 +155,12 @@ module Array =
         slice 2 3 [| 0; 2; 4; 6; 8; 10 |] // [|4; 6|]
         *)
         let slice s e a = Array.sub a s (e - s + 1)
-        /// 配列が定義できているときのスライス
-        [| 'a' .. 'e' |].[2] // 'c'
-        [| 'a' .. 'e' |].[1..3] // [|'b'; 'c'; 'd'|]
-        [| 'a' .. 'e' |].[2..] // [|'c'; 'd'; 'e'|]
-        [| 'a' .. 'e' |].[..3] // [|'a'; 'b'; 'c'; 'd'|]
-
-        (*
-        Array.sub を f |> g でつなげられるように引数の順番を変更し、
-        引数の意味も変えたバージョン。
-        Array.sub とは少し挙動が違うので注意。
-
-        Array.sub は Array.sub array start count
-        Array.sub [| 0; 2; 4; 6; 8; 10 |] 2 3 // [|4; 6; 8|]
-
-        ここでの slice は slice start end array：end は end 番目までを含む
-        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] // [|4; 6|]
-        *)
-        let slice s e a = Array.sub a s (e - s + 1)
         slice 2 3 [| 0; 2; 4; 6; 8; 10 |] |> should equal [|4; 6|]
+        /// 配列が定義できているときの標準のスライス
+        [| 'a' .. 'e' |].[2] |> should equal 'c'
+        [| 'a' .. 'e' |].[1..3] |> should equal [|'b'; 'c'; 'd'|]
+        [| 'a' .. 'e' |].[2..] |> should equal [|'c'; 'd'; 'e'|]
+        [| 'a' .. 'e' |].[..3] |> should equal [|'a'; 'b'; 'c'; 'd'|]
 
     module SortBy =
         // Array.sortBy
@@ -738,15 +725,6 @@ module List =
     dropWhile ((>) 1) [1; 2; 3] |> should equal [2; 3]
     dropWhile ((>) 2) [1; 2; 3] |> should equal [3]
 
-    (*
-    dropWhile: Haskell の dropWhile と同じ
-    https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:dropWhile
-    *)
-    let rec dropWhile (p: 'a -> bool) lst =
-        match lst with
-        | [] -> []
-        | x :: xs -> if p x then dropWhile p xs else lst
-
     // filter
     [1..9]
     |> List.filter (fun x -> x % 2 = 0)
@@ -768,22 +746,33 @@ module List =
     groupBy: Haskell の groupBy と同じ
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:groupBy
     *)
-    let rec groupBy (p: 'a -> 'a -> bool) lst: list<list<'a>> =
-        match lst with
-        | [] -> []
-        | x :: xs ->
-            let (ys, zs) = span (p x) xs // 下にあるコードで定義したspan
-            (x :: ys) :: groupBy p zs
-    groupBy (=) ("Mississippi" |> List.ofSeq)
-    |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
+    module Group =
+        let rec span (p: 'a -> bool) lst =
+            match lst with
+            | [] -> ([], [])
+            | x :: xs ->
+                if p x then
+                    let (ys, zs) = span p xs
+                    (x :: ys, zs)
+                else
+                    ([], lst)
 
-    (*
-    group: Haskell の group と同じ
-    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
-    *)
-    let group xs = groupBy (=) xs
-    group ("Mississippi" |> List.ofSeq)
-    |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
+        let rec groupBy (p: 'a -> 'a -> bool) lst: list<list<'a>> =
+            match lst with
+            | [] -> []
+            | x :: xs ->
+                let (ys, zs) = span (p x) xs
+                (x :: ys) :: groupBy p zs
+        groupBy (=) ("Mississippi" |> List.ofSeq)
+        |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
+
+        (*
+        group: Haskell の group と同じ
+        http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
+        *)
+        let group xs = groupBy (=) xs
+        group ("Mississippi" |> List.ofSeq)
+        |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
 
     // head
     List.head [1;2;3] |> should equal 1
@@ -869,14 +858,18 @@ module Sequence =
 
     // group: Haskell の group と同じ
     // http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
-    let rec group = function
-        | SeqEmpty -> Seq.empty
-        | SeqCons (x, xs) ->
-            let ys: 'a seq = Seq.takeWhile ((=) x) xs
-            let zs: 'a seq = Seq.skipWhile ((=) x) xs
-            Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
-    group "Mississippi" |> printfn "%A"
-    // seq [seq ['M']; seq ['i']; seq ['s'; 's']; seq ['i']; ...]
+    module Group =
+        let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
+            if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
+
+        let rec group = function
+            | SeqEmpty -> Seq.empty
+            | SeqCons (x, xs) ->
+                let ys: 'a seq = Seq.takeWhile ((=) x) xs
+                let zs: 'a seq = Seq.skipWhile ((=) x) xs
+                Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
+        group "Mississippi" |> printfn "%A"
+        // seq [seq ['M']; seq ['i']; seq ['s'; 's']; seq ['i']; ...]
 
     Seq.head (seq { 0 .. 9 }) |> should equal 0
 
@@ -1038,6 +1031,7 @@ module Function =
     map (fun x -> x+1) [1;2;3] |> should equal [2;3;4]
 
 module PatternMatch =
+    exception DivideByZeroException
     // match a specified type of subtypes
     let tryDivide2: decimal -> decimal -> Result<decimal,DivideByZeroException> = fun x y ->
         try Ok (x/y)
@@ -1064,21 +1058,22 @@ module Type =
         spend * tax
     calcTotal 3.0M 1.08M |> should equal 3.24M
 
-    // Single case discriminated union
-    type ValidationError = | InputOutOfRange of string
-    type Spend = private Spend of decimal with
-        member this.Value = this |> fun (Spend value) -> value
-        static member Create input =
-            if input >= 0.0M && input <= 1000.0M then Ok (Spend input)
-            else Error (InputOutOfRange "You can only spend between 0 and 1000")
+    module Type2 =
+        // Single case discriminated union
+        type ValidationError = | InputOutOfRange of string
+        type Spend = private Spend of decimal with
+            member this.Value = this |> fun (Spend value) -> value
+            static member Create input =
+                if input >= 0.0M && input <= 1000.0M then Ok (Spend input)
+                else Error (InputOutOfRange "You can only spend between 0 and 1000")
 
     // TODO Record Type
 
 module Struct =
     [<Struct>]
     type Coupon = { B: int; Discount: int }
-    coupon1 = {B=1; Discount=2}
-    coupon2 = {B=2; Discount=3}
+    let coupon1 = {B=1; Discount=2}
+    let coupon2 = {B=2; Discount=3}
 
 module Map =
     // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html
@@ -1145,12 +1140,14 @@ module Math =
         match xs with
         | [] -> []
         | x::xs -> (x, xs) :: List.map (fun (y, ys) -> (y, x::ys)) (choose xs)
+    choose [1;2;3] |> should equal [(1, [2; 3]); (2, [1; 3]); (3, [1; 2])]
     let rec permutations xs =
         match xs with
         | [] -> [[]]
         | xs ->
             choose xs
-            |> concatMap (fun (y, ys) -> List.map (fun zs -> y::zs) (permutations ys))
+            |> List.collect (fun (y, ys) -> List.map (fun zs -> y::zs) (permutations ys))
+    permutations [1;2;3] |> should equal [[1; 2; 3]; [1; 3; 2]; [2; 1; 3]; [2; 3; 1]; [3; 1; 2]; [3; 2; 1]]
 
 module ActivePattern =
     // 引数で受け取った値を「奇数/偶数」の識別子に分類
