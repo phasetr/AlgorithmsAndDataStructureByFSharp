@@ -161,6 +161,20 @@ module Array =
         [| 'a' .. 'e' |].[2..] // [|'c'; 'd'; 'e'|]
         [| 'a' .. 'e' |].[..3] // [|'a'; 'b'; 'c'; 'd'|]
 
+        (*
+        Array.sub を f |> g でつなげられるように引数の順番を変更し、
+        引数の意味も変えたバージョン。
+        Array.sub とは少し挙動が違うので注意。
+
+        Array.sub は Array.sub array start count
+        Array.sub [| 0; 2; 4; 6; 8; 10 |] 2 3 // [|4; 6; 8|]
+
+        ここでの slice は slice start end array：end は end 番目までを含む
+        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] // [|4; 6|]
+        *)
+        let slice s e a = Array.sub a s (e - s + 1)
+        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] |> should equal [|4; 6|]
+
     module SortBy =
         // Array.sortBy
         // 関数指定でソートする
@@ -667,10 +681,8 @@ module List =
     // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html
     // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
     // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
-    List.append [ 0 .. 5 ] [ 10 .. 15 ]
-    |> should
-        equal
-        [ 0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15 ]
+    List.append [ 0 .. 3 ] [ 5 .. 7]
+    |> should equal [ 0; 1; 2; 3; 5; 6; 7 ]
 
     // collect, Haskell concatMap
     [1..4] |> List.collect (fun x -> [1..x])
@@ -685,26 +697,55 @@ module List =
     // concat, join
     let list1 = [1..5]
     let list2 = [3..7]
-    list1 @ list2
-    |> should equal [1;2;3;4;5;3;4;5;6;7]
-    List.concat [list1;list2]
-    |> should equal [1;2;3;4;5;3;4;5;6;7]
+    list1 @ list2 |> should equal [1;2;3;4;5;3;4;5;6;7]
+    List.concat [list1;list2] |> should equal [1;2;3;4;5;3;4;5;6;7]
 
     // consing
     1 :: [2;3;4] |> should equal [1;2;3;4]
-
     // list comprehension, for
     [for i in 1..3 do i] |> should equal [1;2;3]
 
+    (*
+    delete: Haskell の delete と同じ
+    https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:delete
+    *)
+    let rec delete x xs =
+        match xs with
+        | [] -> []
+        | y :: ys -> if x = y then ys else y :: delete x ys
+    delete 1 [1..3] |> should equal [2; 3]
+    delete 4 [1..3] |> should equal [1; 2; 3]
+
+    (*
+    delete と違い全ての要素を削除する
+    deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [2; 3; 2; 3]
+    deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [1; 2; 3; 1; 1; 2; 3]
+    *)
+    let rec deleteAll x = List.filter ((<>) x)
+    deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [2; 3; 2; 3]
+    deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [1; 2; 3; 1; 1; 2; 3]
+
     // Haskell dropWhile
     // https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile
-    let rec dropWhile p (list: 'T list) =
+    // 下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト
+    let rec dropWhile (p: 'a -> bool) (list: 'a list) =
         match list with
         | [] -> []
         | x :: xs -> if p x then dropWhile p xs else xs
+    dropWhile (fun x -> x < 3) [ 0 .. 5 ] |> should equal [ 4; 5 ]
+    dropWhile ((>) 3) [1; 2; 3; 4; 5; 1; 2; 3] |> should equal [4; 5; 1; 2; 3]
+    dropWhile ((>) 9) [1; 2; 3] |> should equal List.empty<int>
+    dropWhile ((>) 1) [1; 2; 3] |> should equal [2; 3]
+    dropWhile ((>) 2) [1; 2; 3] |> should equal [3]
 
-    dropWhile (fun x -> x < 3) [ 0 .. 5 ]
-    |> should equal [ 4; 5 ]
+    (*
+    dropWhile: Haskell の dropWhile と同じ
+    https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:dropWhile
+    *)
+    let rec dropWhile (p: 'a -> bool) lst =
+        match lst with
+        | [] -> []
+        | x :: xs -> if p x then dropWhile p xs else lst
 
     // filter
     [1..9]
@@ -723,6 +764,27 @@ module List =
         ||> List.fold (fun acc (q, p) -> acc + q * p)
     [(1,2); (3,4)] |> getTotal2
 
+    (*
+    groupBy: Haskell の groupBy と同じ
+    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:groupBy
+    *)
+    let rec groupBy (p: 'a -> 'a -> bool) lst: list<list<'a>> =
+        match lst with
+        | [] -> []
+        | x :: xs ->
+            let (ys, zs) = span (p x) xs // 下にあるコードで定義したspan
+            (x :: ys) :: groupBy p zs
+    groupBy (=) ("Mississippi" |> List.ofSeq)
+    |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
+
+    (*
+    group: Haskell の group と同じ
+    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
+    *)
+    let group xs = groupBy (=) xs
+    group ("Mississippi" |> List.ofSeq)
+    |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
+
     // head
     List.head [1;2;3] |> should equal 1
 
@@ -736,11 +798,52 @@ module List =
     inits "abc" |> should equal [ ""; "a"; "ab"; "abc" ]
     inits "123" |> should equal [ ""; "1"; "12"; "123" ]
 
+    (*
+    zipWith: FSharpPlus では ZipList?
+    F# では map2 を使えばよかった模様。
+    *)
+    let zipWith f xs ys =
+        List.zip xs ys |> List.map (fun (x, y) -> f x y)
+    zipWith (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
+    List.map2 (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
+
+    (*
+    span: Haskell の span と同じ
+    `span p xs = (takeWhile p xs, dropWhile p xs)` であることに注意。
+    https://hackage.haskell.org/package/base-4.14.0.0/docs/src/GHC.List.html#span
+    *)
+    let rec span (p: 'a -> bool) lst =
+        match lst with
+        | [] -> ([], [])
+        | x :: xs ->
+            if p x then
+                let (ys, zs) = span p xs
+                (x :: ys, zs)
+            else
+                ([], lst)
+    span ((>) 3) [1; 2; 3; 4; 1; 2; 3; 4] |> should equal ([1; 2], [3; 4; 1; 2; 3; 4])
+    span ((>) 9) [1; 2; 3] |> should equal ([1; 2; 3], List.empty<int>)
+    span ((>) 0) [1; 2; 3] |> should equal (List.empty<int>, [1; 2; 3])
+
     // sum
     [1..9] |> List.sum |> should equal 45
 
     @"tail"
     List.tail [1;2;3] |> should equal [2;3]
+
+    (*
+    takeWhile: Haskell の takeWhile と同じ
+    List.takeWhileは標準ライブラリにある.
+    下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト
+    *)
+    let rec takeWhile (p: 'a -> bool) lst =
+        match lst with
+        | [] -> []
+        | x :: xs -> if p x then x :: takeWhile p xs else []
+    (takeWhile ((>) 3) [1;2;3]) = (List.takeWhile ((>) 3) [1;2;3]) |> should equal true
+    takeWhile ((>) 3) [1; 2; 3; 4; 1; 2; 3; 4] |> should equal [1; 2]
+    takeWhile ((>) 9) [1; 2; 3] |> should equal [1; 2; 3]
+    takeWhile ((>) 0) [1; 2; 3] |> should equal List.empty<int>
 
 module Sequence =
     // countBy
@@ -764,12 +867,46 @@ module Sequence =
     // Seq.sum s = Seq.fold (+) 0 s
     Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
 
+    // group: Haskell の group と同じ
+    // http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
+    let rec group = function
+        | SeqEmpty -> Seq.empty
+        | SeqCons (x, xs) ->
+            let ys: 'a seq = Seq.takeWhile ((=) x) xs
+            let zs: 'a seq = Seq.skipWhile ((=) x) xs
+            Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
+    group "Mississippi" |> printfn "%A"
+    // seq [seq ['M']; seq ['i']; seq ['s'; 's']; seq ['i']; ...]
+
     Seq.head (seq { 0 .. 9 }) |> should equal 0
+
+    // https://atcoder.jp/contests/abc169/tasks/abc169_d
+    /// Seq に対する head-tail の分解
+    /// Active Pattern 利用
+    let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
+        if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
 
     // infinite list
     Seq.initInfinite id |> Seq.take 3 |> should equal [0; 1; 2]
     Seq.initInfinite (fun x -> x + 1)
     |> Seq.take 3 |> should equal [1; 2; 3]
+
+    /// https://atcoder.jp/contests/abc169/tasks/abc169_d
+    /// return! を使った再帰ではなく mutable を使っているのは return! で生成されるステートマシンのコストが（数を出して1増やすだけの処理より）高いため
+    let initInfinite64 f =
+        seq {
+            let mutable i = 0L
+            while true do
+                yield f i
+                i <- i + 1L
+        }
+    let initInfiniteBigInteger f =
+        seq {
+            let mutable i = 0I
+            while true do
+                yield f i
+                i <- i + 1I
+        }
 
     // Seq.length
     seq [1; 2; 3] |> Seq.length |> should equal 3
@@ -1036,3 +1173,10 @@ module Literal =
 
 module Operator =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
+
+    @"flip: defition of an operator, using paretheses"
+    let flip f x y = f y x
+    let (><) f x y = f y x
+    (/) 3 2 |> should equal 1
+    flip (/) 3 2 |> should equal 0
+    (><) (/) 3 2 |> should equal 0
