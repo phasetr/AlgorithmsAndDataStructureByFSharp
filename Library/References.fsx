@@ -894,6 +894,12 @@ module Function =
     | 1 -> 1
     | n -> n * fact1 (n-1)
 
+    let rec map: ('a -> 'b) -> 'a list -> 'b list = fun f ys ->
+        match ys with
+        | [] -> []
+        | x::xs -> f x :: map f xs
+    map (fun x -> x+1) [1;2;3] |> should equal [2;3;4]
+
 module PatternMatch =
     // match a specified type of subtypes
     let tryDivide2: decimal -> decimal -> Result<decimal,DivideByZeroException> = fun x y ->
