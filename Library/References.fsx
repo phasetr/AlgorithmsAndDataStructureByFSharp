@@ -665,31 +665,33 @@ module Array =
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
 
 module List =
-    // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html
-    // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists
-    // https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
+    @"docs for List
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html
+    https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
+    https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists"
+
+    @"append"
     List.append [ 0 .. 3 ] [ 5 .. 7]
     |> should equal [ 0; 1; 2; 3; 5; 6; 7 ]
 
-    // collect, Haskell concatMap
+    @"collect, Haskell concatMap
+    `let concatMap f xs = List.map f xs |> List.concat`"
     [1..4] |> List.collect (fun x -> [1..x])
     |> should equal [1; 1; 2; 1; 2; 3; 1; 2; 3; 4]
     [1..4] |> List.map (fun x -> [1..x])
     |> should equal [[1]; [1; 2]; [1; 2; 3]; [1; 2; 3; 4]]
     List.collect (List.take 2) [[1;2;3]; [4;5;6]]
     |> should equal [1;2;4;5]
-    // Haskell concatMap
-    //let concatMap f xs = List.map f xs |> List.concat
 
-    // concat, join
+    @"concat, join"
     let list1 = [1..5]
     let list2 = [3..7]
     list1 @ list2 |> should equal [1;2;3;4;5;3;4;5;6;7]
     List.concat [list1;list2] |> should equal [1;2;3;4;5;3;4;5;6;7]
 
-    // consing
+    @"consing"
     1 :: [2;3;4] |> should equal [1;2;3;4]
-    // list comprehension, for
+    @"list comprehension, `for`"
     [for i in 1..3 do i] |> should equal [1;2;3]
 
     (*
@@ -747,6 +749,11 @@ module List =
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:groupBy
     *)
     module Group =
+        @"groupBy"
+        [1;2;3;4;5;7;6;5;4;3]
+        |> List.groupBy (fun x -> x)
+        |> should equal [1,[1];2,[2];3,[3;3];4,[4;4];5,[5;5];7,[7];6,[6]]
+
         let rec span (p: 'a -> bool) lst =
             match lst with
             | [] -> ([], [])
@@ -835,6 +842,8 @@ module List =
     takeWhile ((>) 0) [1; 2; 3] |> should equal List.empty<int>
 
 module Sequence =
+    @"docs
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html "
     // countBy
     type Foo = { Bar: string }
     let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
@@ -871,21 +880,23 @@ module Sequence =
         group "Mississippi" |> printfn "%A"
         // seq [seq ['M']; seq ['i']; seq ['s'; 's']; seq ['i']; ...]
 
+    @"head"
     Seq.head (seq { 0 .. 9 }) |> should equal 0
 
-    // https://atcoder.jp/contests/abc169/tasks/abc169_d
-    /// Seq に対する head-tail の分解
-    /// Active Pattern 利用
+    @"infinite seq"
+    @"https://atcoder.jp/contests/abc169/tasks/abc169_d
+    Seq に対する head-tail の分解
+    Active Pattern 利用"
     let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
         if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
-
-    // infinite list
+    @"infinite seq"
     Seq.initInfinite id |> Seq.take 3 |> should equal [0; 1; 2]
     Seq.initInfinite (fun x -> x + 1)
     |> Seq.take 3 |> should equal [1; 2; 3]
 
-    /// https://atcoder.jp/contests/abc169/tasks/abc169_d
-    /// return! を使った再帰ではなく mutable を使っているのは return! で生成されるステートマシンのコストが（数を出して1増やすだけの処理より）高いため
+    @"initInfinite64
+    https://atcoder.jp/contests/abc169/tasks/abc169_d
+    return! を使った再帰ではなく mutable を使っているのは return! で生成されるステートマシンのコストが（数を出して1増やすだけの処理より）高いため"
     let initInfinite64 f =
         seq {
             let mutable i = 0L
@@ -893,6 +904,7 @@ module Sequence =
                 yield f i
                 i <- i + 1L
         }
+    @"initInfiniteBigInteger"
     let initInfiniteBigInteger f =
         seq {
             let mutable i = 0I
@@ -901,38 +913,38 @@ module Sequence =
                 i <- i + 1I
         }
 
-    // Seq.length
+    @"Seq.length"
     seq [1; 2; 3] |> Seq.length |> should equal 3
 
-    module Map =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/collections.seq-module-%5bfsharp%5d
-        let s = seq { 0 .. 9 }
-        Seq.reduce (-) s // -45
+    @"Seq.ofList"
+    [ 1; 2; 5 ] |> Seq.ofList |> should equal (seq {1;2;5})
 
-    Seq.reduce (-) (seq { 0 .. 9 })
-    |> should equal -45
+    @"Seq.reduce"
+    seq {0..9} |> Seq.reduce (-) |> should equal -45
 
-    let s = seq { 0 .. 3 }
+    @"Seq.tail"
+    Seq.tail (seq {0..3}) |> should equal (seq { 1 .. 3 })
 
-    Seq.tail s |> should equal (seq { 1 .. 3 })
-
+    @"Seq.takeWhile"
     Seq.takeWhile (fun x -> x < 3) (seq { 0 .. 9 })
     |> should equal (seq { 0..2 })
 
 module String =
-    // 埋め込み文字列
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
+
+    @"埋め込み文字列"
     let text = "TEXT"
     $"text: {text}" |> should equal "text: TEXT"
 
-    // collect
-    // map と違って文字を文字列に変換する関数を使って map する
-    // https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d
+    @"collect
+    map と違って文字を文字列に変換する関数を使って map する
+    https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d"
     "Hello, World"
     |> String.collect (fun c -> sprintf "%c " c)
     |> should equal "H e l l o ,   W o r l d "
 
-    // concat
-    // 配列やリストの要素を連結して文字列にする
+    @"concat
+    配列やリストの要素を連結して文字列化"
     [| 1; 2; 3; 4; 5 |]
     |> Array.map string
     |> String.concat " "
@@ -946,19 +958,41 @@ module String =
     [1;2;1;2;3] |> List.distinct
     |> should equal [1;2;3]
 
-    // exists
-    // 文字列中に与えられた条件をみたす文字が存在するか
-    "Hello World!"
-    |> String.exists System.Char.IsUpper
-    |> should equal true
+    ["Stefan"; "says:"; "Hello"; "there!"]
+    |> String.concat " " |> should equal "Stefan says: Hello there!"
 
-    // groupBy
-    [1;2;3;4;5;7;6;5;4;3]
-    |> List.groupBy (fun x -> x)
-    |> should equal [1,[1];2,[2];3,[3;3];4,[4;4];5,[5;5];7,[7];6,[6]]
+    [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
+    [0..9] |> List.map string |> String.concat ", " |> should equal "0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+    ["No comma"] |> String.concat "," |> should equal "No comma"
 
-    // forall
-    // 文字列中のすべての文字が条件を満たすか
+    @"System.String.Concat
+    文字(char)のリストを文字列化.
+    注意: `['1'; '2'; '3'] |> String.concat`はエラー."
+    ['1'; '2'; '3'] |> System.String.Concat |> should equal "123"
+
+    @"exists
+    文字列中に与えられた条件をみたす文字が存在するか"
+    open System
+    "Hello World!" |> String.exists System.Char.IsUpper |> should equal true
+    "Yoda" |> String.exists Char.IsUpper |> should equal true
+    "nope" |> String.exists Char.IsUpper |> should equal false
+
+    @"filter"
+    open System
+    // Filtering out just alphanumeric characters
+    "0 1 2 3 4 5 6 7 8 9 a A m M"
+    |> String.filter Uri.IsHexDigit |> should equal "0123456789aA"
+
+    //Filtering out just digits
+    "hello" |> String.filter Char.IsDigit |> should equal ""
+
+    @"forall"
+    open System
+    "all are lower" |> String.forall Char.IsLower |> should equal false
+    "allarelower" |> String.forall Char.IsLower |> should equal true
+
+    @"forall
+    文字列中のすべての文字が条件を満たすか"
     "helloworld"
     |> String.forall System.Char.IsLower
     |> should equal true
@@ -967,40 +1001,71 @@ module String =
     |> String.forall System.Char.IsLower
     |> should equal false
 
-    // init
-    // インデックスに対して関数を作用させた結果の文字列を連結する
+    @"init
+    インデックスに対して関数を作用させた結果の文字列を連結する"
     String.init 10 (fun i -> i.ToString())
     |> should equal "0123456789"
     String.init 26 (fun i -> sprintf "%c" (char (i + int 'A')))
     |> should equal "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    String.init 10 (fun i -> int '0' + i |> sprintf "%d ")
+    |> should equal "48 49 50 51 52 53 54 55 56 57 "
 
-    // length
-    // 文字列の長さ
+    @"iter"
+    "Hello" |> String.iter (fun c -> printfn "%c %d" c (int c))
+
+    @"iteri"
+    "Hello" |> String.iteri (fun i c -> printfn "%d. %c %d" (i + 1) c (int c))
+
+    @"length
+    文字列の長さ"
     "aiueo" |> String.length |> should equal 5
+    String.length null  |> should equal 0
+    String.length ""    |> should equal 0
+    String.length "123" |> should equal 3
 
-    // map
-    // 各文字に作用
-    "hello, world"
-    |> String.map System.Char.ToUpper
+    @"map
+    各文字に作用"
+    open System
+    "hello, world" |> String.map System.Char.ToUpper
     |> should equal "HELLO, WORLD"
 
-    // reverse
+    "Hello there!" |> String.map Char.ToUpper
+    |> should equal "HELLO THERE!"
+
+    @"mapi"
+    "OK!" |> String.mapi (fun i c -> char c)
+    |> should equal "OK!"
+
+    @"replicate"
+    "Do it!" |> String.replicate 3
+    |> should equal "Do it!Do it!Do it!"
+
+    @"reverse"
     "abcde"
     |> Seq.toArray
     |> Array.rev
     |> System.String
     |> should equal"edcba"
 
-    // Split
-    // 文字列を分割する「メソッド」
+    @"Split
+    文字列を分割する「メソッド」"
     "1 2 3" |> fun s -> s.Split(" ")
     |> should equal [| "1"; "2"; "3"|]
 
-    // Substring
-    // 部分文字列をとる「メソッド」
+    @"Substring
+    部分文字列をとる「メソッド」"
     let s = "0123456789"
     s.Substring(s.Length - 5) |> should equal "56789"
     s.Substring(1, 5) |> should equal "12345"
+
+    @"Seq.take"
+    seq {0..4} |> Seq.take 2 |> should equal (seq {0;1})
+
+    @"Seq.truncate
+    Seq.takeとの違いは指定の要素数以上取れないときにエラーにならず,
+    取れるだけ取ってくれる点."
+    seq {0..4} |> Seq.truncate 2 |> should equal (seq {0;1})
+    seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
 
 module Function =
     @"forward-pipe operator"
