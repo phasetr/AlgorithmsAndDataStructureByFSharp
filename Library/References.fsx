@@ -738,6 +738,14 @@ module List =
         |> List.fold (fun acc (q, p) -> acc + q * p) 0
     [(1,2); (3,4)] |> getTotal1 |> should equal 14
 
+    @"List.foldBack, foldr
+    注意: 引数の順番がHaskellと違う
+    In haskell, foldr :: (a -> b -> b) -> b -> [a] -> [b].
+    But in F#,  foldBack: ('a -> 'b -> 'b) -> [a] -> b -> 'b list"
+    [1;2;3] |> fun xs -> List.foldBack (+) xs 0 |> should equal 6
+    [1;2;3] |> fun xs -> List.foldBack (-) xs 0 |> should equal 2
+    // 1 - (2 - (3 - 0)) = 1 - (2 - 3) = 1 - (-1) = 2
+
     // forward-pipe operator
     let getTotal2 items =
         (0, items)
