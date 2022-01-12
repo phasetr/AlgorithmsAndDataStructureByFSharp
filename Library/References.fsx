@@ -1088,6 +1088,13 @@ module Function =
     let twiceCubic = cubic >> twice
     twiceCubic 3 |> should equal 54
 
+    @"相互再帰関数, mutual recursion"
+    let rec even x = if x = 0 then true else odd (x-1)
+    and odd x = if x = 0 then false else even(x-1)
+    let isEven x = if (x < 0) then even (-x) else even x
+    isEven 9 |> should equal false
+    isEven 10 |> should equal true
+
     @"パターンマッチ・引数の場合分けによる定義,
     Haskellでいう次のような定義
     f [] = []
