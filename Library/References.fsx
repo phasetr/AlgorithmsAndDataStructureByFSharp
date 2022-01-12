@@ -1262,3 +1262,13 @@ module Operator =
     (/) 3 2 |> should equal 1
     flip (/) 3 2 |> should equal 0
     (><) (/) 3 2 |> should equal 0
+
+module Option =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
+    let tryParse (input: string) =
+        match System.Int32.TryParse input with
+        | true, v -> Some v
+        | false, _ -> None
+    None |> Option.bind tryParse |> should equal None
+    Some "42" |> Option.bind tryParse |> should equal (Some 42)
+    Some "Forty-two" |> Option.bind tryParse |> should equal None
