@@ -1,5 +1,3 @@
-/// 関数の名前をよく忘れてリファレンスを見に行くのが面倒なので、使った関数はまとめよう
-/// TODO compareWith まで対応 https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html
 #r "nuget: FsUnit"
 open FsUnit
 
@@ -437,28 +435,16 @@ module Array =
         // 配列の並べ替えが昇順になる Array.sortBy もある.
         Array.sortByDescending
             (fun (x, _) -> x)
-            [| (2, "dos")
-               (3, "tres")
-               (1, "uno") |]
-        |> should
-            equal
-            [| (3, "tres")
-               (2, "dos")
-               (1, "uno") |]
+            [| (2, "dos"); (3, "tres"); (1, "uno") |]
+        |> should equal [| (3, "tres"); (2, "dos"); (1, "uno") |]
 
         Array.sortDescending [| 1 .. 5 |]
         |> should equal [| 5; 4; 3; 2; 1 |]
 
         Array.sortBy
             (fun (x, _) -> x)
-            [| (2, "dos")
-               (3, "tres")
-               (1, "uno") |]
-        |> should
-            equal
-            [| (1, "uno")
-               (2, "dos")
-               (3, "tres") |]
+            [| (2, "dos"); (3, "tres"); (1, "uno") |]
+        |> should equal [| (1, "uno"); (2, "dos"); (3, "tres") |]
 
     module SortDescending =
         // Array.sortDescending
@@ -473,14 +459,8 @@ module Array =
 
         Array.sortByDescending
             (fun (x, _) -> x)
-            [| (2, "dos")
-               (3, "tres")
-               (1, "uno") |]
-        |> should
-            equal
-            [| (3, "tres")
-               (2, "dos")
-               (1, "uno") |]
+            [| (2, "dos"); (3, "tres"); (1, "uno") |]
+        |> should equal [| (3, "tres"); (2, "dos"); (1, "uno") |]
 
     module SplitAt =
         // Array.splitAt
@@ -805,6 +785,25 @@ module List =
         List.zip xs ys |> List.map (fun (x, y) -> f x y)
     zipWith (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
 
+    @"List.scan, Haskell scanl
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#scan
+    http://zvon.org/other/haskell/Outputprelude/scanl_f.html"
+    List.scan (/) 64 [4;2;4] |> should equal [64;16;8;2]
+    List.scan (/) 3 [] |> should equal [3]
+    List.scan max 5 [1;2;3;4] |> should equal [5;5;5;5;5]
+    List.scan max 5 [1;2;3;4;5;6;7] |> should equal [5;5;5;5;5;5;6;7]
+    List.scan (fun x y -> 2*x + y)4 [1;2;3] |> should equal [4;9;20;43]
+
+    @"List.scanBack, Haskell scanr
+    http://zvon.org/other/haskell/Outputprelude/scanr_f.html"
+    List.scanBack (+) [1;2;3;4] 5 |> should equal [15;14;12;9;5]
+    List.scanBack (/) [8;12;24;4] 2 |> should equal [8;1;12;2;2]
+    List.scanBack (/) [] 3 |> should equal [3]
+    List.scanBack (&&) [1>2; 3>2; 5=5] true |> should equal [false;true;true;true]
+    List.scanBack max [3;6;12;4;55;11] 18 |> should equal [55;55;55;55;55;18;18]
+    List.scanBack max [3;6;12;4;55;11] 111 |> should equal [111;111;111;111;111;111;111]
+    List.scanBack (fun x y -> (x+y)/2) [12;4;10;6] 54 |> should equal [12;12;20;30;54]
+
     @"spanHaskell の span と同じ
     `span p xs = (takeWhile p xs, dropWhile p xs)` であることに注意。
     https://hackage.haskell.org/package/base-4.14.0.0/docs/src/GHC.List.html#span"
@@ -829,6 +828,13 @@ module List =
 
     @"tail"
     List.tail [1;2;3] |> should equal [2;3]
+
+    @"Haskell tails
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:tails"
+    let rec tails: list<'a> -> list<list<'a>> = function
+    | [] -> [[]]
+    | x::xs -> (x::xs)::(tails xs)
+    tails [1;2;3;4] |> should equal [[1;2;3;4]; [2;3;4]; [3;4]; [4]; []]
 
     @"takeWhile: Haskell の takeWhile と同じ
     List.takeWhileは標準ライブラリにある.
