@@ -690,7 +690,7 @@ module List =
     """delete と違い全ての要素を削除する
     deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [2; 3; 2; 3]
     deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [1; 2; 3; 1; 1; 2; 3]"""
-    let rec deleteAll x = List.filter ((<>) x)
+    let deleteAll x = List.filter ((<>) x)
     deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [2; 3; 2; 3]
     deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [1; 2; 3; 1; 1; 2; 3]
 
@@ -712,11 +712,16 @@ module List =
     |> List.filter (fun x -> x % 2 = 0)
     |> should equal [2;4;6;8]
 
-    @"fold"
+    @"fold
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#fold
+    初期値を入力のリストの先頭から取りたい場合はreduceを使う."
+    List.fold min 0 [1..9] |> should equal 0
+    List.fold min 2 [1..9] |> should equal 1
     let getTotal1 items =
         items
         |> List.fold (fun acc (q, p) -> acc + q * p) 0
     [(1,2); (3,4)] |> getTotal1 |> should equal 14
+
 
     @"List.foldBack, foldr
     注意: 引数の順番がHaskellと違う
@@ -785,6 +790,10 @@ module List =
         List.zip xs ys |> List.map (fun (x, y) -> f x y)
     zipWith (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
 
+    @"reduce
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#reduce"
+    List.reduce min [1..9] |> should equal 1
+
     @"List.scan, Haskell scanl
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#scan
     http://zvon.org/other/haskell/Outputprelude/scanl_f.html"
@@ -850,7 +859,7 @@ module List =
 
 module Sequence =
     @"docs
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html "
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
 
     @"countBy"
     type Foo = { Bar: string }
@@ -930,6 +939,9 @@ module Sequence =
     @"Seq.reduce"
     seq {0..9} |> Seq.reduce (-) |> should equal -45
 
+    @"Seq.replicate"
+    Seq.replicate 3 'a' |> should equal (seq ['a'; 'a'; 'a'])
+
     @"Seq.tail"
     Seq.tail (seq {0..3}) |> should equal (seq { 1 .. 3 })
 
@@ -945,7 +957,7 @@ module String =
     $"text: {text}" |> should equal "text: TEXT"
 
     @"collect
-    map と違って文字を文字列に変換する関数を使って map する
+    mapと違って文字を文字列に変換する関数を使ってmapする
     https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d"
     "Hello, World"
     |> String.collect (fun c -> sprintf "%c " c)
@@ -1263,6 +1275,10 @@ module Operator =
     flip (/) 3 2 |> should equal 0
     (><) (/) 3 2 |> should equal 0
 
+    @"not equal"
+    1 <> 2 |> should equal true
+    'b' <> 'a' |> should equal true
+
 module Option =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
     let tryParse (input: string) =
@@ -1289,6 +1305,13 @@ module Set =
 
     @"count, length for sets"
     set [1;2] |> Set.count |> should equal 2
+
+    @"difference
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#difference "
+    let origset = Set "abc"
+    let chk = Set "abcdef"
+    Set.difference chk origset |> should equal (set ['d';'e';'f'])
+
 
     @"Set.ofArray"
     Set.ofArray [|1;2|] |> should equal (set [1;2])
