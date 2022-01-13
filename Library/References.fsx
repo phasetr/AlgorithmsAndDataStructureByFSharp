@@ -694,10 +694,12 @@ module List =
     @"list comprehension, `for`"
     [for i in 1..3 do i] |> should equal [1;2;3]
 
-    (*
-    delete: Haskell の delete と同じ
-    https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:delete
-    *)
+    @"contains, https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#contains"
+    List.contains 3 [1..9] |> should equal true
+    List.contains 0 [1..9] |> should equal false
+
+    @"delete: Haskell の delete と同じ.
+    https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:delete"
     let rec delete x xs =
         match xs with
         | [] -> []
@@ -705,18 +707,16 @@ module List =
     delete 1 [1..3] |> should equal [2; 3]
     delete 4 [1..3] |> should equal [1; 2; 3]
 
-    (*
-    delete と違い全ての要素を削除する
+    """delete と違い全ての要素を削除する
     deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [2; 3; 2; 3]
-    deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [1; 2; 3; 1; 1; 2; 3]
-    *)
+    deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [1; 2; 3; 1; 1; 2; 3]"""
     let rec deleteAll x = List.filter ((<>) x)
     deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [2; 3; 2; 3]
     deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [1; 2; 3; 1; 1; 2; 3]
 
-    // Haskell dropWhile
-    // https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile
-    // 下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト
+    @"Haskell dropWhile
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile
+    下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト"
     let rec dropWhile (p: 'a -> bool) (list: 'a list) =
         match list with
         | [] -> []
@@ -727,12 +727,12 @@ module List =
     dropWhile ((>) 1) [1; 2; 3] |> should equal [2; 3]
     dropWhile ((>) 2) [1; 2; 3] |> should equal [3]
 
-    // filter
+    @"filter"
     [1..9]
     |> List.filter (fun x -> x % 2 = 0)
     |> should equal [2;4;6;8]
 
-    // fold
+    @"fold"
     let getTotal1 items =
         items
         |> List.fold (fun acc (q, p) -> acc + q * p) 0
@@ -746,16 +746,14 @@ module List =
     [1;2;3] |> fun xs -> List.foldBack (-) xs 0 |> should equal 2
     // 1 - (2 - (3 - 0)) = 1 - (2 - 3) = 1 - (-1) = 2
 
-    // forward-pipe operator
+    @"forward-pipe operator"
     let getTotal2 items =
         (0, items)
         ||> List.fold (fun acc (q, p) -> acc + q * p)
     [(1,2); (3,4)] |> getTotal2
 
-    (*
-    groupBy: Haskell の groupBy と同じ
-    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:groupBy
-    *)
+    @"groupBy: Haskell の groupBy と同じ
+    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:groupBy"
     module Group =
         @"groupBy"
         [1;2;3;4;5;7;6;5;4;3]
@@ -781,19 +779,17 @@ module List =
         groupBy (=) ("Mississippi" |> List.ofSeq)
         |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
 
-        (*
-        group: Haskell の group と同じ
-        http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
-        *)
+        @"group: Haskell の group と同じ
+        http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
         let group xs = groupBy (=) xs
         group ("Mississippi" |> List.ofSeq)
         |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
 
-    // head
+    @"head"
     List.head [1;2;3] |> should equal 1
 
-    // Haskell inits
-    // https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits
+    @"Haskell inits
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits"
     let inits xs =
         [ 0 .. (Seq.length xs) ]
         |> Seq.map (fun i -> Seq.take i xs)
@@ -802,20 +798,16 @@ module List =
     inits "abc" |> should equal [ ""; "a"; "ab"; "abc" ]
     inits "123" |> should equal [ ""; "1"; "12"; "123" ]
 
-    (*
-    zipWith: FSharpPlus では ZipList?
-    F# では map2 を使えばよかった模様。
-    *)
+    @"map2
+    zipWith: FSharpPlus では ZipList?"
+    List.map2 (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
     let zipWith f xs ys =
         List.zip xs ys |> List.map (fun (x, y) -> f x y)
     zipWith (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
-    List.map2 (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
 
-    (*
-    span: Haskell の span と同じ
+    @"spanHaskell の span と同じ
     `span p xs = (takeWhile p xs, dropWhile p xs)` であることに注意。
-    https://hackage.haskell.org/package/base-4.14.0.0/docs/src/GHC.List.html#span
-    *)
+    https://hackage.haskell.org/package/base-4.14.0.0/docs/src/GHC.List.html#span"
     let rec span (p: 'a -> bool) lst =
         match lst with
         | [] -> ([], [])
@@ -829,17 +821,18 @@ module List =
     span ((>) 9) [1; 2; 3] |> should equal ([1; 2; 3], List.empty<int>)
     span ((>) 0) [1; 2; 3] |> should equal (List.empty<int>, [1; 2; 3])
 
-    // sum
+    @"String to List, 文字列をリストに変換"
+    Seq.toList "abc" |> should equal ['a';'b';'c']
+
+    @"sum"
     [1..9] |> List.sum |> should equal 45
 
     @"tail"
     List.tail [1;2;3] |> should equal [2;3]
 
-    (*
-    takeWhile: Haskell の takeWhile と同じ
+    @"takeWhile: Haskell の takeWhile と同じ
     List.takeWhileは標準ライブラリにある.
-    下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト
-    *)
+    下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト"
     let rec takeWhile (p: 'a -> bool) lst =
         match lst with
         | [] -> []
@@ -852,12 +845,14 @@ module List =
 module Sequence =
     @"docs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html "
-    // countBy
+
+    @"countBy"
     type Foo = { Bar: string }
     let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
     inputs |> Seq.countBy (fun foo -> foo.Bar)
     |> should equal (seq { ("a", 2); ("b", 1) })
 
+    @"dropWhile"
     let rec dropWhile p (xs: 'T seq) =
         match xs with
         | s when Seq.isEmpty s -> Seq.empty
@@ -866,15 +861,14 @@ module Sequence =
                 dropWhile p (Seq.tail xs)
             else
                 (Seq.tail xs)
-
     dropWhile (fun x -> x < 3) (seq { 0 .. 5 })
     |> should equal (seq { 4; 5 })
 
-    // Seq.sum s = Seq.fold (+) 0 s
+    @"Seq.sum s = Seq.fold (+) 0 s"
     Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
 
-    // group: Haskell の group と同じ
-    // http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
+    @"group: Haskell の group と同じ
+    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
     module Group =
         let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
             if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
@@ -1272,3 +1266,26 @@ module Option =
     None |> Option.bind tryParse |> should equal None
     Some "42" |> Option.bind tryParse |> should equal (Some 42)
     Some "Forty-two" |> Option.bind tryParse |> should equal None
+
+module Print =
+    @"%A: どんな型でもとにかく出力"
+    [1;2;3;4] |> printfn "%A"
+    2 |> printfn "%A"
+
+    2L |> printfn "%A" // 2LのLまで出力されてしまう
+    2L |> printfn "%d" // Lは出力されない
+
+    "str" |> printfn "%A" // クオートつきで出力
+    "str" |> printfn "%s" // クオートなしで出力
+
+module Set =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html"
+
+    @"count, length for sets"
+    set [1;2] |> Set.count |> should equal 2
+
+    @"Set.ofArray"
+    Set.ofArray [|1;2|] |> should equal (set [1;2])
+
+    @"Set.ofSeq, 文字列から変換するときはこれを使う."
+    Set.ofSeq "abc" |> should equal (set ['a';'b';'c'])
