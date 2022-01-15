@@ -2,7 +2,7 @@
 open FsUnit
 
 module Array =
-    // accessor or slice
+    @"accessor or slice"
     let a = [| 0 .. 4 |]
     a.[0] |> should equal 0
     a.[0..2] |> should equal [| 0; 1; 2 |]
@@ -24,40 +24,31 @@ module Array =
     Array.append [| 0 .. 5 |] [| 10 .. 15 |]
     |> should equal [|0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15|]
 
-    module Average =
-        // Array.average
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#average
-        Array.average [| 1.0 .. 10.0 |]
-        |> printfn "Average: %f" // 5.500000
-        // To get the average of an array of integers,
-        // use Array.averageBy to convert to float.
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#averageBy
-        Array.averageBy float [| 1 .. 10 |]
-        |> printfn "Average: %f" // 5.500000
+    @"Array.average
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#average
 
-    module Blit =
-        // Array.blit
-        // CopyTo
-        // 1 つ目の配列の一部を 2 つ目の配列こコピーする
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#blit
-        let blit1 = [| 1 .. 10 |]
-        let blit2: int [] = Array.zeroCreate 20
-        // Copy 4 elements from index 3 of array1 to index 5 of array2.
-        Array.blit blit1 3 blit2 5 4
-        printfn "%A" blit2 // [|0; 0; 0; 0; 0; 4; 5; 6; 7; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]
+    To get the average of an array of integers,
+    use Array.averageBy to convert to float.
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#averageBy"
+    Array.average [| 1.0 .. 10.0 |] |> should equal 5.5
+    Array.averageBy float [| 1 .. 10 |] |> should equal 5.5
 
-    module Choose =
-        // Array.choose
-        // if の結果 Option を取る関数を与えて Some(x) だけを取ってくる
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose
-        Array.choose
-            (fun elem ->
-                if elem % 2 = 0 then
-                    Some(float (elem * elem - 1))
-                else
-                    None)
-            [| 1 .. 10 |]
-        |> printfn "%A" // [|3.0; 15.0; 35.0; 63.0; 99.0|]
+    @"Array.blit, CopyTo, 1 つ目の配列の一部を 2 つ目の配列こコピーする
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#blit"
+    // Copy 4 elements from index 3 of array1 to index 5 of array2.
+    let blit1 = [| 1 .. 10 |]
+    let blit2: int [] = Array.zeroCreate 20
+    Array.blit blit1 3 blit2 5 4
+    blit2 |> should equal [|0; 0; 0; 0; 0; 4; 5; 6; 7; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]
+
+    @"Array.choose, `if`の結果`Option`を取る関数を与えて`Some(x)`だけを取ってくる
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose"
+    Array.choose
+        (fun elem ->
+            if elem % 2 = 0 then Some(float (elem * elem - 1))
+            else None)
+        [| 1 .. 10 |]
+    |> should equal [|3.0; 15.0; 35.0; 63.0; 99.0|]
 
     module ChunkBySize =
         // Array.chunkBySize
@@ -175,13 +166,13 @@ module Array =
         Array.tryFindIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 2
         Array.findIndex (fun n -> n % 2 = 1) [| 1 .. 3 |] // 0
 
-    module GroupBy =
-        // Array.groupBy
-        // 配列の要素を引数とする関数を順次実行し, その結果ごとに要素をグループ分けする.
-        // 結果となる配列の要素は (関数の結果, [|要素, ...|]).
-        // 引数の配列が空でも例外は起きない.
-        Array.groupBy (fun n -> n % 3) [| 0 .. 7 |] // [|(0, [|0; 3; 6|]); (1, [|1; 4; 7|]); (2, [|2; 5|])|]
-        Array.groupBy (fun n -> n % 3) [||] // [||] : (int * int []) []
+    @"Array.groupBy
+    配列の要素を引数とする関数を順次実行し, その結果ごとに要素をグループ分けする.
+    結果の配列の要素は (関数の結果, [|要素, ...|]).
+    引数の配列が空でも例外は起きない."
+    Array.groupBy (fun n -> n % 3) [| 0 .. 7 |]
+    |> should equal [|(0, [|0; 3; 6|]); (1, [|1; 4; 7|]); (2, [|2; 5|])|]
+    Array.groupBy (fun n -> n % 3) [||] |> should equal [||]
 
     module Head =
         // Array.head
@@ -389,12 +380,12 @@ module Array =
         |> printfn "%A"
     // ([|4; 5; 6|], [|1; 2; 3; 7; 8; 9; 10|])
 
-    module Replicate =
-        // Array.replicate
-        // 同じ値の要素を複数持つ配列を得る.
-        // 数値が 0 以上の整数でなければ System.ArgumentException.
-        Array.replicate 3 "F#" // [|"F#"; "F#"; "F#"|]
-    //Array.replicate -1 "F#"  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
+    @"Array.replicate, 同じ値の要素を複数持つ配列を得る.
+    数値が 0 以上の整数でなければ System.ArgumentException.
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html"
+    Array.replicate 3 "F#" |> should equal [|"F#"; "F#"; "F#"|]
+    // Array.replicate -1 "F#" |> should throw typeof<System.ArgumentException>
+    // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
 
     module Scan =
         // Array.scan
@@ -1278,6 +1269,15 @@ module Operator =
     @"not equal"
     1 <> 2 |> should equal true
     'b' <> 'a' |> should equal true
+
+    @"<-, substiture, 可変型の変数に代入
+    TODO: fsharp.github.ioの適切なリンクを張り直す
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#(%20:=%20)
+    `:=`はdeprecated."
+    let count = ref 0 // Creates a reference cell object with a mutable Value property
+    count.Value |> should equal 0
+    count.Value <- 1  // Updates the value
+    count.Value |> should equal 1
 
 module Option =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
