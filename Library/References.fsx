@@ -1368,6 +1368,16 @@ module Math =
         let intTo2ary = intToNary 2L
         [0L..11L] |> List.map intTo2ary |> should equal  [['a']; ['b']; ['b'; 'a']; ['b'; 'b']; ['b'; 'a'; 'a']; ['b'; 'a'; 'b']; ['b'; 'b'; 'a']; ['b'; 'b'; 'b']; ['b'; 'a'; 'a'; 'a']; ['b'; 'a'; 'a'; 'b']; ['b'; 'a'; 'b'; 'a']; ['b'; 'a'; 'b'; 'b']]
 
+    @"perfect number, 完全数"
+    let isPerfect n =
+        if n <= 0L then false
+        else
+            seq {1L..(n-1L)}
+            |> Seq.filter (fun x -> n%x = 0L)
+            |> Seq.sum
+            |> (fun x -> x=n)
+    [1L..28L] |> List.filter isPerfect |> should equal [6L;28L]
+
     "@Prime factorization, 素因数分解
     https://atcoder.jp/contests/ABC169/tasks/abc169_d"
     module PrimeFactorization =
@@ -1401,17 +1411,16 @@ module Math =
             @"素数判定
             https://atcoder.jp/contests/arc017/tasks/arc017_1
             https://qiita.com/drken/items/a14e9af0ca2d857dad23#問題-1-素数判定"
-            let rec isPrime n =
-                if n < 0L then isPrime (-n)
+            let rec isprime n =
+                if n < 0L then isprime (-n)
                 elif n = 0L then false
                 elif n = 1L then false
                 else primeFactors n = [ { Number = n; Count = 1 } ]
-            [1L..8L] |> List.map (fun x -> (x, isPrime x))
-            |> should equal  [(1L, false); (2L, true); (3L, true); (4L, false); (5L, true); (6L, false); (7L, true); (8L, false)]
+            [1L..8L] |> List.filter isprime |> [2L;3L;5L;7L]
 
         @"http://www.fssnip.net/3X"
         module FsSnip =
-            let isPrime n =
+            let isprime n =
                 let sqrtn = (float >> sqrt >> int) n // square root of integer
                 [| 2 .. sqrtn |] // all numbers from 2 to sqrt'
                 |> Array.forall (fun x -> n % x <> 0) // no divisors
@@ -1419,7 +1428,7 @@ module Math =
             let allPrimes =
                 // sequences are lazy, so we can make them infinite
                 let rec f n = seq {
-                        if isPrime n then
+                        if isprime n then
                             yield n
                         yield! f (n+1) // recursing
                     }
@@ -1459,7 +1468,7 @@ module Math =
                 else infSeq x
                     |> Seq.takeWhile (fun i -> i * i <= x)
                     |> Seq.forall (fun i -> x % i <> 0L)
-            [0L..10L] |> List.map (fun x -> (x, isprime x))
+            [0L..10L] |> List.filter isprime |> should equal [2L;3L;5L;7L]
 
     @"round, 四捨五入
     どちらにも丸められる場合は偶数にする"
