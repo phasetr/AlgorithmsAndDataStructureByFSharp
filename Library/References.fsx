@@ -1190,6 +1190,22 @@ module Math =
     ceil -1.5 |> should equal -1.0
     ceil 1.4  |> should equal 2.0
     ceil 1.5  |> should equal 2.0
+    @"整数の一桁目の切り上げ
+    cf. ABC123 B, https://atcoder.jp/contests/abc123/submissions/20135376"
+    module Oneceil =
+        let oneceil x = (x+9) / 10 * 10
+        let xs = [|29; 20; 7; 35; 120|]
+        let ys = [|30; 20; 10; 40; 120|]
+        xs |> Array.map oneceil |> should equal ys
+
+    @"first digit, 整数の一桁目を得る"
+    module FirstDigit =
+        let firstDigit x = (10 - x%10) % 10
+        let xs = [|29; 20; 7; 35; 120|]
+        let ys = [|1; 10; 3; 5; 10|]
+        let zs = [|1; 0; 3; 5; 0|]
+        xs |> Array.map (fun x -> 10 - x%10) |> should equal ys
+        xs |> Array.map firstDigit |> should equal zs
 
     @"floor, 切り捨て"
     floor -1.4 |> should equal -2.0
