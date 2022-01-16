@@ -1173,6 +1173,18 @@ module Math =
     @"float arithmetic"
     1.0M/2.0M |> should equal 0.5M
 
+    @"abs
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#abs"
+    abs 1 |> should equal 1
+    abs -1 |> should equal 1
+    abs 1.0 |> should equal 1.0
+    abs -1.0 |> should equal 1.0
+    module Abs =
+        let myabsint x = if x > 0 then x else -x
+        myabsint -1 |> should equal 1
+        let myabsfloat x = if x > 0.0 then x else -x
+        myabsfloat -1.0 |> should equal 1.0
+
     @"** or power for integers
     a^b = pown a b"
     pown 2 3 |> should equal 8
@@ -1198,6 +1210,57 @@ module Math =
         let ys = [|30; 20; 10; 40; 120|]
         xs |> Array.map oneceil |> should equal ys
 
+    @"factorial, 階乗"
+    module Factorial =
+        let rec fact acc n =
+            if n = 0L then 0L
+            elif n = 1L then acc
+            else fact (acc*n) (n-1L)
+        let fact1 = fact 1L
+        [1L..5L] |> List.map fact1 |> should equal [1L;2L;6L;24L;120L]
+
+    @"Fibonacci sequence, フィボナッチ数列"
+    module Fib =
+        @"メモ化していない重いフィボナッチ"
+        let rec fibNoMemo n =
+            if n = 0I then 0I
+            else if n = 1I then 1I
+            else fibNoMemo (n - 1I) + fibNoMemo (n - 2I)
+        fibNoMemo 5I |> should equal 5I
+        fibNoMemo 6I |> should equal 8I
+
+        @"メモ化したフィボナッチ"
+        #nowarn "40"
+        let rec fibMemo =
+            let dict =
+                System.Collections.Generic.Dictionary<_, _>()
+            fun n ->
+                match dict.TryGetValue(n) with
+                | true, v -> v
+                | false, _ ->
+                    let temp =
+                        if n = 0I then 0I
+                        else if n = 1I then 1I
+                        else fibMemo (n - 1I) + fibMemo (n - 2I)
+
+                    dict.Add(n, temp)
+                    temp
+        fibMemo 5I |> should equal 5I
+        fibMemo 6I |> should equal 8I
+        fibMemo 50I |> should equal 12586269025I
+
+        @"unfold によるフィボナッチ数列
+        https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/sequences
+        UntilN とあるが、実際には最終項が N を超えたところでようやく止まる.
+        実際に実行してみるとわかる."
+        let fibByUnfoldUntilN n =
+            (1, 1) // Initial state
+            |> Seq.unfold (fun state ->
+                if (snd state > n)
+                then None
+                else Some(fst state + snd state, (snd state, fst state + snd state)))
+        fibByUnfoldUntilN 1000 |> List.ofSeq |> should equal [2; 3; 5; 8; 13; 21; 34; 55; 89; 144; 233; 377; 610; 987; 1597]
+
     @"first digit, 整数の一桁目を得る"
     module FirstDigit =
         let firstDigit x = (10 - x%10) % 10
@@ -1213,9 +1276,190 @@ module Math =
     floor 1.4  |> should equal 1.0
     floor 1.5  |> should equal 1.0
 
+    @"gcd, lcm
+    http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ALDS1_1_B&lang=ja
+    http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=2116711#1"
+    module GCD =
+        module GCD1 =
+            let gcd: int64 -> int64 -> int64 = fun x y ->
+                let rec locgcd x y =
+                    match y with
+                    | 0L -> x
+                    | _ -> locgcd y (x % y)
+                if x >= y then locgcd x y else locgcd y x
+            let lcm a b = a * b / (gcd a b)
+
+            gcd 2L 4L |> should equal 2L
+            lcm 2L 4L |> should equal 4L
+            gcd 147L 105L |> should equal 21L
+            lcm 147L 105L |> should equal 735L
+
+        @"参考
+        https://docs.microsoft.com/ja-jp/dotnet/fsharp/tour
+        https://alexatnet.com/hr-f-computing-the-gcd/"
+        module MyGcd2 =
+            let rec gcd: int64 -> int64 -> int64 = fun a b ->
+                if a = 0L then b
+                elif a < b then gcd a (b - a)
+                else gcd (a - b) b
+            let lcm a b = a * b / (gcd a b)
+
+            gcd 2L 4L |> should equal 2L
+            lcm 2L 4L |> should equal 4L
+            gcd 147L 105L |> should equal 21L
+            lcm 147L 105L |> should equal 735L
+
+        @"../ProjectEuler/00005_Smallest_multiple/01.fsx"
+        module MyGcd3 =
+            let rec gcd a b =
+                let (s, l) = if a < b then (a, b) else (b, a)
+                let r = l % s
+                if r = 0L then s else gcd r s
+            let lcm a b = a * b / (gcd a b)
+
+            gcd 2L 4L |> should equal 2L
+            lcm 2L 4L |> should equal 4L
+            gcd 147L 105L |> should equal 21L
+            lcm 147L 105L |> should equal 735L
+
     @"剰余, 余り, mod"
     10 % 2 |> should equal 0
     10 % 7 |> should equal 3
+
+    @"n 進法 n-ary notation
+    使える文字の都合で n < 26 を仮定するが本質的ではない
+    参考：https://webbibouroku.com/Blog/Article/haskell-nstring
+    AtCoderで出てきた「26進数」：AtCoder/ABC171/C1.fsx"
+    module NaryLT16 =
+        let numbersLT16 = [| "0";"1";"2";"3";"4";"5";"6";"7";"8";"9";"a";"b";"c";"d";"e";"f"|]
+        let rec toNary n x =
+            if x = 0L then []
+            else
+                let q = x / n
+                let r = x % n |> int
+                List.append (toNary n q) [ numbersLT16.[r] ]
+        let to3ary = toNary 3L
+        [0L..3L] |> List.map to3ary |> should equal  [[]; ["1"]; ["2"]; ["1"; "0"]]
+
+        let intToNary n x =
+            if x = 0L then [ numbersLT16.[0] ]
+            elif n = 0L then []
+            elif n = 1L then List.replicate (int x) (numbersLT16.[1])
+            elif n <= 16L then toNary n x
+            else []
+        let intTo2ary = intToNary 2L
+        [0L..8L] |> List.map intTo2ary |> should equal [["0"]; ["1"]; ["1"; "0"]; ["1"; "1"]; ["1"; "0"; "0"]; ["1"; "0"; "1"]; ["1"; "1"; "0"]; ["1"; "1"; "1"]; ["1"; "0"; "0"; "0"]]
+
+    module NaryLT26 =
+        let numbersLT26 = [| 'a' .. 'z' |]
+        let rec toNary n x =
+            if x = 0L then []
+            else
+                let q = x / n
+                let r = x % n |> int
+                List.append (toNary n q) [ numbersLT26.[r |> int] ]
+
+        let intToNary n x =
+            if x = 0L then [ numbersLT26.[0] ]
+            elif n = 0L then []
+            elif n = 1L then List.replicate (int x) (numbersLT26.[1])
+            elif n <= 26L then toNary n x
+            else []
+        let intTo2ary = intToNary 2L
+        [0L..11L] |> List.map intTo2ary |> should equal  [['a']; ['b']; ['b'; 'a']; ['b'; 'b']; ['b'; 'a'; 'a']; ['b'; 'a'; 'b']; ['b'; 'b'; 'a']; ['b'; 'b'; 'b']; ['b'; 'a'; 'a'; 'a']; ['b'; 'a'; 'a'; 'b']; ['b'; 'a'; 'b'; 'a']; ['b'; 'a'; 'b'; 'b']]
+
+    "@Prime factorization, 素因数分解
+    https://atcoder.jp/contests/ABC169/tasks/abc169_d"
+    module PrimeFactorization =
+        @"https://atcoder.jp/contests/ABC169/submissions/13872716"
+        module PF1 =
+            type Factor = { Number: int64; Count: int }
+            /// m: origN を割っていった値でどんどん小さくなる
+            /// a: 2L からインクリメントしていく値
+            /// origN: 入力値
+            let rec primes m a origN =
+                // sqrt N 以下の値だけ調べればよい
+                if origN < a * a then
+                    if m = 1L then [] else [ { Number = origN; Count = 1 } ] // 最終的に素数と分かったとき
+                elif m % a <> 0L then
+                    let aPlus = if a = 2L then 3L else a + 2L
+                    primes m aPlus origN
+                else
+                    /// n: primes オリジナルの引数 m を a でどんどん割っていく
+                    /// acc: 割り切った回数のカウンター
+                    let rec inner n acc =
+                        if n % a <> 0L then (n, acc) else inner (n / a) (acc + 1)
+
+                    let (m1, c) = inner m 0
+                    // 1 番最初に 2L で呼んでいるため a >= 3 以上では
+                    // m がすでに因数として 2 はもっていない。
+                    // 2 より大きい偶数を考えても仕方ないので奇数だけ考える
+                    let aPlus = if a = 2L then 3L else a + 2L
+                    { Number = a; Count = c }
+                    :: (primes m1 aPlus origN)
+            let primeFactors n = primes n 2L n
+            @"素数判定
+            https://atcoder.jp/contests/arc017/tasks/arc017_1
+            https://qiita.com/drken/items/a14e9af0ca2d857dad23#問題-1-素数判定"
+            let rec isPrime n =
+                if n < 0L then isPrime (-n)
+                elif n = 0L then false
+                elif n = 1L then false
+                else primeFactors n = [ { Number = n; Count = 1 } ]
+            [1L..8L] |> List.map (fun x -> (x, isPrime x))
+            |> should equal  [(1L, false); (2L, true); (3L, true); (4L, false); (5L, true); (6L, false); (7L, true); (8L, false)]
+
+        @"http://www.fssnip.net/3X"
+        module FsSnip =
+            let isPrime n =
+                let sqrtn = (float >> sqrt >> int) n // square root of integer
+                [| 2 .. sqrtn |] // all numbers from 2 to sqrt'
+                |> Array.forall (fun x -> n % x <> 0) // no divisors
+
+            let allPrimes =
+                // sequences are lazy, so we can make them infinite
+                let rec f n = seq {
+                        if isPrime n then
+                            yield n
+                        yield! f (n+1) // recursing
+                    }
+                f 2 // starting from 2
+
+            allPrimes |> Seq.take 5 |> should equal (seq  [|2; 3; 5; 7; 11|])
+
+        @"https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-1097596"
+        module StackOverflowSieve =
+            let rec sieve = function
+                | (p::xs) -> p :: sieve [ for x in xs do if x % p > 0 then yield x ]
+                | []      -> []
+            sieve [2..50] |> List.take 5 |> should equal [2;3;5;7;11]
+
+        module StackOverflowPrime1 =
+            let twoAndOdds n =
+                Array.unfold (fun x -> if x > n then None else if x = 2 then Some(x, x + 1) else Some(x, x + 2)) 2
+            twoAndOdds 15 |> should equal [|2; 3; 5; 7; 9; 11; 13; 15|]
+
+            // https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-35966305
+            let infSeq (limit: int64) =
+                seq {
+                    yield 2L
+                    let mutable i = 3L
+                    let mutable l = 3L
+                    while l < limit do // この制約を入れないと f i がオーバーフローしてひどいことになったことがある。
+                        let a = i
+                        yield a
+                        i <- i + 2L
+                        l <- i
+                }
+
+            let rec isprime x =
+                if x < 0L then isprime (-x)
+                elif x = 0L then false
+                elif x = 1L then false
+                else infSeq x
+                    |> Seq.takeWhile (fun i -> i * i <= x)
+                    |> Seq.forall (fun i -> x % i <> 0L)
+            [0L..10L] |> List.map (fun x -> (x, isprime x))
 
     @"round, 四捨五入
     どちらにも丸められる場合は偶数にする"
