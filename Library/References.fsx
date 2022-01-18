@@ -2,6 +2,8 @@
 open FsUnit
 
 module Array =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html"
+
     @"accessor or slice"
     let a = [| 0 .. 4 |]
     a.[0] |> should equal 0
@@ -128,6 +130,10 @@ module Array =
     @"forall"
     [|true; true|] |> Array.forall id |> should equal true
     [|true; false|] |> Array.forall id |> should equal false
+
+    @"Array.indexed
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#indexed"
+    [|"a";"b";"c"|] |> Array.indexed |> should equal [|(0,"a");(1,"b");(2,"c")|]
 
     module Sub =
         // Array.sub
@@ -871,6 +877,18 @@ module Sequence =
             else xs
     dropWhile (fun x -> x < 3) (seq {0..5})
     |> should equal (seq {3;4;5})
+
+    @"Seq.fold2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold2"
+    type CoinToss = Head | Tails
+    let data1 = [Tails; Head; Tails]
+    let data2 = [Tails; Head; Head]
+    (0, data1, data2) |||> Seq.fold2 (fun acc a b ->
+        match (a, b) with
+        | Head, Head -> acc + 1
+        | Tails, Tails -> acc + 1
+        | _ -> acc - 1)
+        |> should equal 1
 
     @"Seq.sum s = Seq.fold (+) 0 s"
     Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
