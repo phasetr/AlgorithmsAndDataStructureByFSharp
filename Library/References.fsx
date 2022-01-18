@@ -84,17 +84,13 @@ module Array =
         Array.distinctBy (fun n -> n % 2) [| 0 .. 3 |] // [|0; 1|]
         Array.distinctBy<int, bool> (fun _ -> true) [||] // [||] : int []
 
-    let rec dropWhile p (xs: 'T array) =
+    let rec dropWhile p (xs: array<'a>) =
         match xs with
         | [||] -> [||]
         | _ ->
-            if p (Array.head xs) then
-                dropWhile p (Array.tail xs)
-            else
-                (Array.tail xs)
-
-    dropWhile (fun x -> x < 3) [| 0 .. 5 |]
-    |> should equal [| 4; 5 |]
+            if p (Array.head xs) then dropWhile p (Array.tail xs)
+            else xs
+    dropWhile (fun x -> x < 3) [|0..5|] |> should equal [|3;4;5|]
 
     module Empty =
         // Array.empty
@@ -128,6 +124,10 @@ module Array =
         //Array.findBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「System.Collections.Generic.KeyNotFoundException」
         Array.tryFindBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 3
         Array.find (fun n -> n % 2 = 1) [| 1 .. 3 |] // 1
+
+    @"forall"
+    [|true; true|] |> Array.forall id |> should equal true
+    [|true; false|] |> Array.forall id |> should equal false
 
     module Sub =
         // Array.sub
@@ -688,15 +688,15 @@ module List =
     @"Haskell dropWhile
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile
     下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト"
-    let rec dropWhile (p: 'a -> bool) (list: 'a list) =
-        match list with
+    let rec dropWhile: ('a -> bool) -> list<'a> -> list<'a> = fun p xs ->
+        match xs with
         | [] -> []
-        | x :: xs -> if p x then dropWhile p xs else xs
-    dropWhile (fun x -> x < 3) [ 0 .. 5 ] |> should equal [ 4; 5 ]
-    dropWhile ((>) 3) [1; 2; 3; 4; 5; 1; 2; 3] |> should equal [4; 5; 1; 2; 3]
+        | y::ys -> if p y then dropWhile p ys else xs
+    dropWhile (fun x -> x < 3) [0..5] |> should equal [3..5]
+    dropWhile ((>) 3) [1; 2; 3; 4; 5; 1; 2; 3] |> should equal [3; 4; 5; 1; 2; 3]
     dropWhile ((>) 9) [1; 2; 3] |> should equal List.empty<int>
-    dropWhile ((>) 1) [1; 2; 3] |> should equal [2; 3]
-    dropWhile ((>) 2) [1; 2; 3] |> should equal [3]
+    dropWhile ((>) 1) [1; 2; 3] |> should equal [1; 2; 3]
+    dropWhile ((>) 2) [1; 2; 3] |> should equal [2; 3]
 
     @"filter"
     [1..9]
@@ -852,6 +852,10 @@ module Sequence =
     @"docs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
 
+    @"Seq.append
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
+    Seq.append [1;2] [3;4]|> should equal (seq [1..4])
+
     @"countBy"
     type Foo = { Bar: string }
     let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
@@ -859,16 +863,14 @@ module Sequence =
     |> should equal (seq { ("a", 2); ("b", 1) })
 
     @"dropWhile"
-    let rec dropWhile p (xs: 'T seq) =
+    let rec dropWhile p (xs: seq<'a>) =
         match xs with
         | s when Seq.isEmpty s -> Seq.empty
         | _ ->
-            if p (Seq.head xs) then
-                dropWhile p (Seq.tail xs)
-            else
-                (Seq.tail xs)
-    dropWhile (fun x -> x < 3) (seq { 0 .. 5 })
-    |> should equal (seq { 4; 5 })
+            if p (Seq.head xs) then dropWhile p (Seq.tail xs)
+            else xs
+    dropWhile (fun x -> x < 3) (seq {0..5})
+    |> should equal (seq {3;4;5})
 
     @"Seq.sum s = Seq.fold (+) 0 s"
     Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
@@ -891,20 +893,19 @@ module Sequence =
     @"head"
     Seq.head (seq { 0 .. 9 }) |> should equal 0
 
-    @"infinite seq"
-    @"https://atcoder.jp/contests/abc169/tasks/abc169_d
-    Seq に対する head-tail の分解
-    Active Pattern 利用"
+    @"Seq.initInfinite, infinite seq
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#initInfinite
+    https://atcoder.jp/contests/abc169/tasks/abc169_d
+    Seqに対するhead-tailの分解
+    Active Pattern利用"
     let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
         if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
-    @"infinite seq"
     Seq.initInfinite id |> Seq.take 3 |> should equal [0; 1; 2]
-    Seq.initInfinite (fun x -> x + 1)
-    |> Seq.take 3 |> should equal [1; 2; 3]
+    Seq.initInfinite (fun x -> x + 1) |> Seq.take 3 |> should equal [1; 2; 3]
 
     @"initInfinite64
     https://atcoder.jp/contests/abc169/tasks/abc169_d
-    return! を使った再帰ではなく mutable を使っているのは return! で生成されるステートマシンのコストが（数を出して1増やすだけの処理より）高いため"
+    `return!`を使った再帰ではなく`mutable`を使っているのは`return!`で生成されるステートマシンのコストが（数を出して1増やすだけの処理より）高いため"
     let initInfinite64 f =
         seq {
             let mutable i = 0L
@@ -920,6 +921,16 @@ module Sequence =
                 yield f i
                 i <- i + 1I
         }
+
+    @"haskell iterate
+    http://fssnip.net/18/title/Haskell-function-iterate
+    iterate :: (a -> a) -> a -> [a]
+    iterate f x = x : iterate f (f x)"
+    let rec iterate f x = seq {
+        yield x
+        yield! iterate f (f x)
+    }
+    Seq.take 10 (iterate ((*) 2) 1) |> should equal (seq [1;2;4;8;16;32;64;128;256;512])
 
     @"Seq.length"
     seq [1; 2; 3] |> Seq.length |> should equal 3
@@ -1581,6 +1592,9 @@ module Set =
     let chk = Set "abcdef"
     Set.difference chk origset |> should equal (set ['d';'e';'f'])
 
+    @"intersect
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#intersect "
+    Set.intersect (set [1;2;3]) (set [2;3;4]) |> should equal (set [2;3])
 
     @"Set.ofArray"
     Set.ofArray [|1;2|] |> should equal (set [1;2])
