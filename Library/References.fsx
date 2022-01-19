@@ -660,7 +660,8 @@ module List =
     List.collect (List.take 2) [[1;2;3]; [4;5;6]]
     |> should equal [1;2;4;5]
 
-    @"concat, join"
+    @"concat, join
+    Do not coincide with Haskell concat"
     let list1 = [1..5]
     let list2 = [3..7]
     list1 @ list2 |> should equal [1;2;3;4;5;3;4;5;6;7]
@@ -767,8 +768,27 @@ module List =
         group ("Mississippi" |> List.ofSeq)
         |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
 
-    @"head"
+    @"List.head
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#head"
     List.head [1;2;3] |> should equal 1
+
+    @"List.indexed
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#indexed"
+    ["a"; "b"; "c"] |> List.indexed |> should equal [(0, "a"); (1, "b"); (2, "c")]
+
+    @"List.init
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#init"
+    List.init 4 (fun v -> v + 5) |> should equal [5; 6; 7; 8]
+
+    @"Haskell init, not List.init
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:init"
+    module InitHaskellPrelude =
+        let rec init: list<'a> -> list<'a> = function
+        | [] -> failwith "Undefined"
+        | [x] -> []
+        | x::xs -> x :: init xs
+        init [1] |> should equal List.empty<int>
+        init [1;2;3;4] |> should equal [1;2;3]
 
     @"Haskell inits
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits"
@@ -779,6 +799,10 @@ module List =
     //    Seq.mapi (fun i _ -> Seq.take i xs) xs
     inits "abc" |> should equal [ ""; "a"; "ab"; "abc" ]
     inits "123" |> should equal [ ""; "1"; "12"; "123" ]
+
+    @"List.last
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#last"
+    [ "pear"; "banana" ] |> List.last |> should equal "banana"
 
     @"map2
     zipWith: FSharpPlus では ZipList?"
@@ -1445,7 +1469,7 @@ module Math =
                 elif n = 0L then false
                 elif n = 1L then false
                 else primeFactors n = [ { Number = n; Count = 1 } ]
-            [1L..8L] |> List.filter isprime |> [2L;3L;5L;7L]
+            [1L..8L] |> List.filter isprime |> should equal [2L;3L;5L;7L]
 
         @"http://www.fssnip.net/3X"
         module FsSnip =
@@ -1556,6 +1580,17 @@ module Literal =
 
 module Operator =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
+
+    @"Boolean Operators
+    https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/symbol-and-operator-reference/boolean-operators"
+    not true |> should equal false
+    not false |> should equal true
+    (true || true) |> should equal true
+    (true || false) |> should equal true
+    (false || false) |> should equal false
+    (true && true) |> should equal true
+    (true && false) |> should equal false
+    (false && false) |> should equal false
 
     @"flip: defition of an operator, using paretheses"
     let flip f x y = f y x
