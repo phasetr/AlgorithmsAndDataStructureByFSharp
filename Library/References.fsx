@@ -793,12 +793,9 @@ module List =
     @"Haskell inits
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits"
     let inits xs =
-        [ 0 .. (Seq.length xs) ]
-        |> Seq.map (fun i -> Seq.take i xs)
-    //let inits xs =
-    //    Seq.mapi (fun i _ -> Seq.take i xs) xs
-    inits "abc" |> should equal [ ""; "a"; "ab"; "abc" ]
-    inits "123" |> should equal [ ""; "1"; "12"; "123" ]
+        [ 0 .. (List.length xs) ]
+        |> List.map (fun i -> List.take i xs)
+    inits [1..3] |> should equal [[]; [1]; [1; 2]; [1; 2; 3]]
 
     @"List.last
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#last"
@@ -1571,7 +1568,9 @@ module ActivePattern =
 
 module Literal =
     // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/literals
-    uint64 100
+    uint 100 |> should equal 100u
+    int64 100 |> should equal 100L
+    uint64 100 |> should equal 100UL
 
     @"bottom, undefined, ⊥, _|_
     https://stackoverflow.com/questions/20337249/bottom-undefined-value-in-f
