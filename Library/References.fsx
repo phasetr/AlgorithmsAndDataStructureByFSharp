@@ -879,9 +879,23 @@ module Sequence =
     @"docs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
 
+    @"Seq.allPairs
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#allPairs"
+    ([1; 2], [3; 4]) ||> Seq.allPairs |> should equal (seq {(1, 3); (1, 4); (2, 3); (2, 4)})
+
     @"Seq.append
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
     Seq.append [1;2] [3;4]|> should equal (seq [1..4])
+
+    @"Seq.average
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#average"
+    [1.0; 2.0; 3.0] |> Seq.average |> should equal 2
+
+    @"Seq.averageBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#averageBy"
+    type Foo = { Bar: float }
+    seq {{Bar = 2.0}; {Bar = 4.0}}
+    |> Seq.averageBy (fun foo -> foo.Bar) |> should equal 3.0
 
     @"countBy"
     type Foo = { Bar: string }
@@ -910,6 +924,9 @@ module Sequence =
         | Tails, Tails -> acc + 1
         | _ -> acc - 1)
         |> should equal 1
+
+    @"Seq.item"
+    ["a"; "b"; "c"] |> Seq.item 1 |> should equal "b"
 
     @"Seq.sum s = Seq.fold (+) 0 s"
     Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
