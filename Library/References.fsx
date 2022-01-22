@@ -86,6 +86,7 @@ module Array =
         Array.distinctBy (fun n -> n % 2) [| 0 .. 3 |] // [|0; 1|]
         Array.distinctBy<int, bool> (fun _ -> true) [||] // [||] : int []
 
+    @"Array.dropWhile"
     let rec dropWhile p (xs: array<'a>) =
         match xs with
         | [||] -> [||]
@@ -692,7 +693,7 @@ module List =
     deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [2; 3; 2; 3]
     deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [1; 2; 3; 1; 1; 2; 3]
 
-    @"Haskell dropWhile
+    @"Haskell List.dropWhile
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile
     下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト"
     let rec dropWhile: ('a -> bool) -> list<'a> -> list<'a> = fun p xs ->
