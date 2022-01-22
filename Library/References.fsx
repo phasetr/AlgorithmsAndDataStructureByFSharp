@@ -813,6 +813,10 @@ module List =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#reduce"
     List.reduce min [1..9] |> should equal 1
 
+    @"List.replicate
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#replicate"
+    List.replicate 3 "a" |> should equal ["a";"a";"a"]
+
     @"List.scan, Haskell scanl
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#scan
     http://zvon.org/other/haskell/Outputprelude/scanl_f.html"
@@ -894,15 +898,17 @@ module Sequence =
 
     @"Seq.averageBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#averageBy"
-    type Foo = { Bar: float }
-    seq {{Bar = 2.0}; {Bar = 4.0}}
-    |> Seq.averageBy (fun foo -> foo.Bar) |> should equal 3.0
+    module AverageBy =
+        type Foo = { Bar: float }
+        seq {{Bar = 2.0}; {Bar = 4.0}}
+        |> Seq.averageBy (fun foo -> foo.Bar) |> should equal 3.0
 
     @"countBy"
-    type Foo = { Bar: string }
-    let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
-    inputs |> Seq.countBy (fun foo -> foo.Bar)
-    |> should equal (seq { ("a", 2); ("b", 1) })
+    module CountBy =
+        type Foo = { Bar: string }
+        let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
+        inputs |> Seq.countBy (fun foo -> foo.Bar)
+        |> should equal (seq { ("a", 2); ("b", 1) })
 
     @"dropWhile"
     let rec dropWhile p (xs: seq<'a>) =
@@ -1015,14 +1021,14 @@ module String =
     let text = "TEXT"
     $"text: {text}" |> should equal "text: TEXT"
 
-    @"collect
+    @"String.collect
     mapと違って文字を文字列に変換する関数を使ってmapする
     https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d"
     "Hello, World"
     |> String.collect (fun c -> sprintf "%c " c)
     |> should equal "H e l l o ,   W o r l d "
 
-    @"concat
+    @"String.concat
     配列やリストの要素を連結して文字列化"
     [| 1; 2; 3; 4; 5 |]
     |> Array.map string
@@ -1115,7 +1121,8 @@ module String =
     "OK!" |> String.mapi (fun i c -> char c)
     |> should equal "OK!"
 
-    @"replicate"
+    @"String.replicate
+    文字列のくり返し."
     "Do it!" |> String.replicate 3
     |> should equal "Do it!Do it!Do it!"
 
