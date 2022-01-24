@@ -44,13 +44,22 @@ module Array =
     blit2 |> should equal [|0; 0; 0; 0; 0; 4; 5; 6; 7; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]
 
     @"Array.choose, `if`の結果`Option`を取る関数を与えて`Some(x)`だけを取ってくる
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose"
+    filterd map, Haskell mapMaybe
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose
+    https://stackoverflow.com/questions/55674656/how-to-combine-filter-and-mapping-in-haskell"
     Array.choose
         (fun elem ->
             if elem % 2 = 0 then Some(float (elem * elem - 1))
             else None)
         [| 1 .. 10 |]
     |> should equal [|3.0; 15.0; 35.0; 63.0; 99.0|]
+
+    [|Some 1;None;Some 2|] |> Array.choose id |> should equal [|1;2|]
+    [|1;2;3|] |> Array.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal [|2|]
+
+    [|(1,20);(2,30);(1,40);(2,50)|]
+    |> Array.choose (fun (i,v) -> if i = 1 then Some v else None)
+    |> should equal [|20;40|]
 
     module ChunkBySize =
         // Array.chunkBySize
@@ -843,6 +852,7 @@ module List =
     List.reduce min [1..9] |> should equal 1
 
     @"List.replicate
+    `repeat`にも転用可能
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#replicate"
     List.replicate 3 "a" |> should equal ["a";"a";"a"]
 
@@ -1106,6 +1116,14 @@ module Sequence =
 
     @"Seq.replicate"
     Seq.replicate 3 'a' |> should equal (seq ['a'; 'a'; 'a'])
+
+    @"repeat, Haskell
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html"
+    let rec repeat x = seq {
+        yield x
+        yield! repeat x
+    }
+    Seq.take 3 (repeat 1) |> should equal (seq [1;1;1])
 
     @"Seq.tail"
     Seq.tail (seq {0..3}) |> should equal (seq { 1 .. 3 })
