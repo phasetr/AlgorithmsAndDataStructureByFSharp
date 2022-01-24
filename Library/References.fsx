@@ -932,12 +932,66 @@ module Sequence =
         seq {{Bar = 2.0}; {Bar = 4.0}}
         |> Seq.averageBy (fun foo -> foo.Bar) |> should equal 3.0
 
-    @"countBy"
+    @"Seq.cache
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cache"
+    module Cache =
+        let fibSeq = (0, 1) |> Seq.unfold (fun (a,b) -> Some(a + b, (b, a + b)))
+        let fibSeq3 = fibSeq |> Seq.take 3 |> Seq.cache
+        fibSeq3 |> should equal (seq [1;2;3])
+
+    @"Seq.cast
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cast"
+    [box 1; box 2; box 3] |> Seq.cast<int> |> should equal (seq {1; 2; 3})
+
+    @"Seq.choose"
+    [Some 1; None; Some 2] |> Seq.choose id |> should equal (seq {1; 2})
+    [1; 2; 3] |> Seq.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal (seq [2])
+
+    @"Seq.chunkBySize"
+    [1; 2; 3] |> Seq.chunkBySize 2 |> should equal (seq {[|1; 2|]; [|3|]})
+
+    @"Seq.collect"
+    module Collect =
+        type Foo = { Bar: int seq }
+        seq { {Bar = [1; 2]}; {Bar = [3; 4]} } |> Seq.collect (fun foo -> foo.Bar)
+        |> should equal (seq { 1; 2; 3; 4 })
+
+        [[1; 2]; [3; 4]] |> Seq.collect id |> should equal (seq { 1; 2; 3; 4 })
+
+    @"Seq.compareWith"
+    module CompareWith =
+        let closerToNextDozen a b = (a % 12).CompareTo(b % 12)
+        ([1; 10], [1; 10]) ||> Seq.compareWith closerToNextDozen |> should equal 0
+        ([1;5], [1;8]) ||> Seq.compareWith closerToNextDozen |> should equal -1
+        ([1;11], [1;13]) ||> Seq.compareWith closerToNextDozen |> should equal 1
+        ([1;2], [1]) ||> Seq.compareWith closerToNextDozen |> should equal 1
+        ([1], [1;2]) ||> Seq.compareWith closerToNextDozen |> should equal -1
+
+    @"Seq.concat"
+    [[1; 2]; [3]; [4; 5]] |> Seq.concat |> should equal (seq { 1; 2; 3; 4; 5 })
+
+    @"Seq.contains"
+    [1; 2] |> Seq.contains 2 |> should equal true
+    [1; 2] |> Seq.contains 5 |> should equal false
+
+    @"Seq.countBy"
     module CountBy =
         type Foo = { Bar: string }
         let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
         inputs |> Seq.countBy (fun foo -> foo.Bar)
         |> should equal (seq { ("a", 2); ("b", 1) })
+
+    @"Seq.delay"
+    Seq.delay (fun () -> Seq.ofList [1; 2; 3]) |> should equal (seq { 1; 2; 3 })
+
+    @"Seq.distinct"
+    [1; 1; 2; 3] |> Seq.distinct |> should equal (seq { 1; 2; 3 })
+
+    @"Seq.distinctBy"
+    module DistinctBy =
+        type Foo = { Bar: int }
+        [{Bar = 1 };{Bar = 1}; {Bar = 2}; {Bar = 3}] |> Seq.distinctBy (fun foo -> foo.Bar)
+        |> should equal (seq {{ Bar = 1 }; { Bar = 2 }; { Bar = 3 }})
 
     @"dropWhile"
     let rec dropWhile p (xs: seq<'a>) =
@@ -948,6 +1002,23 @@ module Sequence =
             else xs
     dropWhile (fun x -> x < 3) (seq {0..5})
     |> should equal (seq {3;4;5})
+
+    @"Seq.empty"
+    Seq.empty |> should equal (seq [])
+
+    @"Seq.exactlyOne"
+    ["banana"] |> Seq.exactlyOne |> should equal "banana"
+
+    @"Seq.except"
+    let original = [1; 2; 3; 4; 5]
+    let itemsToExclude = [1; 3; 5]
+    original |> Seq.except itemsToExclude |> should equal (seq { 2; 4 })
+
+    @"Seq.exists"
+    [1; 2; 3; 4; 5] |> Seq.exists (fun elm -> elm % 4 = 0) |> should equal true
+    [1; 2; 3; 4; 5] |> Seq.exists (fun elm -> elm % 6 = 0) |> should equal false
+
+    @"Seq.exists2 TODO"
 
     @"Seq.fold2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold2"
@@ -1634,6 +1705,11 @@ module Literal =
 module Operator =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
 
+    @"self definition
+    https://stackoverflow.com/questions/2210854/can-you-define-your-own-operators-in-f"
+    let (+.) x s = [for y in s -> x + y]
+    1 +. [2;3;4] |> should equal [3;4;5]
+
     @"Boolean Operators
     https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/symbol-and-operator-reference/boolean-operators"
     not true |> should equal false
@@ -1664,6 +1740,13 @@ module Operator =
     count.Value |> should equal 0
     count.Value <- 1  // Updates the value
     count.Value |> should equal 1
+
+module Prelude =
+    @"uncurry,
+    http://fssnip.net/3n/title/Curry-Uncurry
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:uncurry"
+    let curry f a b = f (a,b)
+    let uncurry f (a,b) = f a b
 
 module Option =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
