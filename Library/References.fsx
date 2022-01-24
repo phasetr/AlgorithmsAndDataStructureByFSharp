@@ -79,6 +79,11 @@ module Array =
         Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 4 |] // -1
         Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 3 |] // 0
 
+    @"Array.create
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#create"
+    Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
+    Array.create 4 0 |> should equal [|0;0;0;0|]
+
     module DistinctBy =
         // Array.distinctBy
         // 配列の各要素を引数にして関数を実行し、その結果の配列から重複をなくしたものを得る。
@@ -136,34 +141,6 @@ module Array =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#indexed"
     [|"a";"b";"c"|] |> Array.indexed |> should equal [|(0,"a");(1,"b");(2,"c")|]
 
-    module Sub =
-        // Array.sub
-        // スライスの一種
-        (*
-        Array.sub を f |> g でつなげられるように引数の順番を変更し、
-        引数の意味も変えたバージョン。
-        Array.sub とは少し挙動が違うので注意。
-
-        Array.sub は Array.sub array start count
-        Array.sub [| 0; 2; 4; 6; 8; 10 |] 2 3 // [|4; 6; 8|]
-
-        ここでの slice は slice start end array：end は end 番目までを含む
-        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] // [|4; 6|]
-        *)
-        let slice s e a = Array.sub a s (e - s + 1)
-        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] |> should equal [|4; 6|]
-        /// 配列が定義できているときの標準のスライス
-        [| 'a' .. 'e' |].[2] |> should equal 'c'
-        [| 'a' .. 'e' |].[1..3] |> should equal [|'b'; 'c'; 'd'|]
-        [| 'a' .. 'e' |].[2..] |> should equal [|'c'; 'd'; 'e'|]
-        [| 'a' .. 'e' |].[..3] |> should equal [|'a'; 'b'; 'c'; 'd'|]
-
-    module SortBy =
-        // Array.sortBy
-        // 関数指定でソートする
-        Array.sortBy abs [| 1; 4; 8; -2; 5 |]
-        |> printfn "%A" // [|1; -2; 4; 5; 8|]
-
     module FindIndexBack =
         // Array.findBack の結果がある要素の位置を得る.
         // 要素が見つからないときは System.Collections.Generic.KeyNotFoundException.
@@ -172,6 +149,30 @@ module Array =
         //Array.findIndexBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
         Array.tryFindIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 2
         Array.findIndex (fun n -> n % 2 = 1) [| 1 .. 3 |] // 0
+
+    @"Array.fold
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#fold"
+    module Fold =
+        type Charge = | In of int | Out of int
+        let inputs = [| In 1; Out 2; In 3 |]
+        let f acc charge =
+            match charge with
+            | In i -> acc + i
+            | Out o -> acc - o
+        (0, inputs) ||> Array.fold f |> should equal 2
+
+    @"Array.fold2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#fold2"
+    module Fold2 =
+        type CoinToss = Head | Tails
+        let data1 = [| Tails; Head; Tails |]
+        let data2 = [| Tails; Head; Head |]
+        let f acc a b =
+            match (a, b) with
+                | Head, Head -> acc + 1
+                | Tails, Tails -> acc + 1
+                | _ -> acc - 1
+        (0, data1, data2) |||> Array.fold2 f |> should equal 1
 
     @"Array.groupBy
     配列の要素を引数とする関数を順次実行し, その結果ごとに要素をグループ分けする.
@@ -425,6 +426,12 @@ module Array =
 
         Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
 
+    module SortBy =
+        // Array.sortBy
+        // 関数指定でソートする
+        Array.sortBy abs [| 1; 4; 8; -2; 5 |]
+        |> printfn "%A" // [|1; -2; 4; 5; 8|]
+
     module SortByDescending =
         // Array.sortByDescending
         // 配列の要素を引数とする関数を順次実行した結果をもとに要素を降順で並べ替える.
@@ -481,6 +488,28 @@ module Array =
         Array.splitInto 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'|]; [|'c'; 'd'|]; [|'e'|]|] : char [] []
         //Array.splitInto 0 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は正である必要がある」.
         Array.splitInto 3 [| 'a' .. 'b' |] // [|[|'a'|]; [|'b'|]|]
+
+    module Sub =
+        // Array.sub
+        // スライスの一種
+        (*
+        Array.sub を f |> g でつなげられるように引数の順番を変更し、
+        引数の意味も変えたバージョン。
+        Array.sub とは少し挙動が違うので注意。
+
+        Array.sub は Array.sub array start count
+        Array.sub [| 0; 2; 4; 6; 8; 10 |] 2 3 // [|4; 6; 8|]
+
+        ここでの slice は slice start end array：end は end 番目までを含む
+        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] // [|4; 6|]
+        *)
+        let slice s e a = Array.sub a s (e - s + 1)
+        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] |> should equal [|4; 6|]
+        /// 配列が定義できているときの標準のスライス
+        [| 'a' .. 'e' |].[2] |> should equal 'c'
+        [| 'a' .. 'e' |].[1..3] |> should equal [|'b'; 'c'; 'd'|]
+        [| 'a' .. 'e' |].[2..] |> should equal [|'c'; 'd'; 'e'|]
+        [| 'a' .. 'e' |].[..3] |> should equal [|'a'; 'b'; 'c'; 'd'|]
 
     module Tail =
         // Array.tail
