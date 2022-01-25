@@ -26,6 +26,9 @@ Some comments are here.
   I'd like to study immutable style.
 - Rabhi and Lapalme, Algorithms A Functional Programming Approach written by Haskell:
   This looks more algorithms than others.
+- (NEW! 2020) [Bird, Gibbons, Algorithm Design with Haskell](https://www.cambridge.org/core/books/algorithm-design-with-haskell/824BE0319E3762CE8BA5B1D91EEA3F52).
+  Now I reading this book (at 2022/1), and I am rewriting to F#!
+  This book includes data structures, and is relatively easy to read.
 
 Hence I decide to write codes by myself.
 
@@ -34,13 +37,15 @@ e.g., C++, Python.
 
 ## Directory Structure
 
+- AOJ: Codes for the contests in [AOJ](https://judge.u-aizu.ac.jp/onlinejudge/).
+  This site also contains some fundamental algorithms and data structure codes in the form of problems,
+  and is very good introductory one.
 - AtCoder: Codes for the contests in [AtCoder](https://atcoder.jp/).
 - DataStructures: Codes for data structures.
   I added comments for referenced sites, pages, book pages.
 - Book-AlgorithmsAndDataStructuresForProgrammingContests:
   Codes for [this book](https://tatsu-zine.com/books/algorithm-and-datastructure).
 - Library: Codes for important processes.
-- ProjectEuler: Codes for [Project Euler](https://projecteuler.net/)
 
 ## References
 

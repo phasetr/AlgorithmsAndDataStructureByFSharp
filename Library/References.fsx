@@ -1,5 +1,6 @@
 #r "nuget: FsUnit"
 open FsUnit
+#nowarn "40"
 
 module Array =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html"
@@ -1423,7 +1424,7 @@ module Math =
         fibNoMemo 6I |> should equal 8I
 
         @"メモ化したフィボナッチ"
-        #nowarn "40"
+        //#nowarn "40"
         let rec fibMemo =
             let dict =
                 System.Collections.Generic.Dictionary<_, _>()
@@ -1514,6 +1515,28 @@ module Math =
             lcm 2L 4L |> should equal 4L
             gcd 147L 105L |> should equal 21L
             lcm 147L 105L |> should equal 735L
+
+    @"Large Numbers
+    巨大な数を扱うとき
+    cf: https://atcoder.jp/contests/abc169/tasks/abc169_b
+    例えば積がオーバーフローするかしないかを判定するとき、
+    積の値そのものを確認するのではなく、
+    オーバーフローチェックすべき値を新たにかける値で割った値で判定する。"
+    module LargeNumbers =
+        // check
+        System.Int32.MaxValue |> should equal 2147483647
+        System.Int32.MaxValue * 2 |> should equal -2
+
+        /// a*b が int を飛び越えるとき、オーバーフローしてマイナスになったりする
+        let checkOverflowBad a b n = n < (a * b)
+        checkOverflowBad System.Int32.MaxValue 2 System.Int32.MaxValue
+        |> should equal false
+
+        /// a: 元の値、b: 新たにかける値、n: オーバーフローチェックする値
+        /// int なら int の範囲内で計算を処理できる
+        let checkOverflowGood a b n = a > (n / b)
+        checkOverflowGood System.Int32.MaxValue 2 System.Int32.MaxValue
+        |> should equal true
 
     @"剰余, 余り, mod"
     10 % 2 |> should equal 0
@@ -1730,6 +1753,7 @@ module Literal =
     uint 100 |> should equal 100u
     int64 100 |> should equal 100L
     uint64 100 |> should equal 100UL
+    bigint 100 |> should equal 100I
 
     @"bottom, undefined, ⊥, _|_
     https://stackoverflow.com/questions/20337249/bottom-undefined-value-in-f
