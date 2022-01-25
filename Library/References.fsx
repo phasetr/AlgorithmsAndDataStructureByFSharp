@@ -1571,6 +1571,22 @@ module Math =
             |> (fun x -> x=n)
     [1L..28L] |> List.filter isPerfect |> should equal [6L;28L]
 
+    @"perfect square, 完全平方数
+    http://www.fssnip.net/dn/title/Checking-for-perfect-squares
+    An implementation of John D. Cook's algorithm for fast-finding perfect squares: http://www.johndcook.com/blog/2008/11/17/fast-way-to-test-whether-a-number-is-a-square/"
+    module IsPerfectSquare =
+        let isPerfectSquare n =
+            let h = n &&& 0xF
+            if (h > 9) then false
+            else
+                if ( h <> 2 && h <> 3 && h <> 5 && h <> 6 && h <> 7 && h <> 8 ) then
+                    let t = ((n |> double |> sqrt) + 0.5) |> floor|> int
+                    t*t = n
+                else false
+        [1..100]
+        |> List.choose (fun x -> if isPerfectSquare x then Some x else None)
+        |> should equal [1; 4; 9; 16; 25; 36; 49; 64; 81; 100]
+
     "@Prime factorization, 素因数分解
     https://atcoder.jp/contests/ABC169/tasks/abc169_d"
     module PrimeFactorization =
