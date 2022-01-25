@@ -94,12 +94,15 @@ module Array =
     Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
     Array.create 4 0 |> should equal [|0;0;0;0|]
 
-    module DistinctBy =
-        // Array.distinctBy
-        // 配列の各要素を引数にして関数を実行し、その結果の配列から重複をなくしたものを得る。
-        // 要素のない空の配列でも例外は起きない。
-        Array.distinctBy (fun n -> n % 2) [| 0 .. 3 |] // [|0; 1|]
-        Array.distinctBy<int, bool> (fun _ -> true) [||] // [||] : int []
+    @"Array.distinct 一意化, unique
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#distinct"
+    Array.distinct [|1;1;2;3|] |> should equal [|1; 2; 3|]
+
+    @"Array.distinctBy
+    配列の各要素を引数にして関数を実行した配列から重複をなくしたものを得る.
+    要素のない空の配列でも例外は起きない"
+    Array.distinctBy (fun n -> n % 2) [|0..3|] |> should equal [|0; 1|]
+    Array.distinctBy<int, bool> (fun _ -> true) [||] |> should equal  [||]
 
     @"Array.dropWhile"
     let rec dropWhile p (xs: array<'a>) =
@@ -369,18 +372,14 @@ module Array =
         |> Array.maxBy (fun x -> 1.0 - x * x)
         |> printfn "%A" // 0.0
 
-    // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#min
-    [| for x in -100 .. 100 -> x * x - 4 |]
-    |> Array.min
-    |> should equal -4
-
+    @"Array.min
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#min"
+    Array.min [|for x in -100 .. 100 -> x*x-4|] |> should equal -4
     Array.min [| 1; 2; 3 |] |> should equal 1
 
-    module MinBy =
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#minBy
-        [| -10.0 .. 10.0 |]
-        |> Array.minBy (fun x -> x * x - 1.0)
-        |> printfn "%A" // 0.0
+    @"Array.minBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#minBy"
+    [|-10..10|] |> Array.minBy (fun x -> x*x-1) |> should equal 0
 
     module Pairwise =
         // Array.pairwise
@@ -568,6 +567,11 @@ module Array =
         // Array.take と違うのは要素数に関連する例外が発生しないこと.
         Array.truncate 3 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5|]
 
+    @"Array.tryFind
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFind"
+    Array.tryFind (fun x -> x%2=0) [|1;2;3|] |> should equal (Some 2)
+    Array.tryFind (fun x -> x%2=0) [|1;5;3|] |> should equal  None
+
     module TryFindBack =
         // Array.tryFindBack
         // 末尾の要素から順次関数を実行し, 結果が true となる要素を見つける.
@@ -680,6 +684,12 @@ module Array =
         (* windowed と chunBySize との違い *)
         Array.windowed 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'b'; 'c'; 'd'|]; [|'c'; 'd'; 'e'|]|]
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
+
+module Dictionary =
+    @"https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
+
+    @"Dict literal, read only"
+    dict [(1,"a"); (2,"b"); (3,"c")]
 
 module List =
     @"docs for List
@@ -1830,14 +1840,21 @@ module Print =
 module Set =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html"
 
+    @"set itself"
+    set [1..5] |> should equal (set [1..5])
+
+    @"Set.add
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#add"
+    Set.add 1 (set [2..4]) |> should equal (set [1..4])
+    Set.add 1 (set [1..4]) |> should equal (set [1..4])
+
     @"count, length for sets"
     set [1;2] |> Set.count |> should equal 2
 
     @"difference
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#difference "
-    let origset = Set "abc"
-    let chk = Set "abcdef"
-    Set.difference chk origset |> should equal (set ['d';'e';'f'])
+    Set.difference (set "abcdef") (set "abc")
+    |> should equal (set ['d';'e';'f'])
 
     @"intersect
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#intersect "
@@ -1848,3 +1865,11 @@ module Set =
 
     @"Set.ofSeq, 文字列から変換するときはこれを使う."
     Set.ofSeq "abc" |> should equal (set ['a';'b';'c'])
+
+    @"Set.singleton
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#singleton"
+    Set.singleton 7 |> should equal (set [7])
+
+    @"Set.union, 和集合
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#union"
+    Set.union (set [1;2;3]) (set [3;4;5]) |> should equal (set [1..5])
