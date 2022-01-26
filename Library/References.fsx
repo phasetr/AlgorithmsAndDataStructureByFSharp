@@ -697,6 +697,11 @@ module List =
     https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
     https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists"
 
+    @"List literal
+    https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/lists"
+    [1..3] |> should equal [1;2;3]
+    [3..-1..0] |> should equal [3;2;1;0]
+
     @"append"
     List.append [ 0 .. 3 ] [ 5 .. 7]
     |> should equal [ 0; 1; 2; 3; 5; 6; 7 ]
@@ -1595,19 +1600,20 @@ module Math =
         [0L..11L] |> List.map intTo2ary |> should equal  [['a']; ['b']; ['b'; 'a']; ['b'; 'b']; ['b'; 'a'; 'a']; ['b'; 'a'; 'b']; ['b'; 'b'; 'a']; ['b'; 'b'; 'b']; ['b'; 'a'; 'a'; 'a']; ['b'; 'a'; 'a'; 'b']; ['b'; 'a'; 'b'; 'a']; ['b'; 'a'; 'b'; 'b']]
 
     @"perfect number, 完全数"
-    let isPerfect n =
-        if n <= 0L then false
-        else
-            seq {1L..(n-1L)}
-            |> Seq.filter (fun x -> n%x = 0L)
-            |> Seq.sum
-            |> (fun x -> x=n)
-    [1L..28L] |> List.filter isPerfect |> should equal [6L;28L]
+    module IsPerfectSquare1 =
+        let isPerfect n =
+            if n <= 0L then false
+            else
+                seq {1L..(n-1L)}
+                |> Seq.filter (fun x -> n%x = 0L)
+                |> Seq.sum
+                |> (fun x -> x=n)
+        [1L..28L] |> List.filter isPerfect |> should equal [6L;28L]
 
     @"perfect square, 完全平方数
     http://www.fssnip.net/dn/title/Checking-for-perfect-squares
     An implementation of John D. Cook's algorithm for fast-finding perfect squares: http://www.johndcook.com/blog/2008/11/17/fast-way-to-test-whether-a-number-is-a-square/"
-    module IsPerfectSquare =
+    module IsPerfectSquare2 =
         let isPerfectSquare n =
             let h = n &&& 0xF
             if (h > 9) then false
@@ -1619,6 +1625,19 @@ module Math =
         [1..100]
         |> List.choose (fun x -> if isPerfectSquare x then Some x else None)
         |> should equal [1; 4; 9; 16; 25; 36; 49; 64; 81; 100]
+
+    @"Method2 https://www.geeksforgeeks.org/check-if-a-number-is-perfect-square-without-finding-square-root/amp/"
+    module IsPerfectSquare3 =
+        let rec isPerfectSquare x left right =
+            let mid = (left + right) / 2L
+            let midSq = mid * mid
+            if midSq = x then true
+            elif right < left then false
+            elif midSq < x then isPerfectSquare x (mid+1L) right
+            else isPerfectSquare x left (mid-1L)
+
+        [1L..100L] |> List.choose (fun x -> if isPerfectSquare x 1L x then Some x else None)
+        |> should equal [1L; 4L; 9L; 16L; 25L; 36L; 49L; 64L; 81L; 100L]
 
     "@Prime factorization, 素因数分解
     https://atcoder.jp/contests/ABC169/tasks/abc169_d"
