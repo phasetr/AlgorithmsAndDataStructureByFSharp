@@ -211,12 +211,12 @@ module Array =
         Array.tryLast [| 1 .. 3 |] // Some 3
         Array.tryLast<int> [||] // None
 
-    module Indexed =
-        // Array.indexed
-        // 配列の要素とその位置を (位置, 要素) という 1 つのタプルに収めた要素を持つ配列を得る.
-        // 配列の要素が空でも例外は起きない.
-        Array.indexed [| 'a' .. 'c' |] // [|(0, 'a'); (1, 'b'); (2, 'c')|]
-        Array.indexed<char> [||] // [||] : (int * char) []
+    @"Array.indexed
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#indexed
+    配列の要素とその位置を (位置, 要素) という 1 つのタプルに収めた要素を持つ配列を得る.
+    配列の要素が空でも例外は起きない."
+    Array.indexed [|'a'..'c'|] |> should equal [|(0,'a');(1,'b');(2,'c')|]
+    Array.indexed<char> [||] |> should equal [||]
 
     module Init =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.init%5b't%5d-function-%5bfsharp%5d
@@ -275,15 +275,11 @@ module Array =
         Array.head [| 1 .. 3 |] // 1
         Array.tryHead [| 1 .. 3 |] // Some 1
 
-    module Map =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.map%5b't,'u%5d-function-%5bfsharp%5d
-        let data = [| 1; 2; 3; 4 |]
-        data |> Array.map (fun x -> x + 1) |> printfn "%A" // [|2; 3; 4; 5|]
-        data |> Array.map string |> printfn "%A" // [|"1"; "2"; "3"; "4"|]
-
-        data
-        |> Array.map (fun x -> (x, x))
-        |> printfn "%A" // [|(1, 1); (2, 2); (3, 3); (4, 4)|]
+    @"Array.map
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#map"
+    [|1..4|] |> Array.map (fun x -> x + 1) |> should equal [|2;3;4;5|]
+    [|1..4|] |> Array.map string |> should equal [|"1";"2";"3";"4"|]
+    [|1..4|] |> Array.map (fun x -> (x, x)) |> should equal [|(1,1);(2,2);(3,3);(4,4)|]
 
     module Map2 =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.map2%5b't1,'t2,'u%5d-function-%5bfsharp%5d
@@ -684,6 +680,11 @@ module Array =
         (* windowed と chunBySize との違い *)
         Array.windowed 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'b'; 'c'; 'd'|]; [|'c'; 'd'; 'e'|]|]
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
+
+module Char =
+    @"https://docs.microsoft.com/ja-jp/dotnet/api/system.char.islower?view=net-6.0"
+    System.Char.IsLower 'c' |> should equal true
+    System.Char.IsLower 'C' |> should equal false
 
 module Dictionary =
     @"https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
