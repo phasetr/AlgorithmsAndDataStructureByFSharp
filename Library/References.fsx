@@ -136,6 +136,12 @@ module Array =
         Array.except [| 2; 1 |] [| 1 .. 5 |] // [|3; 4; 5|]  第 1 引数はlist, seq, setでも良い
         Array.except<int> [||] [||] // [||] : int []
 
+    @"Array.exists
+    対義語はforall
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#exists"
+    [|1;2;3;4;5|] |> Array.exists (fun elm -> elm % 4 = 0) |> should equal true
+    [|1;2;3;4;5|] |> Array.exists (fun elm -> elm % 6 = 0) |> should equal false
+
     module FindBack =
         // Array.findBack
         // 配列の要素を引数にして関数を順次実行し、その結果 (bool型) が最初に true になった要素を得る。
@@ -1198,7 +1204,6 @@ module String =
     "nope" |> String.exists Char.IsUpper |> should equal false
 
     @"filter"
-    open System
     // Filtering out just alphanumeric characters
     "0 1 2 3 4 5 6 7 8 9 a A m M"
     |> String.filter Uri.IsHexDigit |> should equal "0123456789aA"
@@ -1207,9 +1212,8 @@ module String =
     "hello" |> String.filter Char.IsDigit |> should equal ""
 
     @"forall"
-    open System
-    "all are lower" |> String.forall Char.IsLower |> should equal false
-    "allarelower" |> String.forall Char.IsLower |> should equal true
+    "all are lower" |> System.String.forall System.Char.IsLower |> should equal false
+    "allarelower" |> System.String.forall System.Char.IsLower |> should equal true
 
     @"forall
     文字列中のすべての文字が条件を満たすか"
