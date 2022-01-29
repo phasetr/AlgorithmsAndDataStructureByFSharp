@@ -942,6 +942,10 @@ module List =
     takeWhile ((>) 9) [1; 2; 3] |> should equal [1; 2; 3]
     takeWhile ((>) 0) [1; 2; 3] |> should equal List.empty<int>
 
+    @"List.tryItem"
+    List.tryItem 1 [0..3] |> should equal (Some 1)
+    List.tryItem 4 [0..3] |> should equal None
+
 module Sequence =
     @"docs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
@@ -1131,6 +1135,14 @@ module Sequence =
     @"Seq.length"
     seq [1; 2; 3] |> Seq.length |> should equal 3
 
+    @"Seq.map2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map2"
+    module Map2 =
+        let inputs1 = ["a"; "bad"; "good"]
+        let inputs2 = [0; 2; 1]
+        (inputs1, inputs2) ||> Seq.map2 (fun x y -> x.[y]) |> should equal (seq ['a';'d';'o'])
+        ([1..4], [11..13]) ||> Seq.map2 (fun x y -> x+y) |> should equal (seq [12;14;16])
+
     @"Seq.ofList"
     [ 1; 2; 5 ] |> Seq.ofList |> should equal (seq {1;2;5})
 
@@ -1171,10 +1183,8 @@ module String =
 
     @"String.concat
     配列やリストの要素を連結して文字列化"
-    [| 1; 2; 3; 4; 5 |]
-    |> Array.map string
-    |> String.concat " "
-    |> should equal "1 2 3 4 5"
+    [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
+    [|'a'..'e'|] |> System.String |> should equal "abcde"
 
     [ 1; 2; 3; 4; 5 ]
     |> List.map string
@@ -1193,8 +1203,8 @@ module String =
 
     @"System.String.Concat
     文字(char)のリストを文字列化.
-    注意: `['1'; '2'; '3'] |> String.concat`はエラー."
-    ['1'; '2'; '3'] |> System.String.Concat |> should equal "123"
+    注意: `['1';'2';'3'] |> String.concat`はエラー."
+    ['1';'2';'3'] |> System.String.Concat |> should equal "123"
 
     @"exists
     文字列中に与えられた条件をみたす文字が存在するか"
