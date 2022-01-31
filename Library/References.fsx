@@ -923,6 +923,13 @@ module List =
     @"tail"
     List.tail [1;2;3] |> should equal [2;3]
 
+    @"List.take
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#take"
+    ['a'..'d'] |> List.take 2 |> should equal ['a';'b']
+    // ERROR: InvalidOperationException
+    // ['a'..'d'] |> List.take 6
+    ['a'..'d'] |> List.take 0 |> should equal List.empty<char>
+
     @"Haskell tails
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:tails"
     let rec tails: list<'a> -> list<list<'a>> = function
@@ -1405,6 +1412,13 @@ module Math =
     1L+1L |> should equal 2L
     @"float arithmetic"
     1.0M/2.0M |> should equal 0.5M
+    @"float infinity"
+    infinity |> should equal infinity
+    @"MaxValue
+    https://midoliy.com/content/fsharp/text/type/1_primitive-type.html
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
+    System.Int32.MaxValue |> should equal 2_147_483_647
+    System.Int64.MaxValue |> should equal 9_223_372_036_854_775_807L
 
     @"abs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#abs"
