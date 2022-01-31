@@ -957,13 +957,16 @@ module Sequence =
     @"docs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
 
+    @"Sequence literal"
+    {0..3} |> should equal (seq [0..3])
+
     @"Seq.allPairs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#allPairs"
     ([1; 2], [3; 4]) ||> Seq.allPairs |> should equal (seq {(1, 3); (1, 4); (2, 3); (2, 4)})
 
     @"Seq.append
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
-    Seq.append [1;2] [3;4]|> should equal (seq [1..4])
+    Seq.append [1;2] [3;4]|> should equal {1..4}
 
     @"Seq.average
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#average"
@@ -981,26 +984,26 @@ module Sequence =
     module Cache =
         let fibSeq = (0, 1) |> Seq.unfold (fun (a,b) -> Some(a + b, (b, a + b)))
         let fibSeq3 = fibSeq |> Seq.take 3 |> Seq.cache
-        fibSeq3 |> should equal (seq [1;2;3])
+        fibSeq3 |> should equal {1..3}
 
     @"Seq.cast
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cast"
-    [box 1; box 2; box 3] |> Seq.cast<int> |> should equal (seq {1; 2; 3})
+    [box 1; box 2; box 3] |> Seq.cast<int> |> should equal {1..3}
 
     @"Seq.choose"
     [Some 1; None; Some 2] |> Seq.choose id |> should equal (seq {1; 2})
-    [1; 2; 3] |> Seq.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal (seq [2])
+    [1..3] |> Seq.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal (seq [2])
 
     @"Seq.chunkBySize"
-    [1; 2; 3] |> Seq.chunkBySize 2 |> should equal (seq {[|1; 2|]; [|3|]})
+    [1..3] |> Seq.chunkBySize 2 |> should equal (seq {[|1; 2|]; [|3|]})
 
     @"Seq.collect"
     module Collect =
         type Foo = { Bar: int seq }
         seq { {Bar = [1; 2]}; {Bar = [3; 4]} } |> Seq.collect (fun foo -> foo.Bar)
-        |> should equal (seq { 1; 2; 3; 4 })
+        |> should equal {1..4}
 
-        [[1; 2]; [3; 4]] |> Seq.collect id |> should equal (seq { 1; 2; 3; 4 })
+        [[1;2];[3;4]] |> Seq.collect id |> should equal {1..4}
 
     @"Seq.compareWith"
     module CompareWith =
@@ -1012,7 +1015,7 @@ module Sequence =
         ([1], [1;2]) ||> Seq.compareWith closerToNextDozen |> should equal -1
 
     @"Seq.concat"
-    [[1; 2]; [3]; [4; 5]] |> Seq.concat |> should equal (seq { 1; 2; 3; 4; 5 })
+    [[1; 2]; [3]; [4; 5]] |> Seq.concat |> should equal {1..5}
 
     @"Seq.contains"
     [1; 2] |> Seq.contains 2 |> should equal true
@@ -1026,10 +1029,10 @@ module Sequence =
         |> should equal (seq { ("a", 2); ("b", 1) })
 
     @"Seq.delay"
-    Seq.delay (fun () -> Seq.ofList [1; 2; 3]) |> should equal (seq { 1; 2; 3 })
+    Seq.delay (fun () -> {1..3}) |> should equal {1..3}
 
     @"Seq.distinct"
-    [1; 1; 2; 3] |> Seq.distinct |> should equal (seq { 1; 2; 3 })
+    [1;1;2;3] |> Seq.distinct |> should equal {1..3}
 
     @"Seq.distinctBy"
     module DistinctBy =
@@ -1044,8 +1047,7 @@ module Sequence =
         | _ ->
             if p (Seq.head xs) then dropWhile p (Seq.tail xs)
             else xs
-    dropWhile (fun x -> x < 3) (seq {0..5})
-    |> should equal (seq {3;4;5})
+    {0..5} |> dropWhile (fun x -> x < 3) |> should equal {3..5}
 
     @"Seq.empty"
     Seq.empty |> should equal (seq [])
@@ -1054,13 +1056,11 @@ module Sequence =
     ["banana"] |> Seq.exactlyOne |> should equal "banana"
 
     @"Seq.except"
-    let original = [1; 2; 3; 4; 5]
-    let itemsToExclude = [1; 3; 5]
-    original |> Seq.except itemsToExclude |> should equal (seq { 2; 4 })
+    [1..5] |> Seq.except [1..2..5] |> should equal (seq { 2; 4 })
 
     @"Seq.exists"
-    [1; 2; 3; 4; 5] |> Seq.exists (fun elm -> elm % 4 = 0) |> should equal true
-    [1; 2; 3; 4; 5] |> Seq.exists (fun elm -> elm % 6 = 0) |> should equal false
+    [1..5] |> Seq.exists (fun elm -> elm % 4 = 0) |> should equal true
+    [1..5] |> Seq.exists (fun elm -> elm % 6 = 0) |> should equal false
 
     @"Seq.exists2 TODO"
 
@@ -1098,7 +1098,7 @@ module Sequence =
         // seq [seq ['M']; seq ['i']; seq ['s'; 's']; seq ['i']; ...]
 
     @"head"
-    Seq.head (seq { 0 .. 9 }) |> should equal 0
+    {0..9} |> Seq.head |> should equal 0
 
     @"Seq.initInfinite, infinite seq
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#initInfinite
@@ -1107,8 +1107,8 @@ module Sequence =
     Active Pattern利用"
     let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
         if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
-    Seq.initInfinite id |> Seq.take 3 |> should equal [0; 1; 2]
-    Seq.initInfinite (fun x -> x + 1) |> Seq.take 3 |> should equal [1; 2; 3]
+    Seq.initInfinite id |> Seq.take 3 |> should equal {0..2}
+    Seq.initInfinite (fun x -> x + 1) |> Seq.take 3 |> should equal {1..3}
 
     @"initInfinite64
     https://atcoder.jp/contests/abc169/tasks/abc169_d
@@ -1140,7 +1140,7 @@ module Sequence =
     Seq.take 10 (iterate ((*) 2) 1) |> should equal (seq [1;2;4;8;16;32;64;128;256;512])
 
     @"Seq.length"
-    seq [1; 2; 3] |> Seq.length |> should equal 3
+    {1..3} |> Seq.length |> should equal 3
 
     @"Seq.map2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map2"
@@ -1151,13 +1151,13 @@ module Sequence =
         ([1..4], [11..13]) ||> Seq.map2 (fun x y -> x+y) |> should equal (seq [12;14;16])
 
     @"Seq.ofList"
-    [ 1; 2; 5 ] |> Seq.ofList |> should equal (seq {1;2;5})
+    [1;2;5] |> Seq.ofList |> should equal (seq {1;2;5})
 
     @"Seq.reduce"
-    seq {0..9} |> Seq.reduce (-) |> should equal -45
+    {0..9} |> Seq.reduce (-) |> should equal -45
 
     @"Seq.replicate"
-    Seq.replicate 3 'a' |> should equal (seq ['a'; 'a'; 'a'])
+    Seq.replicate 3 'a' |> should equal (seq ['a';'a';'a'])
 
     @"repeat, Haskell
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html"
@@ -1171,8 +1171,7 @@ module Sequence =
     Seq.tail (seq {0..3}) |> should equal (seq { 1 .. 3 })
 
     @"Seq.takeWhile"
-    Seq.takeWhile (fun x -> x < 3) (seq { 0 .. 9 })
-    |> should equal (seq { 0..2 })
+    {0..9} |> Seq.takeWhile (fun x -> x < 3) |> should equal {0..2}
 
 module String =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
