@@ -1321,6 +1321,24 @@ module Function =
     let twiceCubic = cubic >> twice
     twiceCubic 3 |> should equal 54
 
+    @"memoized recursion"
+    module MemRec =
+        let memorec f =
+            let memo = System.Collections.Generic.Dictionary<_, _>()
+            let rec frec j =
+                match memo.TryGetValue j with
+                | exist, value when exist -> value
+                | _ ->
+                    let value = f frec j
+                    memo.Add(j, value)
+                    value
+            frec
+        let fact frec i =
+            if i = 1L then 1L
+            else i * frec (i-1L)
+        (memorec fact) 20L
+
+
     @"相互再帰関数, mutual recursion"
     let rec even x = if x = 0 then true else odd (x-1)
     and odd x = if x = 0 then false else even (x-1)
@@ -1589,6 +1607,12 @@ module Math =
         let checkOverflowGood a b n = a > (n / b)
         checkOverflowGood System.Int32.MaxValue 2 System.Int32.MaxValue
         |> should equal true
+
+    @"max
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#max"
+    max 1 2 |> should equal 2
+    max [1;2;3] [1;2;4] |> should equal [1;2;4]
+    max "zoo" "alpha" |> should equal "zoo"
 
     @"剰余, 余り, mod"
     10 % 2 |> should equal 0
