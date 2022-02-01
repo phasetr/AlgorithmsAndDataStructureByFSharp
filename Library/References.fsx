@@ -754,6 +754,16 @@ module List =
     deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [2; 3; 2; 3]
     deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [1; 2; 3; 1; 1; 2; 3]
 
+    @"Haskell drop
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:drop"
+    let rec drop n xs =
+        if n <= 0 || List.isEmpty xs then xs
+        else drop (n-1) (List.tail xs)
+    drop 3 [1..5] |> should equal [4;5]
+    drop 3 [] |> should equal []
+    drop (-1) [1;2] |> should equal [1;2]
+    drop 0 [1;2] |> should equal [1;2]
+
     @"Haskell List.dropWhile
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile
     下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト"
@@ -858,6 +868,12 @@ module List =
         [ 0 .. (List.length xs) ]
         |> List.map (fun i -> List.take i xs)
     inits [1..3] |> should equal [[]; [1]; [1; 2]; [1; 2; 3]]
+
+    @"List.Item"
+    module Item =
+        let l = [0..9]
+        l.Item(0) |> should equal 0
+        List.item 0 l |> should equal (l.Item(0))
 
     @"List.last
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#last"
@@ -1337,7 +1353,6 @@ module Function =
             if i = 1L then 1L
             else i * frec (i-1L)
         (memorec fact) 20L
-
 
     @"相互再帰関数, mutual recursion"
     let rec even x = if x = 0 then true else odd (x-1)
