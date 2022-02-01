@@ -792,7 +792,6 @@ module List =
         |> List.fold (fun acc (q, p) -> acc + q * p) 0
     [(1,2); (3,4)] |> getTotal1 |> should equal 14
 
-
     @"List.foldBack, foldr
     注意: 引数の順番がHaskellと違う
     In haskell, foldr :: (a -> b -> b) -> b -> [a] -> [b].
@@ -968,6 +967,15 @@ module List =
     @"List.tryItem"
     List.tryItem 1 [0..3] |> should equal (Some 1)
     List.tryItem 4 [0..3] |> should equal None
+
+    @"Haskell until
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:until"
+    let until p f x =
+        let rec go x =
+            if p x then x else go (f x)
+        go x
+    until ((<) 100) ((*) 2) 1 |> should equal 128
+    until (fun x -> x%2=1) (fun x -> x / 2) 400 |> should equal 25
 
 module Sequence =
     @"docs
