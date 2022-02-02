@@ -2,6 +2,9 @@
 open FsUnit
 #nowarn "40"
 
+@"参考：色々な言語でのリスト処理関数の対応
+https://qiita.com/dico_leque/items/4662a0223cb6bfb19bd3"
+
 module Array =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html"
 
@@ -11,6 +14,12 @@ module Array =
     a.[0..2] |> should equal [| 0; 1; 2 |]
     a.[1..] |> should equal [| 1; 2; 3; 4 |]
     a.[..3] |> should equal [| 0; 1; 2; 3 |]
+
+    @"Haskell accumArray"
+    let accumArray: ('e -> 'v -> 'e) -> 'e -> ('i * 'i) -> list<'i * 'v> -> array<'i*'e> = fun f e (l,r) ivs ->
+        [for j in [l..r] do (j, List.fold f e [for (i,v) in ivs do if i=j then yield v])]
+        |> Array.ofList
+    accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1, 60); (2, 80); (3, 0)|]
 
     @"Array.allPairs
     配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
@@ -399,7 +408,8 @@ module Array =
         |> printfn "%A"
     // ([|4; 5; 6|], [|1; 2; 3; 7; 8; 9; 10|])
 
-    @"Array.replicate, 同じ値の要素を複数持つ配列を得る.
+    @"Array.replicate, Haskell replicate
+    同じ値の要素を複数持つ配列を得る.
     数値が 0 以上の整数でなければ System.ArgumentException.
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html"
     Array.replicate 3 "F#" |> should equal [|"F#"; "F#"; "F#"|]
@@ -731,8 +741,7 @@ module List =
     List.collect (List.take 2) [[1;2;3]; [4;5;6]]
     |> should equal [1;2;4;5]
 
-    @"concat, join
-    Do not coincide with Haskell concat"
+    @"concat, join"
     let list1 = [1..5]
     let list2 = [3..7]
     list1 @ list2 |> should equal [1;2;3;4;5;3;4;5;6;7]
@@ -1097,6 +1106,10 @@ module Sequence =
         inputs |> Seq.countBy (fun foo -> foo.Bar)
         |> should equal (seq { ("a", 2); ("b", 1) })
 
+    @"Haskell cycle"
+    let cycle xs = Seq.concat <| Seq.initInfinite (fun _ -> xs)
+    cycle [1..2] |> Seq.take 4 |> should equal [1;2;1;2]
+
     @"Seq.delay
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#delay"
     Seq.delay (fun () -> {1..3}) |> should equal {1..3}
@@ -1126,15 +1139,16 @@ module Sequence =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#except"
     [1..5] |> Seq.except [1..2..5] |> should equal (seq {2;4})
 
-    @"Seq.exists, cf. Seq.forall (= Haskell all)
+    @"Seq.exists, Haskell any
+    cf. Seq.forall (= Haskell all)
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists"
     [1..5] |> Seq.exists (fun elm -> elm % 4 = 0) |> should equal true
     [1..5] |> Seq.exists (fun elm -> elm % 6 = 0) |> should equal false
 
     @"Seq.exists2 TODO
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists2"
-   ([1;2], [1;2;0]) ||> Seq.exists2 (fun a b -> a > b) |> should equal false
-   ([1;4], [1;3;4]) ||> Seq.exists2 (fun a b -> a > b) |> should equal true
+    ([1;2], [1;2;0]) ||> Seq.exists2 (fun a b -> a > b) |> should equal false
+    ([1;4], [1;3;4]) ||> Seq.exists2 (fun a b -> a > b) |> should equal true
 
     @"Seq.filter
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists2"
