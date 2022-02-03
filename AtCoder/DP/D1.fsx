@@ -3,16 +3,16 @@
 open FsUnit
 
 @"https://atcoder.jp/contests/dp/submissions/14854368"
-@"dp[i][j]=(i番目までの品物を重さがj以下になるように選んだときの価値の最大値)"
+@"dp[i][w]=(i番目までの品物を重さがw以下になるように選んだときの価値の最大値)"
 let solve N W (wvs: array<int*int64>) =
     let f (dp: array<int64>) (w,v) =
         let help w0 =
             if w0 >= w then (max (dp.[w0-w]+v) dp.[w0])
             else dp.[w0]
         Array.map help [|0..W|]
-    let initState = Array.replicate (W+1) 0L
+    let dp = Array.replicate (W+1) 0L
     wvs
-    |> Array.fold f initState
+    |> Array.fold f dp
     |> Array.last
 
 let N, W = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0], x.[1])
