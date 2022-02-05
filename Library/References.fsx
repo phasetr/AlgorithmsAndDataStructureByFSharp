@@ -464,8 +464,7 @@ module Array =
             [| (2, "dos"); (3, "tres"); (1, "uno") |]
         |> should equal [| (3, "tres"); (2, "dos"); (1, "uno") |]
 
-        Array.sortDescending [| 1 .. 5 |]
-        |> should equal [| 5; 4; 3; 2; 1 |]
+        Array.sortDescending [|1..5|] |> should equal [|5..(-1)..1|]
 
         Array.sortBy
             (fun (x, _) -> x)
