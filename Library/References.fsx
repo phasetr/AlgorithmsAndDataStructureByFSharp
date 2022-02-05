@@ -740,7 +740,7 @@ module List =
     List.collect (List.take 2) [[1;2;3]; [4;5;6]]
     |> should equal [1;2;4;5]
 
-    @"concat, join"
+    @"List.concat, concat, join"
     let list1 = [1..5]
     let list2 = [3..7]
     list1 @ list2 |> should equal [1;2;3;4;5;3;4;5;6;7]
@@ -2046,6 +2046,15 @@ module Math =
 
         [1L..100L] |> List.choose (fun x -> if isPerfectSquare x 1L x then Some x else None)
         |> should equal [1L; 4L; 9L; 16L; 25L; 36L; 49L; 64L; 81L; 100L]
+
+    @"Permutation, 順列, Bird-Gibbons, perms1"
+    let perms xs =
+        let rec inserts: 'a -> 'a list -> 'a list list = fun x -> function
+            | [] -> [[x]]
+            | y::ys -> (x::y::ys) :: List.map (fun z -> y::z) (inserts x ys)
+        let step x xss = List.collect (inserts x) xss
+        List.foldBack step xs [[]]
+    perms [1..3] |> should equal [[1;2;3];[2;1;3];[2;3;1];[1;3;2];[3;1;2];[3;2;1]]
 
     "@Prime factorization, 素因数分解
     https://atcoder.jp/contests/ABC169/tasks/abc169_d"
