@@ -132,7 +132,7 @@ module Array =
         // 要素が1つだけの配列から要素を取り出す。
         // 配列の要素が複数もしくは空のときは System.ArgumentException。
         // Array.singleton は逆。
-        Array.exactlyOne [| 3 |]
+        Array.exactlyOne [|3|]
         //Array.exactlyOne [| 3; 2 |] // 例外発生「System.ArgumentException: 入力シーケンスに複数の要素が含まれています。」
         //Array.exactlyOne<int> [||] // 例外発生「System.ArgumentException: 入力シーケンスが空でした。」
         Array.singleton 3 // [|3|] (Array.exactlyOneとは逆)
@@ -1772,6 +1772,7 @@ module Map =
     Map.empty<int, string> |> Map.isEmpty |> should equal true
 
 module Math =
+    @"Literal Types: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals"
     @"int64 arithmetic"
     1L+1L |> should equal 2L
     @"float arithmetic"
