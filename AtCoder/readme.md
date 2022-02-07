@@ -15,6 +15,8 @@
 - [atcoder-tools](https://github.com/kyuridenamida/atcoder-tools)
 - [AtCoder Problems](https://kenkoooo.com/atcoder)
   - [AtCoder Problems Training](https://kenkoooo.com/atcoder/#/training)
+- [Educational DP Contest / DP まとめコンテスト](https://atcoder.jp/contests/dp)
+- [Typical DP Contest](https://atcoder.jp/contests/tdpc)
 
 ## Project making
 

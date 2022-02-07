@@ -487,15 +487,14 @@ module Array =
             [| (2, "dos"); (3, "tres"); (1, "uno") |]
         |> should equal [| (3, "tres"); (2, "dos"); (1, "uno") |]
 
-    module SplitAt =
-        // Array.splitAt
-        // 指定した要素の位置ので配列を 2 つに分けてそれぞれを同じタプルに収める.
-        // 指定された位置の要素はタプルの右側の配列に含まれる.
-        // 位置は 0 か正の整数に限られ, それ以外を指定すると System.ArgumentException.
-        // 指定した位置が配列の長さ (要素の数) より大きいと System.InvalidOperationException.
-        Array.splitAt 3 [| 'a' .. 'e' |] // ([|'a'; 'b'; 'c'|], [|'d'; 'e'|])
-        Array.splitAt 0 [| 'a' .. 'e' |] // ([||], ([||], [|'a'; 'b'; 'c'; 'd'; 'e'|]))
-        Array.splitAt 5 [| 'a' .. 'e' |] // ([|'a'; 'b'; 'c'; 'd'; 'e'|], [||])
+    @"Array.splitAt
+    指定した要素の位置ので配列を 2 つに分けてそれぞれを同じタプルに収める.
+    指定された位置の要素はタプルの右側の配列に含まれる.
+    位置は 0 か正の整数に限られ, それ以外を指定すると System.ArgumentException.
+    指定した位置が配列の長さ (要素の数) より大きいと System.InvalidOperationException."
+    Array.splitAt 3 [| 'a' .. 'e' |] |> should equal ([|'a'; 'b'; 'c'|], [|'d'; 'e'|])
+    Array.splitAt 0 [| 'a' .. 'e' |] |> should equal ([||], [|'a'; 'b'; 'c'; 'd'; 'e'|])
+    Array.splitAt 5 [| 'a' .. 'e' |] |> should equal ([|'a'; 'b'; 'c'; 'd'; 'e'|], [||])
     //Array.splitAt -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
     //Array.splitAt  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
 
