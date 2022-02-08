@@ -1656,6 +1656,13 @@ module String =
     seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
 
 module Function =
+    @"Define an operator
+    Bird, Gibbons, P.130"
+    let (<<=): list<'a> -> list<'a> -> bool = fun xs ys ->
+        List.forall id [for x in xs do for y in ys do x <= y]
+    [1..3] <<= [4..6] |> should equal true
+    [1..3] <<= [2..4] |> should equal false
+
     @"forward-pipe operator"
     let getTotal2 items =
         (0, items)
