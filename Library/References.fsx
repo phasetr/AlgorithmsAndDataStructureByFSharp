@@ -1612,7 +1612,6 @@ module String =
 
     @"map
     各文字に作用"
-    open System
     "hello, world" |> String.map System.Char.ToUpper
     |> should equal "HELLO, WORLD"
 
@@ -1713,9 +1712,9 @@ module Function =
     f [] = []
     f x:xs = undefined
     "
-    let rec fact1 = function
+    let rec factSlow = function
     | 1 -> 1
-    | n -> n * fact1 (n-1)
+    | n -> n * factSlow (n-1)
 
     let rec map: ('a -> 'b) -> 'a list -> 'b list = fun f ys ->
         match ys with
