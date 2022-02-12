@@ -1523,6 +1523,9 @@ module Sequence =
 module String =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
 
+    @"文字列を一文字ずつ切り出して数値化する"
+    Seq.map (string >> int) "0123" |> should equal [0..3]
+
     @"埋め込み文字列"
     let text = "TEXT"
     $"text: {text}" |> should equal "text: TEXT"
