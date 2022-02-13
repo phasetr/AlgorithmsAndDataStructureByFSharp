@@ -2318,3 +2318,13 @@ module Set =
     @"Set.union, 和集合
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#union"
     Set.union (set [1;2;3]) (set [3;4;5]) |> should equal (set [1..5])
+
+module Type =
+    module Sample1 =
+        type elem (id, name) =
+            member this.id = id
+            member this.name = name
+        let e = elem(1, "test")
+        e.id |> should equal 1
+        e.name |> should equal "test"
+
