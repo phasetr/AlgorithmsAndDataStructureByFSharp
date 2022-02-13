@@ -2263,6 +2263,14 @@ module Prelude =
 
 module Option =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
+
+    @"Option.flatten, `Option (Option <'a>)`を`Option<'a>'にする.
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#flatten"
+    (None: int option option) |> Option.flatten |> should equal None
+    (Some ((None: int option))) |> Option.flatten |> should equal None
+    (Some (Some 42)) |> Option.flatten |> should equal (Some 42)
+
+    @"tryParse"
     let tryParse (input: string) =
         match System.Int32.TryParse input with
         | true, v -> Some v
@@ -2327,4 +2335,3 @@ module Type =
         let e = elem(1, "test")
         e.id |> should equal 1
         e.name |> should equal "test"
-
