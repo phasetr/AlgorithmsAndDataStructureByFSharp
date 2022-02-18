@@ -84,7 +84,7 @@ module Array =
         // Array.collect
         // 配列の各要素に関数を当て、最後に flat 化する
         // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#collect
-        Array.collect (fun elem -> [| 0 .. elem |]) [| 1; 5; 10 |]
+        Array.collect (fun elem -> [|0..elem|]) [|1;5;10|]
         |> printfn "%A" // [|0; 1; 0; 1; 2; 3; 4; 5; 0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10|]
 
     module CompareWith =
