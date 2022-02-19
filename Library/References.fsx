@@ -161,9 +161,21 @@ module Array =
         Array.tryFindBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 3
         Array.find (fun n -> n % 2 = 1) [| 1 .. 3 |] // 1
 
-    @"forall"
+    @"Array.forall
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#forall"
     [|true; true|] |> Array.forall id |> should equal true
     [|true; false|] |> Array.forall id |> should equal false
+
+    @"Array.forall2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#forall2"
+    module ForAll2 =
+        let inputs1 = [|1..3|]
+        let inputs2 = [|1..3|]
+        (inputs1, inputs2) ||> Array.forall2 (=) |> should equal true
+
+        let items1 = [|2017;1;1|]
+        let items2 = [|2019;19;8|]
+        (items1, items2) ||> Array.forall2 (=) |> should equal false
 
     @"Array.indexed
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#indexed"
@@ -260,11 +272,9 @@ module Array =
         [| for i in 1 .. 5 -> (i, i * i) |]
         |> Array.iter (fun (a, b) -> printf "(%d, %d) " a b) // (1, 1) (2, 4) (3, 9) (4, 16) (5, 25)
 
-    module Iter2 =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter2%5b't1,'t2%5d-function-%5bfsharp%5d
-        let array1 = [| 1; 2; 3 |]
-        let array2 = [| 4; 5; 6 |]
-        Array.iter2 (fun x y -> x * y |> printf "%d ") array1 array2 // 4 10 18
+    @"Array.iter2
+    https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter2%5b't1,'t2%5d-function-%5bfsharp%5d"
+    Array.iter2 (fun x y -> x * y |> printf "%d ") [|1..3|] [|4..6|] // 4 8 10
 
     module Iteri =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iteri%5b't%5d-function-%5bfsharp%5d
@@ -560,16 +570,24 @@ module Array =
         // 要素数が負の数のとき
         Array.truncate -1 [| 3; 2; 5; 4; 1 |] // [||]
 
-    module TakeWhile =
-        // Array.takeWhile
-        // 要素を引数とする関数を先頭から順次実行し,
-        // 結果が true となる要素を持つ配列を得る.
-        // 逆に結果が false となる位置から末尾までの要素を持つ配列を得られる Array.skipWhile や,
-        // 先頭から指定した位置までの要素を持つ配列を得られる Array.take もある.
-        Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
-        Array.skipWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|5; 4; 1|]
+    @"Array.takeWhile
+    要素を引数とする関数を先頭から順次実行し,
+    結果がtrueとなる要素を持つ配列を得る.
+    逆に結果がfalseとなる位置から末尾までの要素を持つ配列を得られるArray.skipWhileや,
+    先頭から指定した位置までの要素を持つ配列を得られるArray.takeもある."
+    Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] |> should equal [|3;2|]
+    Array.skipWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] |> should equal [|5;4;1|]
+    Array.take 3 [|3;2;5;4;1|] |> should equal [|3;2;5|]
 
-        Array.take 3 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5|]
+    @"配列の配列の転置: array2Dバージョンは別途参照"
+    module Transpose =
+        let transpose xa =
+            let rnum = Array.length xa
+            let cnum = Array.length xa.[0]
+            let rowstr i = [|0..(rnum-1)|] |> Array.map (fun j -> xa.[j].[i])
+            [|0..(cnum-1)|] |> Array.map (fun i -> rowstr i)
+        let a = [|[|1;2|];[|3;4|]|]
+        transpose a |> should equal [|[|1;3|];[|2;4|]|]
 
     module Truncate =
         // Array.truncate
@@ -694,6 +712,34 @@ module Array =
         (* windowed と chunBySize との違い *)
         Array.windowed 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'b'; 'c'; 'd'|]; [|'c'; 'd'; 'e'|]|]
         Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
+
+module Array2D =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html"
+
+    @"array2D, constructor"
+    array2D [[1..2];[2..3]]
+
+    @"行または列だけ取る"
+    module TakeColOrRow =
+        let a = array2D [[1..10];[11..20]]
+        a.[0..,0] |> should equal [|1;11|]
+        a.[0,0..] |> should equal [|1..10|]
+
+    @"Array2D.length"
+    module Array2DLength =
+        let a = array2D [[1..10];[11..20]]
+        Array2D.length1 a |> should equal 2
+        Array2D.length2 a |> should equal 10
+
+    @"transpose, 転置"
+    module Transpose =
+        let transpose xa2 =
+            let rnum = Array2D.length1 xa2
+            let cnum = Array2D.length2 xa2
+            let newrow i = [|0..(rnum-1)|] |> Array.map (fun j -> xa2.[j,i])
+            [|0..(cnum-1)|] |> Array.map (fun i -> newrow i) |> array2D
+        let a = array2D [[1;2];[3;4]]
+        transpose a |> should equal (array2D [[1;3];[2;4]])
 
 module Char =
     @"https://docs.microsoft.com/ja-jp/dotnet/api/system.char.islower?view=net-6.0"
@@ -1542,7 +1588,7 @@ module String =
     [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
     [|'a'..'e'|] |> System.String |> should equal "abcde"
 
-    [ 1; 2; 3; 4; 5 ]
+    [1..5]
     |> List.map string
     |> String.concat " "
     |> should equal "1 2 3 4 5"
