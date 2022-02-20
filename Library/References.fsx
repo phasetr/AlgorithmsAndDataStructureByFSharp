@@ -57,46 +57,43 @@ module Array =
     filterd map, Haskell mapMaybe
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose
     https://stackoverflow.com/questions/55674656/how-to-combine-filter-and-mapping-in-haskell"
-    Array.choose
-        (fun elem ->
-            if elem % 2 = 0 then Some(float (elem * elem - 1))
-            else None)
-        [| 1 .. 10 |]
-    |> should equal [|3.0; 15.0; 35.0; 63.0; 99.0|]
+    module Choose =
+        Array.choose
+            (fun elem ->
+                if elem % 2 = 0 then Some(float (elem * elem - 1))
+                else None)
+            [| 1 .. 10 |]
+        |> should equal [|3.0; 15.0; 35.0; 63.0; 99.0|]
 
-    [|Some 1;None;Some 2|] |> Array.choose id |> should equal [|1;2|]
-    [|1;2;3|] |> Array.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal [|2|]
+        [|Some 1;None;Some 2|] |> Array.choose id |> should equal [|1;2|]
+        [|1;2;3|] |> Array.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal [|2|]
 
-    [|(1,20);(2,30);(1,40);(2,50)|]
-    |> Array.choose (fun (i,v) -> if i = 1 then Some v else None)
-    |> should equal [|20;40|]
+        [|(1,20);(2,30);(1,40);(2,50)|]
+        |> Array.choose (fun (i,v) -> if i = 1 then Some v else None)
+        |> should equal [|20;40|]
 
-    module ChunkBySize =
-        // Array.chunkBySize
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#chunkBySize
-        // 一次元配列の要素を指定された数ごとに区切ったジャグ配列 (配列の配列) を得る。
-        // 要素数に正の整数を指定しないと System.ArgumentException が起きる。
-        Array.chunkBySize 3 [| 0 .. 7 |] // [|[|0; 1; 2|]; [|3; 4; 5|]; [|6; 7|]|] : int [] []
-        //Array.chunkBySize 0 [| 0 .. 7 |] // 例外発生「System.ArgumentException: 入力は正である必要があります。」
-        Array.chunkBySize<int> 3 [| 0 .. 7 |] // [||] : int [] []
+    @"Array.chunkBySize
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#chunkBySize
+    一次元配列の要素を指定された数ごとに区切ったジャグ配列 (配列の配列) を得る。
+    要素数に正の整数を指定しないと System.ArgumentException が起きる。"
+    Array.chunkBySize 3 [|0..7|] |> should equal [|[|0;1;2|];[|3;4;5|];[|6;7|]|]
+    //Array.chunkBySize 0 [| 0 .. 7 |] // 例外発生「System.ArgumentException: 入力は正である必要があります。」
 
-    module Collect =
-        // Array.collect
-        // 配列の各要素に関数を当て、最後に flat 化する
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#collect
-        Array.collect (fun elem -> [|0..elem|]) [|1;5;10|]
-        |> printfn "%A" // [|0; 1; 0; 1; 2; 3; 4; 5; 0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10|]
+    @"Array.collect
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#collect
+    配列の各要素に関数を当て、最後に flat 化する"
+    Array.collect (fun elem -> [|0..elem|]) [|1;5;10|]
+    |> should equal [|0;1;0;1;2;3;4;5;0;1;2;3;4;5;6;7;8;9;10|]
 
+    @"Array.compareWith
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#compareWith"
     module CompareWith =
-        // Array.compareWith
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#compareWith
         let compare elem1 elem2 =
             if elem1 > elem2 then 1
             elif elem1 < elem2 then -1
             else 0
-
-        Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 4 |] // -1
-        Array.compareWith compare [| 1 .. 3 |] [| 1; 2; 3 |] // 0
+        Array.compareWith compare [|1..3|] [|1;2;4|] |> should equal -1
+        Array.compareWith compare [|1..3|] [|1;2;3|] |> should equal  0
 
     @"Array.create
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#create"
@@ -113,7 +110,8 @@ module Array =
     Array.distinctBy (fun n -> n % 2) [|0..3|] |> should equal [|0; 1|]
     Array.distinctBy<int, bool> (fun _ -> true) [||] |> should equal  [||]
 
-    @"Array.dropWhile"
+    @"Array.dropWhile
+    F#ではArray.skipWhileとして実装されているのでそちらを見ること."
     let rec dropWhile p (xs: array<'a>) =
         match xs with
         | [||] -> [||]
@@ -122,10 +120,9 @@ module Array =
             else xs
     dropWhile (fun x -> x < 3) [|0..5|] |> should equal [|3;4;5|]
 
-    module Empty =
-        // Array.empty
-        // 空の配列を生成する
-        Array.empty |> printfn "%A" // 'a []
+    @"Array.empty
+    空の配列を生成する."
+    Array.empty |> should equal [||]
 
     module ExactlyOne =
         // Array.exactlyOne
@@ -255,7 +252,7 @@ module Array =
         // Array.isEmpty
         // 配列の空判定
         Array.empty |> Array.isEmpty // true
-        [| 1 |] |> Array.isEmpty // false
+        [|1|] |> Array.isEmpty // false
 
     module Item =
         // Array.item
@@ -1568,6 +1565,9 @@ module Sequence =
 
 module String =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
+
+    @"文字列結合"
+    "abc" + "def" |> should equal "abcdef"
 
     @"文字列を一文字ずつ切り出して数値化する"
     Seq.map (string >> int) "0123" |> should equal [0..3]
