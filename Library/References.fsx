@@ -2016,6 +2016,12 @@ module Math =
     max [1;2;3] [1;2;4] |> should equal [1;2;4]
     max "zoo" "alpha" |> should equal "zoo"
 
+    @"min
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#min"
+    min 1 2 |> should equal 1
+    min [1;2;3] [1;2;4] |> should equal [1;2;3]
+    min "zoo" "alpha" |> should equal "alpha"
+
     @"剰余, 余り, mod"
     10 % 2 |> should equal 0
     10 % 7 |> should equal 3
