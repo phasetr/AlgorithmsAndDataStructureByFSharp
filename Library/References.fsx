@@ -760,8 +760,11 @@ module List =
     [1..3] |> should equal [1;2;3]
     [3..-1..0] |> should equal [3;2;1;0]
 
+    @"リスト内包表記: 特にifで条件をつける"
+    [for n in [1..10] do if n%2=0 then yield n] |> should equal [2..2..10]
+
     @"List.allPairs
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#allPairs"
+    https://fsharp.git  ihub.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#allPairs"
     List.allPairs [1;2] [3;4] |> should equal [(1,3);(1,4);(2,3);(2,4)]
     module AllPairs =
         let people = ["Kirk"; "Spock"; "McCoy"]
@@ -1016,6 +1019,11 @@ module List =
     span ((>) 3) [1; 2; 3; 4; 1; 2; 3; 4] |> should equal ([1; 2], [3; 4; 1; 2; 3; 4])
     span ((>) 9) [1; 2; 3] |> should equal ([1; 2; 3], List.empty<int>)
     span ((>) 0) [1; 2; 3] |> should equal (List.empty<int>, [1; 2; 3])
+
+    @"List.splitAt, Haskellと同じ.
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#splitAt
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:splitAt"
+    List.splitAt 3 [8;4;3;1;6;1] |> should equal ([8;4;3], [1;6;1])
 
     @"String to List, 文字列をリストに変換"
     Seq.toList "abc" |> should equal ['a';'b';'c']
@@ -2379,7 +2387,7 @@ module Set =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#union"
     Set.union (set [1;2;3]) (set [3;4;5]) |> should equal (set [1..5])
 
-module Type =
+module TypeSample =
     module Sample1 =
         type elem (id, name) =
             member this.id = id
