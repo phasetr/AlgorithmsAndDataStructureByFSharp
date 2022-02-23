@@ -447,6 +447,19 @@ module Array =
         // Array.scan (+) 1 [2; 3; 4] == [1; 1 + 2; (1 + 2) + 3; ((1 + 2) + 3) + 4]
         Array.scan (+) 1 [| 2 .. 4 |] // [|1; 3; 6; 10|]
 
+    @"Array.set, もとの配列を書き換える破壊的な関数
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#set"
+    module Set =
+        let inputs = [|"a";"b";"c"|]
+        Array.set inputs 1 "B"
+        inputs |> should equal [|"a";"B";"c"|]
+
+        @"初期化した配列からfoldで配列を更新する"
+        [|1..5|] |> Array.fold (fun a i ->
+            Array.set a (i-1) (i*i)
+            a) (Array.create 10 -1)
+        |> should equal [|1;4;9;16;25;-1;-1;-1;-1;-1|]
+
     module Singleton =
         // Array.singleton
         // 要素を 1 つだけ持つ配列を得る.
@@ -1431,6 +1444,9 @@ module Sequence =
 
     @"Seq.minBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#minBy"
+    module MinBy =
+        let inputs =
+        ["aaa";"b";"cccc"] |> Seq.minBy (fun s -> s.Length) |> should equal "b"
 
     @"Seq.ofArray
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#ofArray"
@@ -1913,7 +1929,7 @@ module Math =
     @"factorial, 階乗"
     module Factorial =
         @"非正の数に対して1を返す: 状況に応じて修正しよう."
-        // 
+        //
         let fact n =
             let rec f acc n =
                 if n <= 0L then 1L
@@ -2053,6 +2069,20 @@ module Math =
         let checkOverflowGood a b n = a > (n / b)
         checkOverflowGood System.Int32.MaxValue 2 System.Int32.MaxValue
         |> should equal true
+
+    @"log, 自然対数
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#log"
+    module Log =
+        let logBase baseNumber value = (log value) / (log baseNumber)
+        logBase 2.0 32.0 |> should equal 5.0
+        logBase 10.0 1000.0 |> should equal 2.9999999999999996
+
+    @"log10, 常用対数
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#log10"
+    log10 1000.0 |> should equal 3.0
+    log10 100000.0 |> should equal 5.0
+    log10 0.0001 |> should equal -4.0
+    log10 -20.0 |> should equal nan
 
     @"max
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#max"
