@@ -95,10 +95,27 @@ module Array =
         Array.compareWith compare [|1..3|] [|1;2;4|] |> should equal -1
         Array.compareWith compare [|1..3|] [|1;2;3|] |> should equal  0
 
+    @"Array.countBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#countBy"
+    module CountBy =
+        type Foo = { Bar: string }
+        let inputs = [| {Bar = "a"}; {Bar = "b"}; {Bar = "a"} |]
+        inputs |> Array.countBy (fun foo -> foo.Bar) |> should equal [|("a",2);("b",1)|]
+
     @"Array.create
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#create"
     Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
     Array.create 4 0 |> should equal [|0;0;0;0|]
+
+    @"Array.delete, あるk番目の要素だけ取り除く"
+    module Delete =
+        let delete k xa = Array.append (Array.take k xa) (Array.skip (k+1) xa)
+        let xa = [|0..4|]
+        delete 0 xa |> should equal [|1;2;3;4|]
+        delete 1 xa |> should equal [|0;2;3;4|]
+        delete 2 xa |> should equal [|0;1;3;4|]
+        delete 3 xa |> should equal [|0;1;2;4|]
+        delete 4 xa |> should equal [|0;1;2;3|]
 
     @"Array.distinct 一意化, unique
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#distinct"
@@ -1884,14 +1901,33 @@ module Math =
         let ys = [|30; 20; 10; 40; 120|]
         xs |> Array.map oneceil |> should equal ys
 
+    @"compare, Generic comparison
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#compare"
+    compare 1 2 |> should equal -1
+    compare [1;2;3] [1;2;4] |> should equal -1
+    compare 2 2 |> should equal 0
+    compare [1;2;3] [1;2;3] |> should equal 0
+    compare 2 1 |> should equal 1
+    compare [1;2;4] [1;2;3] |> should equal 1
+
     @"factorial, 階乗"
     module Factorial =
-        let rec fact acc n =
-            if n = 0L then 0L
-            elif n = 1L then acc
-            else fact (acc*n) (n-1L)
-        let fact1 = fact 1L
-        [1L..5L] |> List.map fact1 |> should equal [1L;2L;6L;24L;120L]
+        @"非正の数に対して1を返す: 状況に応じて修正しよう."
+        // 
+        let fact n =
+            let rec f acc n =
+                if n <= 0L then 1L
+                elif n = 1L then acc
+                else f (acc*n) (n-1L)
+            f 1L n
+        [-1L..5L] |> List.map fact |> should equal [1L;1L;1L;2L;6L;24L;120L]
+
+        @"comb, combination, 組み合わせ
+        n <= kで1を返すようにした"
+        let comb n k = if n<=k then 1L else (fact n) / ((fact k) * (fact (n-k)))
+        comb 4L 2L |> should equal 6L
+        comb 2 2 |> should equal 1
+        comb 1 2 |> should equal 1
 
     @"Fibonacci sequence, フィボナッチ数列"
     module Fib =
