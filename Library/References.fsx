@@ -1945,6 +1945,9 @@ module Math =
         comb 2 2 |> should equal 1
         comb 1 2 |> should equal 1
 
+        @"homcomb, homogeneous combination, 重複組み合わせ"
+        let homcomb n k = comb (n+k-1L) k
+
     @"Fibonacci sequence, フィボナッチ数列"
     module Fib =
         @"メモ化していない重いフィボナッチ"
@@ -2292,7 +2295,8 @@ module Math =
     round 1.4  |> should equal 1.0
     round 1.5  |> should equal 2.0
 
-    @"sign, 符号"
+    @"sign, 符号
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#sign"
     sign -2 |> should equal -1
     sign -1 |> should equal -1
     sign 0  |> should equal 0
