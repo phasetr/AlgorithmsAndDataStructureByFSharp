@@ -320,19 +320,20 @@ module Array =
     [|1..4|] |> Array.map string |> should equal [|"1";"2";"3";"4"|]
     [|1..4|] |> Array.map (fun x -> (x, x)) |> should equal [|(1,1);(2,2);(3,3);(4,4)|]
 
-    module Map2 =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.map2%5b't1,'t2,'u%5d-function-%5bfsharp%5d
-        let array1 = [| 1; 2; 3 |]
-        let array2 = [| 4; 5; 6 |]
-        Array.map2 (+) array1 array2 |> printfn "%A" // [|5; 7; 9|]
+    @"Array.map2, Haskell zipWith
+    Haskellは要素数が違うリストを食わせると少ない方に合わせてくれるが,
+    F#ではエラーになる.
+    ただしSeq.map2を使えばHaskellと同じ挙動になるので,
+    必要に応じてSeq.map2を使おう.
+    https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.map2%5b't1,'t2,'u%5d-function-%5bfsharp%5d"
+    Array.map2 (+) [|1..3|] [|4..6|] |> should equal [|5;7;9|]
 
-    module Map3 =
-        // Array.map3
-        // 同じ数の要素を持つ 3 つの配列のそれぞれから順次取り出した要素を引数とする関数を実行し,
-        // その結果を要素とする配列を得る.
-        // それぞれの配列の要素の型が違っていてもいいが,
-        // 3 つの配列の要素の数がどれか 1 つでも違っていると System.ArgumentException.
-        Array.map3 (fun x y z -> (x, y, z)) [| 0 .. 2 |] [| 'a' .. 'c' |] [| '$' .. '&' |] // [|(0, 'a', '$'); (1, 'b', '%'); (2, 'c', '&')|]
+    @"Array.map3
+    同じ数の要素を持つ 3 つの配列のそれぞれから順次取り出した要素を引数とする関数を実行し,
+    その結果を要素とする配列を得る.
+    それぞれの配列の要素の型が違っていてもいいが,
+    3つの配列の要素の数がどれか 1 つでも違っていると System.ArgumentException."
+    Array.map3 (fun x y z -> (x, y, z)) [|0..2|] [|'a'..'c'|] [|'$'..'&'|] |> should equal [|(0,'a','$');(1,'b','%');(2,'c','&')|]
     //Array.map3 (fun x y z -> (x, y, z)) [|0..2|] [|'a'..'d'|] [|'$'..'&'|] // 例外発生「 System.ArgumentException: 配列の長さが異なります」.
 
     module MapFold =
