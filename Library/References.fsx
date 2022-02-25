@@ -165,6 +165,12 @@ module Array =
     [|1;2;3;4;5|] |> Array.exists (fun elm -> elm % 4 = 0) |> should equal true
     [|1;2;3;4;5|] |> Array.exists (fun elm -> elm % 6 = 0) |> should equal false
 
+    "@Array.find
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#find"
+    [|1..3|] |> Array.find (fun elm -> elm % 2 = 0) |> should equal 2
+    //[|1..3|] |> Array.find (fun elm -> elm % 6 = 0) // ERROR!
+    [|1..3|] |> Array.tryFind (fun elm -> elm % 6 = 0) |> should equal None
+
     module FindBack =
         // Array.findBack
         // 配列の要素を引数にして関数を順次実行し、その結果 (bool型) が最初に true になった要素を得る。
@@ -174,6 +180,19 @@ module Array =
         //Array.findBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「System.Collections.Generic.KeyNotFoundException」
         Array.tryFindBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 3
         Array.find (fun n -> n % 2 = 1) [| 1 .. 3 |] // 1
+
+    @"Array.findIndex
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#findIndex"
+    [|1..5|] |> Array.findIndex ((=) 2) |> should equal 1
+
+    module FindIndexBack =
+        // Array.findBack の結果がある要素の位置を得る.
+        // 要素が見つからないときは System.Collections.Generic.KeyNotFoundException.
+        // 結果が option になる Array.tryFindIndexBack や, 配列の要素を先頭から判定していく Array.findIndex もある.
+        Array.findIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // 2
+        //Array.findIndexBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
+        Array.tryFindIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 2
+        Array.findIndex (fun n -> n % 2 = 1) [| 1 .. 3 |] // 0
 
     @"Array.forall
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#forall"
@@ -190,10 +209,6 @@ module Array =
         let items1 = [|2017;1;1|]
         let items2 = [|2019;19;8|]
         (items1, items2) ||> Array.forall2 (=) |> should equal false
-
-    @"Array.indexed
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#indexed"
-    [|"a";"b";"c"|] |> Array.indexed |> should equal [|(0,"a");(1,"b");(2,"c")|]
 
     module FindIndexBack =
         // Array.findBack の結果がある要素の位置を得る.
