@@ -497,7 +497,6 @@ module Array =
         // 関数の戻り値が false となる位置までの要素をなくした配列を得る.
         // 逆にその位置までの要素を得られる Array.takeWhile もある.
         Array.skipWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [| 5; 4; 1 |]
-
         Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
 
     module SortBy =
