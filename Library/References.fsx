@@ -1873,13 +1873,49 @@ module Struct =
     let coupon2 = {B=2; Discount=3}
 
 module Map =
-    // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html
-    let sample = Map [ (1, "a"); (2, "b") ]
-    sample |> Map.find 1 |> should equal "a"
-    sample |> Map.find 2 |> should equal "b"
-    //sample |> Map.find 3 // Error
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html"
 
+    @"Map.add
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#add"
+    module Add =
+        let input = Map [ (1, "a"); (2, "b") ]
+        input |> Map.add 3 "c" |> should equal (Map [(1, "a"); (2, "b"); (3, "c")])
+        input |> Map.add 2 "aa"  |> should equal (Map [(1, "a"); (2, "aa")])
+
+    @"Map.change
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#change"
+    module Change =
+        let input = Map [ (1, "a"); (2, "b") ]
+        input |> Map.change 1 (fun x ->
+            match x with
+            | Some s -> Some (s + "z")
+            | None -> None) |> should equal (Map [(1, "az"); (2, "b")])
+
+    @"Map.containsKey
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#containsKey"
+    module ContainsKey =
+        let sample = Map [ (1, "a"); (2, "b") ]
+        sample |> Map.containsKey 1 |> should equal true
+        sample |> Map.containsKey 3 |> should equal false
+
+    @"Map.empty
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#empty"
     Map.empty<int, string> |> Map.isEmpty |> should equal true
+
+    @"Map.find
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#find"
+    module Find =
+        let sample = Map [ (1, "a"); (2, "b") ]
+        sample |> Map.find 1 |> should equal "a"
+        sample |> Map.find 2 |> should equal "b"
+        //sample |> Map.find 3 // Error
+
+    @"Map.forall
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#forall"
+    module Forall =
+    let sample = Map [ (1, "a"); (2, "b") ]
+    sample |> Map.forall (fun n s -> n >= s.Length) |> should equal true
+    sample |> Map.forall (fun n s -> n = s.Length) |> should equal false
 
 module Math =
     @"Literal Types: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals"
