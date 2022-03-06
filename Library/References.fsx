@@ -1943,13 +1943,24 @@ module Math =
         let myabsfloat x = if x > 0.0 then x else -x
         myabsfloat -1.0 |> should equal 1.0
 
-    @"** or power for integers
+    @"** or power for int
     a^b = pown a b"
     pown 2 3 |> should equal 8
     pown 3 2 |> should equal 9
 
+    @"2のべき乗 for int64, pow2L n = 2^n"
+    let pow2L n = 1L <<< n
+    pow2L 50 |> should equal 1125899906842624L
+
     @"** or power for floating numbers"
     2.0 ** 3.0 |> should equal 8.0
+
+    @"power for bigint"
+    let powI (x:bigint) y =
+        let rec f y acc = if y = 0 then acc else f (y-1) (x*acc)
+        f y 1I
+    powI 2I 20 |> should equal 1048576I
+    powI 2I 50 |> should equal 1125899906842624I
 
     @"absolute value"
     abs 10 |> should equal 10
