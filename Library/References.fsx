@@ -1919,6 +1919,18 @@ module Map =
 
 module Math =
     @"Literal Types: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals"
+    @"1, 0x1, 0o1, 0b1,
+    1l (int),
+    1u (uint32),
+    1L (int64),
+    1UL (uint64),
+    1s (int16),
+    1y (sbyte),
+    1uy (byte),
+    1.0 (float),
+    1.0f (float32),
+    1.0m (decimal),
+    1I (BigInteger)"
     @"int64 arithmetic"
     1L+1L |> should equal 2L
     @"float arithmetic"
@@ -2472,12 +2484,15 @@ module Option =
     Some "Forty-two" |> Option.bind tryParse |> should equal None
 
 module Print =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-printfmodule.html"
     @"%A: どんな型でもとにかく出力"
     [1;2;3;4] |> printfn "%A"
     2 |> printfn "%A"
 
     2L |> printfn "%A" // 2LのLまで出力されてしまう
     2L |> printfn "%d" // Lは出力されない
+
+    2.0 |> printfn "%f" // floatを出力
 
     "str" |> printfn "%A" // クオートつきで出力
     "str" |> printfn "%s" // クオートなしで出力
