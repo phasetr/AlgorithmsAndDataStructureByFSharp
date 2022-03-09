@@ -9,17 +9,17 @@ module Array =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html"
 
     @"accessor or slice"
-    let a = [| 0 .. 4 |]
+    let a = [|0..4|]
     a.[0] |> should equal 0
-    a.[0..2] |> should equal [| 0; 1; 2 |]
-    a.[1..] |> should equal [| 1; 2; 3; 4 |]
-    a.[..3] |> should equal [| 0; 1; 2; 3 |]
+    a.[0..2] |> should equal [|0;1;2|]
+    a.[1..] |> should equal [|1;2;3;4|]
+    a.[..3] |> should equal [|0;1;2;3|]
 
     @"Haskell accumArray"
     let accumArray: ('e -> 'v -> 'e) -> 'e -> ('i * 'i) -> list<'i * 'v> -> array<'i*'e> = fun f e (l,r) ivs ->
         [for j in [l..r] do (j, List.fold f e [for (i,v) in ivs do if i=j then yield v])]
         |> Array.ofList
-    accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1, 60); (2, 80); (3, 0)|]
+    accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1, 60);(2, 80);(3, 0)|]
 
     @"Array.allPairs
     配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
@@ -33,8 +33,8 @@ module Array =
     @"Array.append
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#append
     配列の連結"
-    Array.append [| 0 .. 5 |] [| 10 .. 15 |]
-    |> should equal [|0; 1; 2; 3; 4; 5; 10; 11; 12; 13; 14; 15|]
+    Array.append [|0..5|] [|10..15|]
+    |> should equal [|0;1;2;3;4;5;10;11;12;13;14;15|]
 
     @"Array.average
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#average
@@ -432,13 +432,13 @@ module Array =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#minBy"
     [|-10..10|] |> Array.minBy (fun x -> x*x-1) |> should equal 0
 
-    module Pairwise =
-        // Array.pairwise
-        // 隣り合う要素どうしをタプル収めた要素を持つ配列を得る.
-        // 配列の要素が 1 つ以下のときの戻り値は空の配列.
-        Array.pairwise [| 'a' .. 'd' |] // [|('a', 'b'); ('b', 'c'); ('c', 'd')|]
-        Array.pairwise [| 'a' |]
-        Array.pairwise<char> [||] // [||] : (char * char) []
+    @"Array.pairwise
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#pairwise
+    隣り合う要素どうしをタプル収めた要素を持つ配列を得る.
+    配列の要素が 1 つ以下のときの戻り値は空の配列."
+    Array.pairwise [|'a'..'d'|] |> should equal  [|('a','b');('b','c');('c','d')|]
+    Array.pairwise [|'a'|] |> should equal ([||] : (char * char) [])
+    Array.pairwise<char> [||] |> should equal ([||] : (char * char) [])
 
     module Partition =
         // Array.partition
