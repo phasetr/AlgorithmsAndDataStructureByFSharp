@@ -102,6 +102,11 @@ module Array =
         let inputs = [| {Bar = "a"}; {Bar = "b"}; {Bar = "a"} |]
         inputs |> Array.countBy (fun foo -> foo.Bar) |> should equal [|("a",2);("b",1)|]
 
+    @"Array.contains
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#contains"
+    [|1..2|] |> Array.contains 2 |> should equal true
+    [|1..2|] |> Array.contains 5 |> should equal false
+
     @"Array.create
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#create"
     Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
