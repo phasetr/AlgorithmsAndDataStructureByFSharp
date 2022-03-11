@@ -127,12 +127,14 @@ module Array =
     Array.distinct [|1;1;2;3|] |> should equal [|1; 2; 3|]
 
     @"Array.distinctBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#distinctBy
     配列の各要素を引数にして関数を実行した配列から重複をなくしたものを得る.
     要素のない空の配列でも例外は起きない"
     Array.distinctBy (fun n -> n % 2) [|0..3|] |> should equal [|0; 1|]
     Array.distinctBy<int, bool> (fun _ -> true) [||] |> should equal  [||]
 
     @"Array.dropWhile
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#skipWhile
     F#ではArray.skipWhileとして実装されているのでそちらを見ること."
     let rec dropWhile p (xs: array<'a>) =
         match xs with
@@ -143,32 +145,33 @@ module Array =
     dropWhile (fun x -> x < 3) [|0..5|] |> should equal [|3;4;5|]
 
     @"Array.empty
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#empty
     空の配列を生成する."
     Array.empty |> should equal [||]
 
-    module ExactlyOne =
-        // Array.exactlyOne
-        // 要素が1つだけの配列から要素を取り出す。
-        // 配列の要素が複数もしくは空のときは System.ArgumentException。
-        // Array.singleton は逆。
-        Array.exactlyOne [|3|]
-        //Array.exactlyOne [| 3; 2 |] // 例外発生「System.ArgumentException: 入力シーケンスに複数の要素が含まれています。」
-        //Array.exactlyOne<int> [||] // 例外発生「System.ArgumentException: 入力シーケンスが空でした。」
-        Array.singleton 3 // [|3|] (Array.exactlyOneとは逆)
+    @"Array.exactlyOne
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#exactlyOne
+    要素が1つだけの配列から要素を取り出す。
+    配列の要素が複数もしくは空のときは System.ArgumentException。
+    Array.singleton は逆。"
+    Array.exactlyOne [|3|] |> should equal 3
+    //Array.exactlyOne [| 3; 2 |] // 例外発生「System.ArgumentException: 入力シーケンスに複数の要素が含まれています。」
+    //Array.exactlyOne<int> [||] // 例外発生「System.ArgumentException: 入力シーケンスが空でした。」
+    Array.singleton 3 |> should equal [|3|] // (Array.exactlyOneとは逆)
 
-    module Except =
-        // Array.except
-        // 配列 2 の要素から配列 1 の要素を取り除いた配列を得る。
-        // 配列 1 は list, seq, set でもいい。
-        // どちらの配列が空でも例外は起きない。
-        Array.except [| 2; 1 |] [| 1 .. 5 |] // [|3; 4; 5|]  第 1 引数はlist, seq, setでも良い
-        Array.except<int> [||] [||] // [||] : int []
+    @"Array.except
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#except
+    配列 2 の要素から配列 1 の要素を取り除いた配列を得る。
+    配列 1 は list, seq, set でもいい。
+    どちらの配列が空でも例外は起きない。"
+    Array.except [|2;1|] [|1..5|] |> should equal [|3; 4; 5|]  // 第 1 引数はlist, seq, setでも良い
+    Array.except<int> [||] [||] |> should equal ([||] : int [])
 
     @"Array.exists
     対義語はforall
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#exists"
-    [|1;2;3;4;5|] |> Array.exists (fun elm -> elm % 4 = 0) |> should equal true
-    [|1;2;3;4;5|] |> Array.exists (fun elm -> elm % 6 = 0) |> should equal false
+    [|1..5|] |> Array.exists (fun elm -> elm % 4 = 0) |> should equal true
+    [|1..5|] |> Array.exists (fun elm -> elm % 6 = 0) |> should equal false
 
     "@Array.find
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#find"
@@ -176,6 +179,8 @@ module Array =
     //[|1..3|] |> Array.find (fun elm -> elm % 6 = 0) // ERROR!
     [|1..3|] |> Array.tryFind (fun elm -> elm % 6 = 0) |> should equal None
 
+    "@Array.findBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#findBack"
     module FindBack =
         // Array.findBack
         // 配列の要素を引数にして関数を順次実行し、その結果 (bool型) が最初に true になった要素を得る。
