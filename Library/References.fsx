@@ -1639,6 +1639,9 @@ module String =
     @"文字列結合"
     "abc" + "def" |> should equal "abcdef"
 
+    @"文字列の反転, reverse"
+    "abcde" |> Seq.toArray |> Array.rev |> System.String |> should equal"edcba"
+
     @"文字列を一文字ずつ切り出して数値化する"
     Seq.map (string >> int) "0123" |> should equal [0..3]
 
@@ -1752,13 +1755,6 @@ module String =
     文字列のくり返し."
     "Do it!" |> String.replicate 3
     |> should equal "Do it!Do it!Do it!"
-
-    @"reverse"
-    "abcde"
-    |> Seq.toArray
-    |> Array.rev
-    |> System.String
-    |> should equal"edcba"
 
     @"Split
     文字列を分割する「メソッド」"
