@@ -25,10 +25,8 @@ module Array =
     配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
     結果となる配列の長さが膨大になる可能性があるため引数の配列の長さに注意すること.
     引数の配列のどちらかが空のときは結果の配列も空になる."
-    Array.allPairs [| 'a'; 'b'; 'c' |] [| 1; 2 |]
-    |> should equal [|('a', 1); ('a', 2); ('b', 1); ('b', 2); ('c', 1); ('c', 2)|]
-    Array.allPairs<char, int> [| 'a'; 'b' |] [||]
-    |> should equal [||] //: (char * int) []
+    Array.allPairs [|'a'..'c'|] [|1..2|] |> should equal [|('a',1);('a',2);('b',1);('b',2);('c',1);('c',2)|]
+    Array.allPairs<char, int> [|'a';'b'|] [||] |> should equal [||] //: (char * int) []
 
     @"Array.append
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#append
@@ -233,7 +231,7 @@ module Array =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#fold"
     module Fold =
         type Charge = | In of int | Out of int
-        let inputs = [| In 1; Out 2; In 3 |]
+        let inputs = [|In 1;Out 2;In 3|]
         let f acc charge =
             match charge with
             | In i -> acc + i
@@ -792,6 +790,12 @@ module Array2D =
             [|0..(cnum-1)|] |> Array.map (fun i -> newrow i) |> array2D
         let a = array2D [[1;2];[3;4]]
         transpose a |> should equal (array2D [[1;3];[2;4]])
+
+module Bool =
+    @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/symbol-and-operator-reference/boolean-operators"
+
+    @"boolean not"
+    not true |> should equal false
 
 module Char =
     @"https://docs.microsoft.com/ja-jp/dotnet/api/system.char.islower?view=net-6.0"
@@ -1641,6 +1645,13 @@ module String =
     @"埋め込み文字列"
     let text = "TEXT"
     $"text: {text}" |> should equal "text: TEXT"
+
+    @"部分文字列の検索
+    https://www.dotnetperls.com/indexof-fs"
+    module Contains =
+        let words = "fish frog dog"
+        words.IndexOf("frog") |> should equal 5
+        words.IndexOf("bird") |> should equal -1
 
     @"String.collect
     mapと違って文字を文字列に変換する関数を使ってmapする
