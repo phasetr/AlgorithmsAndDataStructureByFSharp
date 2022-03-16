@@ -8,6 +8,7 @@
   - F# mono 10.2.3: 4023
   - Haskell GHC 7.10.3: 3014
   - Haskell GHC 8.8.3: 4027
+- [Test cases in contents](https://atcoder.jp/posts/20)
 - [AtCoder に登録したら次にやること ～ これだけ解けば十分闘える！過去問精選 10 問 ～](https://qiita.com/drken/items/fd4e5e3630d0f5859067)
   - [F# 編](https://qiita.com/kuuso1/items/606b75c172cafa1d07f6)
 - [C++: 解説放送で作ったライブラリ集](https://github.com/atcoder-live/library)

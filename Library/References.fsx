@@ -2513,6 +2513,26 @@ module Option =
     (Some ((None: int option))) |> Option.flatten |> should equal None
     (Some (Some 42)) |> Option.flatten |> should equal (Some 42)
 
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isNone"
+    None |> Option.isNone |> should equal true
+    Some 42 |> Option.isNone |> should equal  false
+
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isSome"
+    None |> Option.isSome |> should equal false
+    Some 42 |> Option.isSome |> should equal true
+
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#orElse"
+    ((None: int Option), None) ||> Option.orElse |> should equal None
+    (Some 99, None) ||> Option.orElse |> should equal (Some 99)
+    (None, Some 42) ||> Option.orElse |> should equal (Some 42)
+    (Some 99, Some 42) ||> Option.orElse |> should equal (Some 42)
+
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#orElseWith"
+    (None: int Option) |> Option.orElseWith (fun () -> None) |> should equal None
+    None |> Option.orElseWith (fun () -> (Some 99)) |> should equal (Some 99)
+    Some 42 |> Option.orElseWith (fun () -> None) |> should equal (Some 42)
+    Some 42 |> Option.orElseWith (fun () -> (Some 99)) |> should equal (Some 42)
+
     @"tryParse"
     let tryParse (input: string) =
         match System.Int32.TryParse input with
