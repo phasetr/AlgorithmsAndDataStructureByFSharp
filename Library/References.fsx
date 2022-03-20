@@ -1531,9 +1531,25 @@ module Sequence =
 
     @"Seq.scan
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#scan"
+    module Scan =
+        type Charge = | In of int | Out of int
+        let inputs = seq {In 1;Out 2;In 3}
+        (0, inputs) ||> Seq.scan (fun acc charge ->
+            match charge with
+                | In i -> acc + i
+                | Out o -> acc - o)
+        |> should equal [0;1;-1;2]
 
     @"Seq.scanBack
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#scanBack"
+    module ScanBack =
+        type Charge = | In of int | Out of int
+        let inputs = [In 1;Out 2;In 3]
+        (inputs, 0) ||> Seq.scanBack (fun charge acc ->
+            match charge with
+                | In i -> acc + i
+                | Out o -> acc - o)
+        |> should equal [2;1;3;0]
 
     @"Seq.singleton
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#singleton"

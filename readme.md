@@ -58,11 +58,15 @@ I know their names, but I do not read them thoroughly.
 - [docs.microsoft.com](https://docs.microsoft.com/en-us/dotnet/fsharp/)
   - [msdn, visual fsharp](https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/visual-fsharp)
 - [F# for fun and profit](https://fsharpforfunandprofit.com/)
+  - [Gitbook](https://swlaschin.gitbooks.io/fsharpforfunandprofit/content/)
 - [Wikibook: F# Programming](https://en.wikibooks.org/wiki/F_Sharp_Programming)
 - [Functional Programming Patterns](https://www.slideshare.net/ScottWlaschin/fp-patterns-ndc-london2014)
   - Descriptions on "Pattern: Chaining callbacks with continuation" from P.85 helps me very much.
   - `Monadic Bind`
 - [Russel, Essential Functional-First F#](https://leanpub.com/essential-fsharp)
+- コンピュテーション式
+  - [コンピュテーション式, docs.microsoft.com (in Japanese)](https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions)
+  - [詳説コンピュテーション式 (in Japanese)](https://bleis-tift.hatenablog.com/entry/computation-expression)
 
 ### Algorithms and data structures
 
