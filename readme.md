@@ -67,6 +67,7 @@ I know their names, but I do not read them thoroughly.
 - コンピュテーション式
   - [コンピュテーション式, docs.microsoft.com (in Japanese)](https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions)
   - [詳説コンピュテーション式 (in Japanese)](https://bleis-tift.hatenablog.com/entry/computation-expression)
+- [F# for Math series by @7shi (in Japanese)](https://qiita.com/7shi/items/2036e7a739c2a9e04025)
 
 ### Algorithms and data structures
 
