@@ -63,6 +63,7 @@ I know their names, but I do not read them thoroughly.
   - Descriptions on "Pattern: Chaining callbacks with continuation" from P.85 helps me very much.
   - `Monadic Bind`
 - [Russel, Essential Functional-First F#](https://leanpub.com/essential-fsharp)
+- [F# for Math series by @7shi (in Japanese)](https://qiita.com/7shi/items/2036e7a739c2a9e04025)
 
 ### Algorithms and data structures
 

@@ -802,6 +802,20 @@ module Char =
     System.Char.IsLower 'c' |> should equal true
     System.Char.IsLower 'C' |> should equal false
 
+module ComputationExpression =
+    @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions
+    expr { let! ... }
+    expr { do! ... }
+    expr { yield ... }
+    expr { yield! ... }
+    expr { return ... }
+    expr { return! ... }
+    expr { match! ... }"
+
+    @"yield
+    https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions#yield"
+    seq { for i in 1..10 -> i * i } |> should equal []
+
 module Dictionary =
     @"https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
 
