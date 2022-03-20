@@ -79,7 +79,7 @@ module Array =
 
     @"Array.collect
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#collect
-    配列の各要素に関数を当て、最後に flat 化する"
+    配列の各要素に関数を当て、最後にflat化する"
     Array.collect (fun elem -> [|0..elem|]) [|1;5;10|]
     |> should equal [|0;1;0;1;2;3;4;5;0;1;2;3;4;5;6;7;8;9;10|]
 
@@ -636,8 +636,7 @@ module Array =
             let cnum = Array.length xa.[0]
             let rowstr i = [|0..(rnum-1)|] |> Array.map (fun j -> xa.[j].[i])
             [|0..(cnum-1)|] |> Array.map (fun i -> rowstr i)
-        let a = [|[|1;2|];[|3;4|]|]
-        transpose a |> should equal [|[|1;3|];[|2;4|]|]
+        [|[|1;2|];[|3;4|]|] |> transpose |> should equal [|[|1;3|];[|2;4|]|]
 
     module Truncate =
         // Array.truncate
@@ -1941,6 +1940,14 @@ module Map =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#empty"
     Map.empty<int, string> |> Map.isEmpty |> should equal true
 
+    @"Map.fold
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#fold"
+    ("initial", Map [(1,"a");(2,"b")])
+    ||> Map.fold (fun state n s -> sprintf "%s %i %s" state n s)
+    |> should equal "initial 1 a 2 b"
+
+    Map.empty<int, string> |> Map.isEmpty |> should equal true
+
     @"Map.find
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#find"
     module Find =
@@ -1970,6 +1977,8 @@ module Math =
     1.0f (float32),
     1.0m (decimal),
     1I (BigInteger)"
+    @"bigint parse"
+    "1" |> bigint.Parse |> should equal 1I
     @"int64 arithmetic"
     1L+1L |> should equal 2L
     @"float arithmetic"
@@ -2124,11 +2133,8 @@ module Math =
     module GCD =
         module GCD1 =
             let gcd: int64 -> int64 -> int64 = fun x y ->
-                let rec locgcd x y =
-                    match y with
-                    | 0L -> x
-                    | _ -> locgcd y (x % y)
-                if x >= y then locgcd x y else locgcd y x
+                let rec frec x y = if y=0L then x else frec y (x%y)
+                if x >= y then frec x y else frec y x
             let lcm a b = a * b / (gcd a b)
 
             gcd 2L 4L |> should equal 2L
