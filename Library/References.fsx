@@ -31,8 +31,7 @@ module Array =
     @"Array.append
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#append
     配列の連結"
-    Array.append [|0..5|] [|10..15|]
-    |> should equal [|0;1;2;3;4;5;10;11;12;13;14;15|]
+    Array.append [|0..5|] [|10..15|] |> should equal [|0;1;2;3;4;5;10;11;12;13;14;15|]
 
     @"Array.average
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#average
@@ -40,13 +39,13 @@ module Array =
     To get the average of an array of integers,
     use Array.averageBy to convert to float.
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#averageBy"
-    Array.average [| 1.0 .. 10.0 |] |> should equal 5.5
-    Array.averageBy float [| 1 .. 10 |] |> should equal 5.5
+    Array.average [|1.0..10.0|] |> should equal 5.5
+    Array.averageBy float [|1..10|] |> should equal 5.5
 
     @"Array.blit, CopyTo, 1 つ目の配列の一部を 2 つ目の配列こコピーする
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#blit"
     // Copy 4 elements from index 3 of array1 to index 5 of array2.
-    let blit1 = [| 1 .. 10 |]
+    let blit1 = [|1..10|]
     let blit2: int [] = Array.zeroCreate 20
     Array.blit blit1 3 blit2 5 4
     blit2 |> should equal [|0; 0; 0; 0; 0; 4; 5; 6; 7; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]
@@ -60,7 +59,7 @@ module Array =
             (fun elem ->
                 if elem % 2 = 0 then Some(float (elem * elem - 1))
                 else None)
-            [| 1 .. 10 |]
+            [|1..10|]
         |> should equal [|3.0; 15.0; 35.0; 63.0; 99.0|]
 
         [|Some 1;None;Some 2|] |> Array.choose id |> should equal [|1;2|]
@@ -75,7 +74,7 @@ module Array =
     一次元配列の要素を指定された数ごとに区切ったジャグ配列 (配列の配列) を得る。
     要素数に正の整数を指定しないと System.ArgumentException が起きる。"
     Array.chunkBySize 3 [|0..7|] |> should equal [|[|0;1;2|];[|3;4;5|];[|6;7|]|]
-    //Array.chunkBySize 0 [| 0 .. 7 |] // 例外発生「System.ArgumentException: 入力は正である必要があります。」
+    //Array.chunkBySize 0 [|0..7|] // 例外発生「System.ArgumentException: 入力は正である必要があります。」
 
     @"Array.collect
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#collect
@@ -97,7 +96,7 @@ module Array =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#countBy"
     module CountBy =
         type Foo = { Bar: string }
-        let inputs = [| {Bar = "a"}; {Bar = "b"}; {Bar = "a"} |]
+        let inputs = [|{Bar = "a"}; {Bar = "b"}; {Bar = "a"}|]
         inputs |> Array.countBy (fun foo -> foo.Bar) |> should equal [|("a",2);("b",1)|]
 
     @"Array.contains
@@ -153,7 +152,7 @@ module Array =
     配列の要素が複数もしくは空のときは System.ArgumentException。
     Array.singleton は逆。"
     Array.exactlyOne [|3|] |> should equal 3
-    //Array.exactlyOne [| 3; 2 |] // 例外発生「System.ArgumentException: 入力シーケンスに複数の要素が含まれています。」
+    //Array.exactlyOne [|3; 2|] // 例外発生「System.ArgumentException: 入力シーケンスに複数の要素が含まれています。」
     //Array.exactlyOne<int> [||] // 例外発生「System.ArgumentException: 入力シーケンスが空でした。」
     Array.singleton 3 |> should equal [|3|] // (Array.exactlyOneとは逆)
 
@@ -178,29 +177,28 @@ module Array =
     [|1..3|] |> Array.tryFind (fun elm -> elm % 6 = 0) |> should equal None
 
     "@Array.findBack
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#findBack"
-    module FindBack =
-        // Array.findBack
-        // 配列の要素を引数にして関数を順次実行し、その結果 (bool型) が最初に true になった要素を得る。
-        // 要素が見つからないときは System.Collections.Generic.KeyNotFoundException。
-        // 結果が option になる Array.tryFindBack や、配列の要素を先頭から順次判定していく Array.find もある。
-        Array.findBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // 3
-        //Array.findBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「System.Collections.Generic.KeyNotFoundException」
-        Array.tryFindBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 3
-        Array.find (fun n -> n % 2 = 1) [| 1 .. 3 |] // 1
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#findBack
+    配列の要素を引数にして関数を順次実行し、その結果 (bool型) が最初に true になった要素を得る。
+    要素が見つからないときは System.Collections.Generic.KeyNotFoundException。
+    結果が option になる Array.tryFindBack や、配列の要素を先頭から順次判定していく Array.find もある。"
+    Array.findBack (fun n -> n % 2 = 1) [|1..3|] |> should equal 3
+    //Array.findBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「System.Collections.Generic.KeyNotFoundException」
+    Array.tryFindBack (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 3)
+    Array.find (fun n -> n % 2 = 1) [|1..3|] |> should equal 1
 
     @"Array.findIndex
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#findIndex"
     [|1..5|] |> Array.findIndex ((=) 2) |> should equal 1
 
-    module FindIndexBack =
-        // Array.findBack の結果がある要素の位置を得る.
-        // 要素が見つからないときは System.Collections.Generic.KeyNotFoundException.
-        // 結果が option になる Array.tryFindIndexBack や, 配列の要素を先頭から判定していく Array.findIndex もある.
-        Array.findIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // 2
-        //Array.findIndexBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
-        Array.tryFindIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 2
-        Array.findIndex (fun n -> n % 2 = 1) [| 1 .. 3 |] // 0
+    @"Array.findIndexBack
+    Array.findBackの結果がある要素の位置を得る.
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#findIndexBack
+    要素が見つからないときは System.Collections.Generic.KeyNotFoundException.
+    結果が option になる Array.tryFindIndexBack や, 配列の要素を先頭から判定していく Array.findIndex もある."
+    Array.findIndexBack (fun n -> n % 2 = 1) [|1..3|] |> should equal  2
+    //Array.findIndexBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
+    Array.tryFindIndexBack (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 2)
+    Array.findIndex (fun n -> n % 2 = 1) [|1..3|] |> should equal 0
 
     @"Array.forall
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#forall"
@@ -209,23 +207,8 @@ module Array =
 
     @"Array.forall2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#forall2"
-    module ForAll2 =
-        let inputs1 = [|1..3|]
-        let inputs2 = [|1..3|]
-        (inputs1, inputs2) ||> Array.forall2 (=) |> should equal true
-
-        let items1 = [|2017;1;1|]
-        let items2 = [|2019;19;8|]
-        (items1, items2) ||> Array.forall2 (=) |> should equal false
-
-    module FindIndexBack =
-        // Array.findBack の結果がある要素の位置を得る.
-        // 要素が見つからないときは System.Collections.Generic.KeyNotFoundException.
-        // 結果が option になる Array.tryFindIndexBack や, 配列の要素を先頭から判定していく Array.findIndex もある.
-        Array.findIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // 2
-        //Array.findIndexBack (fun n -> n % 2 = 1) [|0|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
-        Array.tryFindIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 2
-        Array.findIndex (fun n -> n % 2 = 1) [| 1 .. 3 |] // 0
+    ([|1..3|], [|1..3|]) ||> Array.forall2 (=) |> should equal true
+    ([|2017;1;1|], [|2019;19;8|]) ||> Array.forall2 (=) |> should equal false
 
     @"Array.fold
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#fold"
@@ -242,8 +225,8 @@ module Array =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#fold2"
     module Fold2 =
         type CoinToss = Head | Tails
-        let data1 = [| Tails; Head; Tails |]
-        let data2 = [| Tails; Head; Head |]
+        let data1 = [|Tails; Head; Tails|]
+        let data2 = [|Tails; Head; Head|]
         let f acc a b =
             match (a, b) with
                 | Head, Head -> acc + 1
@@ -252,28 +235,30 @@ module Array =
         (0, data1, data2) |||> Array.fold2 f |> should equal 1
 
     @"Array.groupBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#groupBy
     配列の要素を引数とする関数を順次実行し, その結果ごとに要素をグループ分けする.
     結果の配列の要素は (関数の結果, [|要素, ...|]).
     引数の配列が空でも例外は起きない."
-    Array.groupBy (fun n -> n % 3) [| 0 .. 7 |]
+    Array.groupBy (fun n -> n % 3) [|0..7|]
     |> should equal [|(0, [|0; 3; 6|]); (1, [|1; 4; 7|]); (2, [|2; 5|])|]
     Array.groupBy (fun n -> n % 3) [||] |> should equal [||]
 
-    module Head =
-        // Array.head
-        // 配列の先頭の要素を得る.
-        // 配列要素が空のときは System.ArgumentException.
-        // 結果が option になる Array.tryHead もある.
-        // 配列の先頭の要素だけをなくした配列を得る Array.tail や,
-        // 配列の末尾の要素を得る Array.last や Array.tryLast もある.
-        Array.head [| 1 .. 3 |] // 1
-        //Array.head<int> [||]    // 例外発生「 System.ArgumentException: 入力配列が空でした」.
-        Array.tryHead [| 1 .. 3 |] // Some 1
-        Array.tryHead<int> [||] // None
-        Array.tail [| 1 .. 3 |] // [| 2; 3 |]
-        Array.last [| 1 .. 3 |] // 3
-        Array.tryLast [| 1 .. 3 |] // Some 3
-        Array.tryLast<int> [||] // None
+    @"Array.head
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#groupBy
+    Array.head
+    配列の先頭の要素を得る.
+    配列要素が空のときは System.ArgumentException.
+    結果が option になる Array.tryHead もある.
+    配列の先頭の要素だけをなくした配列を得る Array.tail や,
+    配列の末尾の要素を得る Array.last や Array.tryLast もある."
+    Array.head [|1..3|] |> should equal 1
+    //Array.head<int> [||]    // 例外発生「 System.ArgumentException: 入力配列が空でした」.
+    Array.tryHead [|1..3|] |> should equal (Some 1)
+    Array.tryHead<int> [||] |> should equal None
+    Array.tail [|1..3|] |> should equal  [|2;3|]
+    Array.last [|1..3|] |> should equal 3
+    Array.tryLast [|1..3|] |> should equal (Some 3)
+    Array.tryLast<int> [||] |> should equal None
 
     @"Array.indexed
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#indexed
@@ -282,10 +267,11 @@ module Array =
     Array.indexed [|'a'..'c'|] |> should equal [|(0,'a');(1,'b');(2,'c')|]
     Array.indexed<char> [||] |> should equal [||]
 
-    module Init =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.init%5b't%5d-function-%5bfsharp%5d
-        Array.init 10 (fun i -> i * i)
-        |> should equal [| 0; 1; 4; 9; 16; 25; 36; 49; 64; 81 |]
+    @"Array.init
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#init
+    https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.init%5b't%5d-function-%5bfsharp%5d"
+    Array.init 10 (fun i -> i * i)
+    |> should equal [|0;1;4;9;16;25;36;49;64;81|]
 
     module IsEmpty =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.isempty%5b't%5d-function-%5bfsharp%5d
@@ -299,14 +285,14 @@ module Array =
         // 配列から指定した位置の要素を得る.
         // 指定した位置に要素が存在しなければ System.IndexOutOfRangeException.
         // 結果が option になる Array.tryItem もある.
-        Array.item 2 [| 'a' .. 'c' |] // 'c'
+        Array.item 2 [|'a'..'c'|] // 'c'
         //Array.item<int> 1 [||]  // 例外発生「 System.IndexOutOfRangeException: インデックスが配列の境界外です」.
-        Array.tryItem 2 [| 'a' .. 'c' |] // Some 'c'
+        Array.tryItem 2 [|'a'..'c'|] // Some 'c'
         Array.tryItem<int> 0 [||] // None
 
     module Iter =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter%5b't%5d-function-%5bfsharp%5d
-        [| for i in 1 .. 5 -> (i, i * i) |]
+        [|for i in 1..5 -> (i, i * i)|]
         |> Array.iter (fun (a, b) -> printf "(%d, %d) " a b) // (1, 1) (2, 4) (3, 9) (4, 16) (5, 25)
 
     @"Array.iter2
@@ -315,13 +301,13 @@ module Array =
 
     module Iteri =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iteri%5b't%5d-function-%5bfsharp%5d
-        let array1 = [| 1; 2; 3 |]
+        let array1 = [|1;2;3|]
         Array.iteri (fun i x -> i * x |> printf "%d ") array1 // 0 2 6
 
     module Iteri2 =
         // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iteri2%5b't1,'t2%5d-function-%5bfsharp%5d
-        let array1 = [| 1; 2; 3 |]
-        let array2 = [| 4; 5; 6 |]
+        let array1 = [|1;2;3|]
+        let array2 = [|4;5;6|]
         Array.iteri2 (fun i x y -> i * x * y |> printf "%d ") array1 array2 // 0 10 36
 
     module Last =
@@ -330,12 +316,12 @@ module Array =
         // 配列の要素が空のときは System.ArgumentException.
         // 結果が option になる Array.tryLast もある.
         // 配列の先頭の要素を得られる Array.head や Array.tryHead もある.
-        Array.last [| 1 .. 3 |] // 3
+        Array.last [|1..3|] // 3
         //Array.last<int> [||]  // 例外発生「 System.ArgumentException: 入力配列が空でした」.
-        Array.tryLast [| 1 .. 3 |] // Some 3
+        Array.tryLast [|1..3|] // Some 3
         Array.tryLast<int> [||] // None
-        Array.head [| 1 .. 3 |] // 1
-        Array.tryHead [| 1 .. 3 |] // Some 1
+        Array.head [|1..3|] // 1
+        Array.tryHead [|1..3|] // Some 1
 
     @"Array.map
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#map"
@@ -371,7 +357,7 @@ module Array =
                 printfn "x = %2d, y = %1d, x * y = %3d" x y (x * y)
                 (x, x * y))
             1
-            [| 2 .. 5 |] //([|1; 2; 6; 24|], 120)
+            [|2..5|] //([|1;2;6;24|], 120)
         (* 途中経過 *)
         //x =  1, y = 2, x * y =   2
         //x =  2, y = 3, x * y =   6
@@ -379,7 +365,7 @@ module Array =
         //x = 24, y = 5, x * y = 120
 
         // 比較用
-        Array.mapFoldBack (fun x y -> (x, x * y)) [| 2 .. 5 |] 1 // ([|2; 3; 4; 5|], 120)
+        Array.mapFoldBack (fun x y -> (x, x * y)) [|2..5|] 1 // ([|2;3;4;5|], 120)
 
     module MapFoldBack =
         // Array.mapFoldBack
@@ -394,47 +380,35 @@ module Array =
             (fun x y ->
                 printfn "x = %1d, y = %2d, x * y = %3d" x y (x * y)
                 (y, x * y))
-            [| 2 .. 5 |]
-            1 // ([| 60; 20; 5; 1 |], 120)
+            [|2..5|]
+            1 // ([|60;20;5;1|], 120)
     (* 途中経過 *)
     //x = 5, y =  1, x * y =   5
     //x = 4, y =  5, x * y =  20
     //x = 3, y = 20, x * y =  60
     //x = 2, y = 60, x * y = 120
 
-    module Mapi =
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#mapi
-        // Haskell imap
-        let array1 = [| 1; 2; 3 |]
+    @"Array.mapi, imap in Haskell
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#mapi"
+    [|1..3|] |> Array.mapi (fun i x -> (i,x)) |> should equal [|(0,1);(1,2);(2,3)|]
 
-        array1
-        |> Array.mapi (fun i x -> (i, x))
-        |> printfn "%A" // [|(0, 1); (1, 2); (2, 3)|]
+    @"Array.mapi2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#mapi2"
+    Array.mapi2 (fun i x y -> (x + y) * i) [|1..3|] [|4..6|] |> should equal [|0;7;18|]
 
-    module Mapi2 =
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#mapi2
-        let array1 = [| 1; 2; 3 |]
-        let array2 = [| 4; 5; 6 |]
+    @"Array.max
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#max"
+    [|-100..100|] |> Array.map (fun x -> 4-x*x)
+    |> Array.max |> should equal 4
 
-        Array.mapi2 (fun i x y -> (x + y) * i) array1 array2
-        |> printfn "%A" // [|0; 7; 18|]
-
-    module Max =
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#max
-        [| for x in -100 .. 100 -> 4 - x * x |]
-        |> Array.max
-        |> printfn "%A" // 4
-
-    module MaxBy =
-        // https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#maxBy
-        [| -10.0 .. 10.0 |]
-        |> Array.maxBy (fun x -> 1.0 - x * x)
-        |> printfn "%A" // 0.0
+    @"Array.maxBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#maxBy"
+    [|-10.0..10.0|] |> Array.maxBy (fun x -> 1.0 - x * x) |> should equal 0.0
 
     @"Array.min
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#min"
-    Array.min [|for x in -100 .. 100 -> x*x-4|] |> should equal -4
-    Array.min [| 1; 2; 3 |] |> should equal 1
+    Array.min [|for x in -100..100 -> x*x-4|] |> should equal -4
+    Array.min [|1;2;3|] |> should equal 1
 
     @"Array.minBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#minBy"
@@ -448,27 +422,25 @@ module Array =
     Array.pairwise [|'a'|] |> should equal ([||] : (char * char) [])
     Array.pairwise<char> [||] |> should equal ([||] : (char * char) [])
 
-    module Partition =
-        // Array.partition
-        // predicate の正否でわける
-        [| 1 .. 10 |]
-        |> Array.partition (fun elem -> elem > 3 && elem < 7)
-        |> printfn "%A"
-    // ([|4; 5; 6|], [|1; 2; 3; 7; 8; 9; 10|])
+    @"Array.partition
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#partition
+    predicate の正否でわける"
+    [|1..10|] |> Array.partition (fun elem -> elem > 3 && elem < 7)
+    |> should equal ([|4;5;6|], [|1;2;3;7;8;9;10|])
 
     @"Array.replicate, Haskell replicate
     同じ値の要素を複数持つ配列を得る.
     数値が 0 以上の整数でなければ System.ArgumentException.
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html"
-    Array.replicate 3 "F#" |> should equal [|"F#"; "F#"; "F#"|]
+    Array.replicate 3 "F#" |> should equal [|"F#";"F#";"F#"|]
     // Array.replicate -1 "F#" |> should throw typeof<System.ArgumentException>
-    // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
+    // 例外発生「System.ArgumentException: 入力は負以外である必要がある」.
 
     @"Array.scan
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#scan
-    fold の「途中の値」をすべて集めた配列を返す関数というイメージを持つといい。
+    foldの「途中の値」をすべて集めた配列を返す関数というイメージを持つといい。
     Array.fold (+) 1 [2..4] == ((1 + 2) + 3) + 4
-    Array.scan (+) 1 [2..4] == [1; 1 + 2; (1 + 2) + 3; ((1 + 2) + 3) + 4]"
+    Array.scan (+) 1 [2..4] == [1;1 + 2;(1 + 2) + 3;((1 + 2) + 3) + 4]"
     Array.scan (+) 1 [|2..4|] |> should equal [|1;3;6;10|]
 
     @"Array.set, もとの配列を書き換える破壊的な関数
@@ -484,149 +456,131 @@ module Array =
             a) (Array.create 10 -1)
         |> should equal [|1;4;9;16;25;-1;-1;-1;-1;-1|]
 
-    module Singleton =
-        // Array.singleton
-        // 要素を 1 つだけ持つ配列を得る.
-        // 逆に要素が 1 つだけの配列から要素を取り出す Array.exactlyOne もある.
-        Array.singleton 3 // [|3|]
-        Array.exactlyOne [| 3 |]
+    @"Array.singleton
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#singleton
+    要素を 1 つだけ持つ配列を得る.
+    逆に要素が 1 つだけの配列から要素を取り出す Array.exactlyOne もある."
+    Array.singleton 3 |> should equal [|3|]
+    Array.exactlyOne [|3|] |> should equal 3
 
-    module Skip =
-        // Array.skip
-        // 先頭から指定した位置までの要素をなくした配列を得る.
-        // 数値が負の数でも例外は発生しません.
-        // 逆に先頭から指定した位置までの要素を持つ配列を得られる Array.take もある.
-        Array.skip 2 [| 'a' .. 'e' |] // [|'c'; 'd'; 'e'|]
-        Array.skip -1 [| 'a' .. 'e' |] // [|'a'; 'b'; 'c'; 'd'; 'e'|]
-        Array.take 3 [| 'a' .. 'e' |] // [|'a'; 'b'; 'c'|]
+    @"Array.skip, drop in Haskell
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#skip
+    先頭から指定した位置までの要素をなくした配列を得る.
+    数値が負の数でも例外は発生しません.
+    逆に先頭から指定した位置までの要素を持つ配列を得られる Array.take もある."
+    Array.skip 2 [|'a'..'e'|] |> should equal [|'c';'d';'e'|]
+    Array.skip -1 [|'a'..'e'|] |> should equal [|'a';'b';'c';'d';'e'|]
+    Array.take 3 [|'a'..'e'|] |> should equal [|'a';'b';'c'|]
 
-    module SkipWhile =
-        // Array.skipWhile
-        // 関数の戻り値が false となる位置までの要素をなくした配列を得る.
-        // 逆にその位置までの要素を得られる Array.takeWhile もある.
-        Array.skipWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [| 5; 4; 1 |]
-        Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
+    @"Array.skipWhile, dropWhile in Haskell
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#skipwhile
+    関数の戻り値が false となる位置までの要素をなくした配列を得る.
+    逆にその位置までの要素を得られる Array.takeWhile もある."
+    Array.skipWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|5;4;1|]
+    Array.takeWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|3;2|]
 
-    module SortBy =
-        // Array.sortBy
-        // 関数指定でソートする
-        Array.sortBy abs [| 1; 4; 8; -2; 5 |]
-        |> printfn "%A" // [|1; -2; 4; 5; 8|]
+    @"Array.sortBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sortBy
+    関数指定でソートする"
+    Array.sortBy abs [|1;4;8;-2;5|] |> should equal [|1;-2;4;5;8|]
 
-    module SortByDescending =
-        // Array.sortByDescending
-        // 配列の要素を引数とする関数を順次実行した結果をもとに要素を降順で並べ替える.
-        // 関数の結果は比較可能な値でなければなりません.
-        // 他に配列の要素自体を並べ替える Array.sortDescending や,
-        // 配列の並べ替えが昇順になる Array.sortBy もある.
-        Array.sortByDescending
-            (fun (x, _) -> x)
-            [| (2, "dos"); (3, "tres"); (1, "uno") |]
-        |> should equal [| (3, "tres"); (2, "dos"); (1, "uno") |]
+    @"Array.sortByDescending
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sortByDescending
+    配列の要素を引数とする関数を順次実行した結果をもとに要素を降順で並べ替える.
+    関数の結果は比較可能な値でなければなりません.
+    他に配列の要素自体を並べ替える Array.sortDescending や,
+    配列の並べ替えが昇順になる Array.sortBy もある."
+    Array.sortByDescending
+        (fun (x, _) -> x)
+        [|(2,"dos");(3,"tres");(1,"uno")|]
+    |> should equal [|(3,"tres");(2,"dos");(1,"uno")|]
+    Array.sortDescending [|1..5|] |> should equal [|5..(-1)..1|]
+    Array.sortBy (fun (x, _) -> x) [|(2,"dos");(3,"tres");(1,"uno")|]
+    |> should equal [|(1, "uno");(2, "dos");(3, "tres")|]
 
-        Array.sortDescending [|1..5|] |> should equal [|5..(-1)..1|]
-
-        Array.sortBy
-            (fun (x, _) -> x)
-            [| (2, "dos"); (3, "tres"); (1, "uno") |]
-        |> should equal [| (1, "uno"); (2, "dos"); (3, "tres") |]
-
-    module SortDescending =
-        // Array.sortDescending
-        // 配列の要素を降順で並べ替える.
-        // 要素は比較可能な値でなければならない.
-        // 他に昇順で並べ替える Array.sort や要素を引数にして関数を順次実行した値で並べ替える Array.sortByDescending もある.
-        Array.sortDescending [| for i in 1 .. 5 -> -i |]
-        |> should equal [| -1; -2; -3; -4; -5 |]
-
-        Array.sort [| for i in 1 .. 5 -> -i |]
-        |> should equal [| -5; -4; -3; -2; -1 |]
-
-        Array.sortByDescending
-            (fun (x, _) -> x)
-            [| (2, "dos"); (3, "tres"); (1, "uno") |]
-        |> should equal [| (3, "tres"); (2, "dos"); (1, "uno") |]
+    @"Array.sortDescending
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sortDescending
+    配列の要素を降順で並べ替える.
+    要素は比較可能な値でなければならない.
+    他に昇順で並べ替える Array.sort や要素を引数にして関数を順次実行した値で並べ替える Array.sortByDescending もある."
+    Array.sortDescending [|for i in 1..5 -> -i|] |> should equal [|-1;-2;-3;-4;-5|]
+    Array.sort [|for i in 1..5 -> -i|] |> should equal [|-5;-4;-3;-2;-1|]
+    Array.sortByDescending (fun (x, _) -> x) [|(2,"dos");(3,"tres");(1,"uno")|]
+    |> should equal [|(3,"tres");(2,"dos");(1,"uno")|]
 
     @"Array.splitAt
     指定した要素の位置ので配列を 2 つに分けてそれぞれを同じタプルに収める.
     指定された位置の要素はタプルの右側の配列に含まれる.
     位置は 0 か正の整数に限られ, それ以外を指定すると System.ArgumentException.
     指定した位置が配列の長さ (要素の数) より大きいと System.InvalidOperationException."
-    Array.splitAt 3 [| 'a' .. 'e' |] |> should equal ([|'a'; 'b'; 'c'|], [|'d'; 'e'|])
-    Array.splitAt 0 [| 'a' .. 'e' |] |> should equal ([||], [|'a'; 'b'; 'c'; 'd'; 'e'|])
-    Array.splitAt 5 [| 'a' .. 'e' |] |> should equal ([|'a'; 'b'; 'c'; 'd'; 'e'|], [||])
+    Array.splitAt 3 [|'a'..'e'|] |> should equal ([|'a';'b';'c'|], [|'d';'e'|])
+    Array.splitAt 0 [|'a'..'e'|] |> should equal ([||], [|'a';'b';'c';'d';'e'|])
+    Array.splitAt 5 [|'a'..'e'|] |> should equal ([|'a';'b';'c';'d';'e'|], [||])
     //Array.splitAt -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
     //Array.splitAt  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
 
-    module SplitInto =
-        // Array.splitInto
-        // 配列の要素を指定した数に等分する.
-        // 結果は'T [] [] になる.
-        // 分割数が 0 のときは System.ArgumentException.
-        // 分割数が配列の要素の数より大きくても例外は起きない.
-        Array.splitInto 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'|]; [|'c'; 'd'|]; [|'e'|]|] : char [] []
-        //Array.splitInto 0 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は正である必要がある」.
-        Array.splitInto 3 [| 'a' .. 'b' |] // [|[|'a'|]; [|'b'|]|]
+    @"Array.splitInto
+    配列の要素を指定した数に等分する.
+    結果は'T [] [] になる.
+    分割数が 0 のときは System.ArgumentException.
+    分割数が配列の要素の数より大きくても例外は起きない."
+    Array.splitInto 3 [|'a'..'e'|] |> should equal ([|[|'a';'b'|];[|'c';'d'|];[|'e'|]|] : char [] [])
+    //Array.splitInto 0 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は正である必要がある」.
+    Array.splitInto 3 [|'a'..'b'|] |> should equal [|[|'a'|];[|'b'|]|]
 
-    module Sub =
-        // Array.sub
-        // スライスの一種
-        (*
-        Array.sub を f |> g でつなげられるように引数の順番を変更し、
-        引数の意味も変えたバージョン。
-        Array.sub とは少し挙動が違うので注意。
+    @"Array.sub
+    スライスの一種.
+    Array.sub を f |> g でつなげられるように引数の順番を変更し、
+    引数の意味も変えたバージョン。
+    Array.sub とは少し挙動が違うので注意。
 
-        Array.sub は Array.sub array start count
-        Array.sub [| 0; 2; 4; 6; 8; 10 |] 2 3 // [|4; 6; 8|]
+    Array.sub は Array.sub array start count
+    Array.sub [|0;2;4;6;8;10|] 2 3 // [|4;6;8|]
 
-        ここでの slice は slice start end array：end は end 番目までを含む
-        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] // [|4; 6|]
-        *)
-        let slice s e a = Array.sub a s (e - s + 1)
-        slice 2 3 [| 0; 2; 4; 6; 8; 10 |] |> should equal [|4; 6|]
-        /// 配列が定義できているときの標準のスライス
-        [| 'a' .. 'e' |].[2] |> should equal 'c'
-        [| 'a' .. 'e' |].[1..3] |> should equal [|'b'; 'c'; 'd'|]
-        [| 'a' .. 'e' |].[2..] |> should equal [|'c'; 'd'; 'e'|]
-        [| 'a' .. 'e' |].[..3] |> should equal [|'a'; 'b'; 'c'; 'd'|]
+    ここでの slice は slice start end array：end は end 番目までを含む
+    slice 2 3 [|0;2;4;6;8;10|] // [|4;6|]"
+    let slice s e a = Array.sub a s (e - s + 1)
+    slice 2 3 [|0;2;4;6;8;10|] |> should equal [|4;6|]
+    /// 配列が定義できているときの標準のスライス
+    [|'a'..'e'|].[2] |> should equal 'c'
+    [|'a'..'e'|].[1..3] |> should equal [|'b';'c';'d'|]
+    [|'a'..'e'|].[2..] |> should equal [|'c';'d';'e'|]
+    [|'a'..'e'|].[..3] |> should equal [|'a';'b';'c';'d'|]
 
-    module Tail =
-        // Array.tail
-        // 先頭の要素をなくした配列を得る.
-        // 配列の要素がないときは System.ArgumentException.
-        // 逆に配列の先頭の要素だけを得られる Array.head もある.
-        Array.tail [| 1 .. 3 |] // [|2; 3|]
-        // Array.tail<int> [||]    // 例外発生「 System.ArgumentException: 入力シーケンスには十分な数の要素がありません」.
-        Array.head [| 1 .. 3 |] // 1
+    @"Array.tail
+    先頭の要素をなくした配列を得る.
+    配列の要素がないときは System.ArgumentException.
+    逆に配列の先頭の要素だけを得られる Array.head もある."
+    Array.tail [|1..3|] |> should equal [|2;3|]
+    // Array.tail<int> [||]    // 例外発生「 System.ArgumentException: 入力シーケンスには十分な数の要素がありません」.
+    Array.head [|1..3|] |> should equal 1
 
-    module Take =
-        // Array.take
-        // 先頭から指定された数だけの要素を持つ配列を得る.
-        // 要素数が負の数のときは System.ArgumentException.
-        // 要素数が配列の長さより大きいときは System.InvalidOperationException.
-        // 他に関数で判定した位置の要素を持つ配列を得られる Array.takeWhile や,
-        // 逆に先頭から指定された数の要素をなくした配列を得られる Array.skip もある.
-        Array.take 3 [| 'a' .. 'e' |] // [|'a'; 'b'; 'c'|]
-        Array.take 0 [| 'a' .. 'e' |] // [||] : char []
-        // Array.take -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
-        // Array.take  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
-        // Array.take 6 [|3; 2; 5; 4; 1|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
-        Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] // [|3; 2|]
-
-        Array.skip 3 [| 'a' .. 'e' |] // [|'d'; 'e'|]
-        Array.take 3 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5|]
-        // 要素数が配列の長さより大きいとき
-        Array.truncate 6 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5; 4; 1|]
-        // 要素数が負の数のとき
-        Array.truncate -1 [| 3; 2; 5; 4; 1 |] // [||]
+    @"Array.take
+    先頭から指定された数だけの要素を持つ配列を得る.
+    要素数が負の数のときは System.ArgumentException.
+    要素数が配列の長さより大きいときは System.InvalidOperationException.
+    他に関数で判定した位置の要素を持つ配列を得られる Array.takeWhile や,
+    逆に先頭から指定された数の要素をなくした配列を得られる Array.skip もある."
+    Array.take 3 [|'a'..'e'|] |> should equal [|'a';'b';'c'|]
+    Array.take 0 [|'a'..'e'|] |> should equal ([||] : char [])
+    // Array.take -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
+    // Array.take  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
+    // Array.take 6 [|3;2;5;4;1|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
+    Array.takeWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|3;2|]
+    Array.skip 3 [|'a'..'e'|] |> should equal [|'d';'e'|]
+    Array.take 3 [|3;2;5;4;1|] |> should equal [|3;2;5|]
+    // 要素数が配列の長さより大きいとき
+    Array.truncate 6 [|3;2;5;4;1|] |> should equal [|3;2;5;4;1|]
+    // 要素数が負の数のとき
+    Array.truncate -1 [|3;2;5;4;1|] |> should equal [||]
 
     @"Array.takeWhile
     要素を引数とする関数を先頭から順次実行し,
     結果がtrueとなる要素を持つ配列を得る.
     逆に結果がfalseとなる位置から末尾までの要素を持つ配列を得られるArray.skipWhileや,
     先頭から指定した位置までの要素を持つ配列を得られるArray.takeもある."
-    Array.takeWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] |> should equal [|3;2|]
-    Array.skipWhile (fun n -> n < 4) [| 3; 2; 5; 4; 1 |] |> should equal [|5;4;1|]
+    Array.takeWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|3;2|]
+    Array.skipWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|5;4;1|]
     Array.take 3 [|3;2;5;4;1|] |> should equal [|3;2;5|]
 
     @"配列の配列の転置: array2Dバージョンは別途参照"
@@ -638,87 +592,79 @@ module Array =
             [|0..(cnum-1)|] |> Array.map (fun i -> rowstr i)
         [|[|1;2|];[|3;4|]|] |> transpose |> should equal [|[|1;3|];[|2;4|]|]
 
-    module Truncate =
-        // Array.truncate
-        // 先頭から指定した数だけの要素を持つ配列を得る.
-        // Array.take と違うのは要素数に関連する例外が発生しないこと.
-        Array.truncate 3 [| 3; 2; 5; 4; 1 |] // [|3; 2; 5|]
+    @"Array.truncate
+    先頭から指定した数だけの要素を持つ配列を得る.
+    Array.take と違うのは要素数に関連する例外が発生しないこと."
+    Array.truncate 3 [|3;2;5;4;1|] |> should equal [|3;2;5|]
 
     @"Array.tryFind
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFind"
     Array.tryFind (fun x -> x%2=0) [|1;2;3|] |> should equal (Some 2)
     Array.tryFind (fun x -> x%2=0) [|1;5;3|] |> should equal  None
 
-    module TryFindBack =
-        // Array.tryFindBack
-        // 末尾の要素から順次関数を実行し, 結果が true となる要素を見つける.
-        // 見つかったら 「Some 結果」, 見つからなかったら None を返す.
-        // 結果が option ではない Array.findBack もあるほか,
-        // 先頭の要素から順に関数を実行する Array.tryFind や Array.find もある.
-        (* 結果が見つかったとき *)
-        Array.tryFindBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 3
-        Array.findBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // 3
-        (* 結果が見つからないとき *)
-        Array.tryFindBack (fun n -> n > 3) [| 1 .. 3 |] // None
-        // Array.findBack (fun n -> n > 3) [|1; 2; 3|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
-        Array.tryFind (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 1
-        Array.find (fun n -> n % 2 = 1) [| 1 .. 3 |] // 1
+    @"Array.tryFindBack
+    末尾の要素から順次関数を実行し, 結果が true となる要素を見つける.
+    見つかったら 「Some 結果」, 見つからなかったら None を返す.
+    結果が option ではない Array.findBack もあるほか,
+    先頭の要素から順に関数を実行する Array.tryFind や Array.find もある."
+    (* 結果が見つかったとき *)
+    Array.tryFindBack (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 3)
+    Array.findBack (fun n -> n % 2 = 1) [|1..3|] |> should equal 3
+    (* 結果が見つからないとき *)
+    Array.tryFindBack (fun n -> n > 3) [|1..3|] |> should equal None
+    // Array.findBack (fun n -> n > 3) [|1;2;3|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
+    Array.tryFind (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 1)
+    Array.find (fun n -> n % 2 = 1) [|1..3|] |> should equal 1
 
-    module TryFindIndexBack =
-        // Array.tryFindIndexBack
-        // Array.tryFindBack の結果となる要素の位置を見つける.
-        // 見つかったら Some 位置, 見つからなかったら None.
-        // 要素の位置を先頭から見つける Array.tryFindIndex や,
-        // 結果を option ではなく実際の値で得られる Array.findIndexBack もある.
-        Array.tryFindIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 2
-        Array.tryFindIndex (fun n -> n % 2 = 1) [| 1 .. 3 |] // Some 0
-        Array.findIndexBack (fun n -> n % 2 = 1) [| 1 .. 3 |] // 2
+    @"Array.tryFindIndexBack
+    Array.tryFindBack の結果となる要素の位置を見つける.
+    見つかったら Some 位置, 見つからなかったら None.
+    要素の位置を先頭から見つける Array.tryFindIndex や,
+    結果を option ではなく実際の値で得られる Array.findIndexBack もある."
+    Array.tryFindIndexBack (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 2)
+    Array.tryFindIndex (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 0)
+    Array.findIndexBack (fun n -> n % 2 = 1) [|1..3|] |> should equal 2
 
-    module TryHead =
-        // Array.tryHead
-        // 配列の先頭の要素を取り出します.
-        // 要素が存在すれば Some 要素, 要素が存在しなければ None となります.
-        // 結果を option ではなく実際の値で得られる Array.head や,
-        // 末尾の要素を得る Array.tryLast もある.
-        (* 先頭の要素が存在するとき *)
-        Array.tryHead [| 3; 1; 2 |]
-        Array.head [| 3; 1; 2 |]
-        (* 先頭の要素が存在しないとき *)
-        Array.tryHead<int> [||] // None
-        //Array.head<int>    [||]  // 例外発生「 System.ArgumentException: 入力配列が空でした」.
-        Array.tryLast [| 3; 1; 2 |]
+    @"Array.tryHead
+    配列の先頭の要素を取り出します.
+    要素が存在すれば Some 要素, 要素が存在しなければ None となります.
+    結果を option ではなく実際の値で得られる Array.head や,
+    末尾の要素を得る Array.tryLast もある."
+    (* 先頭の要素が存在するとき *)
+    Array.tryHead [|3;1;2|] |> should equal (Some 3)
+    Array.head [|3;1;2|] |> should equal 3
+    (* 先頭の要素が存在しないとき *)
+    Array.tryHead<int> [||] |> should equal None
+    //Array.head<int>    [||]  // 例外発生「 System.ArgumentException: 入力配列が空でした」.
+    Array.tryLast [|3;1;2|] |> should equal (Some 2)
 
-    module TryItem =
-        // Array.tryItem
-        // 指定した位置の要素を取り出します.
-        // 要素が存在すれば Some 要素, 存在しなければ None.
-        // 結果が option ではなく要素で得られる Array.item もある.
-        (* 指定した位置に要素が存在するとき *)
-        Array.tryItem 2 [| 'c'; 'a'; 'b' |] // Some 'b'
-        Array.item 2 [| 'c'; 'a'; 'b' |] // 'b'
-        (* 指定した位置に要素が存在しないとき *)
-        Array.tryItem 4 [| 'c'; 'a'; 'b' |] // None
-    // Array.item 4 [| 'c'; 'a'; 'b' |] // 例外発生「 System.IndexOutOfRangeException 」
+    @"Array.tryItem
+    指定した位置の要素を取り出します.
+    要素が存在すれば Some 要素, 存在しなければ None.
+    結果が option ではなく要素で得られる Array.item もある."
+    (* 指定した位置に要素が存在するとき *)
+    Array.tryItem 2 [|'c';'a';'b'|] |> should equal (Some 'b')
+    Array.item 2 [|'c';'a';'b'|] |> should equal 'b'
+    (* 指定した位置に要素が存在しないとき *)
+    Array.tryItem 4 [|'c';'a';'b'|] |> should equal None
+    // Array.item 4 [|'c';'a';'b'|] // 例外発生「 System.IndexOutOfRangeException 」
 
-    module TryLast =
-        // Array.tryLast
-        // 配列の末尾の要素が得られたら 「Some 要素」, 得られなければ None.
-        // 結果が option ではなく要素自身となる Array.last もあるが,
-        // こちらは配列が空だと例外が起きる.
-        // 配列の先頭の要素を得られる Array.tryHead もある.
-        Array.tryLast [| 3; 1; 2 |]
-        Array.tryLast<int> [||] // None
-        Array.last [| 3; 1; 2 |]
+    @"Array.tryLast
+    配列の末尾の要素が得られたら 「Some 要素」, 得られなければ None.
+    結果が option ではなく要素自身となる Array.last もあるが,
+    こちらは配列が空だと例外が起きる.
+    配列の先頭の要素を得られる Array.tryHead もある."
+    Array.tryLast [|3;1;2|] |> should equal (Some 2)
+    Array.tryLast<int> [||] |> should equal None
+    Array.last [|3;1;2|] |> should equal 2
 
-    module Unfold =
-        // Array.unfold
-        // 初期値を元に関数を累積的に実行して列をつくる.
-        // 関数の引数は初期値および前回の結果とし,
-        // 戻り値は次回も関数を実行するときは Some (結果となる配列の要素, 次回実行時の引数),
-        // 関数の実行を終了するときは None とする.
-        Array.unfold (fun n -> if n > 5 then None else Some(n, n + 1)) 1 // [|1; 2; 3; 4; 5|]
+    @"Array.unfold
+    初期値を元に関数を累積的に実行して列をつくる.
+    関数の引数は初期値および前回の結果とし,
+    戻り値は次回も関数を実行するときは Some (結果となる配列の要素, 次回実行時の引数),
+    関数の実行を終了するときは None とする."
+    Array.unfold (fun n -> if n > 5 then None else Some(n, n + 1)) 1 // [|1;2;3;4;5|]
     (* フィボナッチ数列の配列 (Array.unfold) *)
-
     module Fib =
         let fibs n =
             Array.unfold (fun (x, y, z) ->
@@ -727,40 +673,37 @@ module Array =
                 else
                     None)
             <| (1, 1, n)
-        // fibs 10 = [|1; 1; 2; 3; 5; 8; 13; 21; 34; 55|]
+        fibs 10 |> should equal [|1;1;2;3;5;8;13;21;34;55|]
 
         (* フィボナッチ数 (Array.fold) *)
         let fib n =
             fst
-            <| Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [| 1 .. n |] // fib 10 = 55
+            <| Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [|1..n|] // fib 10 = 55
 
-        // Array.where
-        // Array.filter と同じく配列の各要素で実行した関数の結果が true となるものをすべて取り出す.
-        // Array.find では最初に true となる要素だけとなるのが違う.
-        Array.where (fun n -> n % 2 = 0) [| 1 .. 5 |] // [|2; 4|]
-        Array.filter (fun n -> n % 2 = 0) [| 1 .. 5 |] // [|2; 4|]
-        Array.find (fun n -> n % 2 = 0) [| 1 .. 5 |] // 2
+    @"Array.where
+    Array.filter と同じく配列の各要素で実行した関数の結果が true となるものをすべて取り出す.
+    Array.find では最初に true となる要素だけとなるのが違う."
+    Array.where (fun n -> n % 2 = 0) [|1..5|] |> should equal [|2;4|]
+    Array.filter (fun n -> n % 2 = 0) [|1..5|] |> should equal [|2;4|]
+    Array.find (fun n -> n % 2 = 0) [|1..5|] |> should equal 2
 
-    module Windowed =
-        // Array.windowed
-        // 指定した要素数だけ位置が連続する配列を要素とするジャグ配列を得る.
-        // 要素数が正の整数でないときは System.ArgumentException.
-        // 要素数が配列の要素の数を上回ると結果の配列は空.
-        // 要素数を 2 に指定すると結果が Array.pairwise と似ているが,
-        // 要素がタプルか配列かが違う.
-        // Array.chunkBySize との違いは, ただ配列の要素を区切るのではなく,
-        // 先頭の要素から順次要素数だけ連続する要素を 1 つの配列にまとめていること.
-        Array.windowed 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'b'; 'c'; 'd'|]; [|'c'; 'd'; 'e'|]|]
-        //Array.windowed 0 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は正である必要がある」.
-        Array.windowed 6 [| 'a' .. 'e' |] // [||] : char [] []
-
-        (* windowed と pairwise との違い *)
-        Array.windowed 2 [| 'a' .. 'e' |] // [|[|'a'; 'b'|]; [|'b'; 'c'|]; [|'c'; 'd'|]; [|'d'; 'e'|]|]
-        Array.pairwise [| 'a' .. 'e' |] // [|('a', 'b'); ('b', 'c'); ('c', 'd'); ('d', 'e')|]
-
-        (* windowed と chunBySize との違い *)
-        Array.windowed 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'b'; 'c'; 'd'|]; [|'c'; 'd'; 'e'|]|]
-        Array.chunkBySize 3 [| 'a' .. 'e' |] // [|[|'a'; 'b'; 'c'|]; [|'d'; 'e'|]|]
+    @"Array.windowed
+    指定した要素数だけ位置が連続する配列を要素とするジャグ配列を得る.
+    要素数が正の整数でないときは System.ArgumentException.
+    要素数が配列の要素の数を上回ると結果の配列は空.
+    要素数を 2 に指定すると結果が Array.pairwise と似ているが,
+    要素がタプルか配列かが違う.
+    Array.chunkBySize との違いは, ただ配列の要素を区切るのではなく,
+    先頭の要素から順次要素数だけ連続する要素を 1 つの配列にまとめていること."
+    Array.windowed 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'b';'c';'d'|];[|'c';'d';'e'|]|]
+    //Array.windowed 0 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は正である必要がある」.
+    Array.windowed 6 [|'a'..'e'|] |> should equal ([||] : char [] [])
+    (* windowed と pairwise との違い *)
+    Array.windowed 2 [|'a'..'e'|] |> should equal [|[|'a';'b'|];[|'b';'c'|];[|'c';'d'|];[|'d';'e'|]|]
+    Array.pairwise [|'a'..'e'|] |> should equal [|('a', 'b');('b', 'c');('c', 'd');('d', 'e')|]
+    (* windowed と chunBySize との違い *)
+    Array.windowed 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'b';'c';'d'|];[|'c';'d';'e'|]|]
+    Array.chunkBySize 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'d';'e'|]|]
 
 module Array2D =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html"
@@ -819,7 +762,7 @@ module Dictionary =
     @"https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
 
     @"Dict literal, read only"
-    dict [(1,"a"); (2,"b"); (3,"c")]
+    dict [(1,"a");(2,"b");(3,"c")]
 
 module List =
     @"docs for List
@@ -839,22 +782,22 @@ module List =
     https://fsharp.git  ihub.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#allPairs"
     List.allPairs [1;2] [3;4] |> should equal [(1,3);(1,4);(2,3);(2,4)]
     module AllPairs =
-        let people = ["Kirk"; "Spock"; "McCoy"]
+        let people = ["Kirk";"Spock";"McCoy"]
         let numbers = [1;2]
         people |> List.allPairs numbers
-        |> should equal [(1, "Kirk"); (1, "Spock"); (1, "McCoy"); (2, "Kirk"); (2, "Spock"); (2, "McCoy")]
+        |> should equal [(1, "Kirk");(1, "Spock");(1, "McCoy");(2, "Kirk");(2, "Spock");(2, "McCoy")]
 
     @"List.append"
-    List.append [ 0 .. 3 ] [ 5 .. 7]
-    |> should equal [ 0; 1; 2; 3; 5; 6; 7 ]
+    List.append [ 0..3 ] [ 5..7]
+    |> should equal [ 0;1;2;3;5;6;7 ]
 
     @"List.collect, Haskell concatMap
     `let concatMap f xs = List.map f xs |> List.concat`"
     [1..4] |> List.collect (fun x -> [1..x])
-    |> should equal [1; 1; 2; 1; 2; 3; 1; 2; 3; 4]
+    |> should equal [1;1;2;1;2;3;1;2;3;4]
     [1..4] |> List.map (fun x -> [1..x])
-    |> should equal [[1]; [1; 2]; [1; 2; 3]; [1; 2; 3; 4]]
-    List.collect (List.take 2) [[1;2;3]; [4;5;6]]
+    |> should equal [[1];[1;2];[1;2;3];[1;2;3;4]]
+    List.collect (List.take 2) [[1;2;3];[4;5;6]]
     |> should equal [1;2;4;5]
 
     @"List.concat, concat, join"
@@ -879,15 +822,15 @@ module List =
         match xs with
         | [] -> []
         | y :: ys -> if x = y then ys else y :: delete x ys
-    delete 1 [1..3] |> should equal [2; 3]
-    delete 4 [1..3] |> should equal [1; 2; 3]
+    delete 1 [1..3] |> should equal [2;3]
+    delete 4 [1..3] |> should equal [1;2;3]
 
     """delete と違い全ての要素を削除する
-    deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [2; 3; 2; 3]
-    deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> printfn "%A" // [1; 2; 3; 1; 1; 2; 3]"""
+    deleteAll 1 [ 1;2;3;1;1;2;3 ] |> printfn "%A" // [2;3;2;3]
+    deleteAll 4 [ 1;2;3;1;1;2;3 ] |> printfn "%A" // [1;2;3;1;1;2;3]"""
     let deleteAll x = List.filter ((<>) x)
-    deleteAll 1 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [2; 3; 2; 3]
-    deleteAll 4 [ 1; 2; 3; 1; 1; 2; 3 ] |> should equal [1; 2; 3; 1; 1; 2; 3]
+    deleteAll 1 [ 1;2;3;1;1;2;3 ] |> should equal [2;3;2;3]
+    deleteAll 4 [ 1;2;3;1;1;2;3 ] |> should equal [1;2;3;1;1;2;3]
 
     @"filter"
     [1..9]
@@ -902,7 +845,7 @@ module List =
     let getTotal1 items =
         items
         |> List.fold (fun acc (q, p) -> acc + q * p) 0
-    [(1,2); (3,4)] |> getTotal1 |> should equal 14
+    [(1,2);(3,4)] |> getTotal1 |> should equal 14
 
     @"List.foldBack, foldr
     注意: 引数の順番がHaskellと違う
@@ -916,7 +859,7 @@ module List =
     let getTotal2 items =
         (0, items)
         ||> List.fold (fun acc (q, p) -> acc + q * p)
-    [(1,2); (3,4)] |> getTotal2
+    [(1,2);(3,4)] |> getTotal2
 
     @"group: Haskell の group と同じ
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
@@ -931,7 +874,7 @@ module List =
                 let zs: 'a seq = Seq.skipWhile ((=) x) xs
                 Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
         group "Mississippi" |> printfn "%A"
-        // seq [seq ['M']; seq ['i']; seq ['s'; 's']; seq ['i']; ...]
+        // seq [seq ['M'];seq ['i'];seq ['s';'s'];seq ['i'];...]
 
     @"groupBy: Haskell の groupBy と同じ
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:groupBy"
@@ -958,13 +901,13 @@ module List =
                 let (ys, zs) = span (p x) xs
                 (x :: ys) :: groupBy p zs
         groupBy (=) ("Mississippi" |> List.ofSeq)
-        |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
+        |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
 
         @"group: Haskell の group と同じ
         http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
         let group xs = groupBy (=) xs
         group ("Mississippi" |> List.ofSeq)
-        |> should equal [['M']; ['i']; ['s'; 's']; ['i']; ['s'; 's']; ['i']; ['p'; 'p']; ['i']]
+        |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
 
     @"List.head
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#head"
@@ -972,11 +915,11 @@ module List =
 
     @"List.indexed
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#indexed"
-    ["a"; "b"; "c"] |> List.indexed |> should equal [(0, "a"); (1, "b"); (2, "c")]
+    ["a";"b";"c"] |> List.indexed |> should equal [(0, "a");(1, "b");(2, "c")]
 
     @"List.init
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#init"
-    List.init 4 (fun v -> v + 5) |> should equal [5; 6; 7; 8]
+    List.init 4 (fun v -> v + 5) |> should equal [5;6;7;8]
 
     @"Haskell init, not List.init
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:init"
@@ -991,9 +934,9 @@ module List =
     @"Haskell inits
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits"
     let inits xs =
-        [ 0 .. (List.length xs) ]
+        [ 0..(List.length xs) ]
         |> List.map (fun i -> List.take i xs)
-    inits [1..3] |> should equal [[]; [1]; [1; 2]; [1; 2; 3]]
+    inits [1..3] |> should equal [[];[1];[1;2];[1;2;3]]
 
     @"List.Item"
     module Item =
@@ -1003,14 +946,14 @@ module List =
 
     @"List.last
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#last"
-    [ "pear"; "banana" ] |> List.last |> should equal "banana"
+    [ "pear";"banana" ] |> List.last |> should equal "banana"
 
     @"map2
     zipWith: FSharpPlus では ZipList?"
-    List.map2 (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
+    List.map2 (+) [1;2;3] [2;4;6] |> should equal [3;6;9]
     let zipWith f xs ys =
         List.zip xs ys |> List.map (fun (x, y) -> f x y)
-    zipWith (+) [1;2;3] [2;4;6] |> should equal [3; 6; 9]
+    zipWith (+) [1;2;3] [2;4;6] |> should equal [3;6;9]
 
     @"reduce
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#reduce"
@@ -1035,7 +978,7 @@ module List =
     List.scanBack (+) [1;2;3;4] 5 |> should equal [15;14;12;9;5]
     List.scanBack (/) [8;12;24;4] 2 |> should equal [8;1;12;2;2]
     List.scanBack (/) [] 3 |> should equal [3]
-    List.scanBack (&&) [1>2; 3>2; 5=5] true |> should equal [false;true;true;true]
+    List.scanBack (&&) [1>2;3>2;5=5] true |> should equal [false;true;true;true]
     List.scanBack max [3;6;12;4;55;11] 18 |> should equal [55;55;55;55;55;18;18]
     List.scanBack max [3;6;12;4;55;11] 111 |> should equal [111;111;111;111;111;111;111]
     List.scanBack (fun x y -> (x+y)/2) [12;4;10;6] 54 |> should equal [12;12;20;30;54]
@@ -1060,10 +1003,10 @@ module List =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#skipWhile
     下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト"
     List.skipWhile (fun x -> x < 3) [0..5] |> should equal [3..5]
-    List.skipWhile ((>) 3) [1; 2; 3; 4; 5; 1; 2; 3] |> should equal [3; 4; 5; 1; 2; 3]
-    List.skipWhile ((>) 9) [1; 2; 3] |> should equal List.empty<int>
-    List.skipWhile ((>) 1) [1; 2; 3] |> should equal [1; 2; 3]
-    List.skipWhile ((>) 2) [1; 2; 3] |> should equal [2; 3]
+    List.skipWhile ((>) 3) [1;2;3;4;5;1;2;3] |> should equal [3;4;5;1;2;3]
+    List.skipWhile ((>) 9) [1;2;3] |> should equal List.empty<int>
+    List.skipWhile ((>) 1) [1;2;3] |> should equal [1;2;3]
+    List.skipWhile ((>) 2) [1;2;3] |> should equal [2;3]
     module DropWhile =
         @"https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:dropWhile"
         let rec dropWhile: ('a -> bool) -> list<'a> -> list<'a> = fun p xs ->
@@ -1071,10 +1014,10 @@ module List =
             | [] -> []
             | y::ys -> if p y then dropWhile p ys else xs
         dropWhile (fun x -> x < 3) [0..5] |> should equal [3..5]
-        dropWhile ((>) 3) [1; 2; 3; 4; 5; 1; 2; 3] |> should equal [3; 4; 5; 1; 2; 3]
-        dropWhile ((>) 9) [1; 2; 3] |> should equal List.empty<int>
-        dropWhile ((>) 1) [1; 2; 3] |> should equal [1; 2; 3]
-        dropWhile ((>) 2) [1; 2; 3] |> should equal [2; 3]
+        dropWhile ((>) 3) [1;2;3;4;5;1;2;3] |> should equal [3;4;5;1;2;3]
+        dropWhile ((>) 9) [1;2;3] |> should equal List.empty<int>
+        dropWhile ((>) 1) [1;2;3] |> should equal [1;2;3]
+        dropWhile ((>) 2) [1;2;3] |> should equal [2;3]
 
     @"span: Haskell の span と同じ
     `span p xs = (takeWhile p xs, dropWhile p xs)` であることに注意。
@@ -1088,9 +1031,9 @@ module List =
                 (x :: ys, zs)
             else
                 ([], lst)
-    span ((>) 3) [1; 2; 3; 4; 1; 2; 3; 4] |> should equal ([1; 2], [3; 4; 1; 2; 3; 4])
-    span ((>) 9) [1; 2; 3] |> should equal ([1; 2; 3], List.empty<int>)
-    span ((>) 0) [1; 2; 3] |> should equal (List.empty<int>, [1; 2; 3])
+    span ((>) 3) [1;2;3;4;1;2;3;4] |> should equal ([1;2], [3;4;1;2;3;4])
+    span ((>) 9) [1;2;3] |> should equal ([1;2;3], List.empty<int>)
+    span ((>) 0) [1;2;3] |> should equal (List.empty<int>, [1;2;3])
 
     @"List.splitAt, Haskellと同じ.
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#splitAt
@@ -1118,7 +1061,7 @@ module List =
     let rec tails: list<'a> -> list<list<'a>> = function
     | [] -> [[]]
     | x::xs -> (x::xs)::(tails xs)
-    tails [1;2;3;4] |> should equal [[1;2;3;4]; [2;3;4]; [3;4]; [4]; []]
+    tails [1;2;3;4] |> should equal [[1;2;3;4];[2;3;4];[3;4];[4];[]]
 
     @"takeWhile: Haskell の takeWhile と同じ
     List.takeWhileは標準ライブラリにある.
@@ -1128,9 +1071,9 @@ module List =
         | [] -> []
         | x :: xs -> if p x then x :: takeWhile p xs else []
     (takeWhile ((>) 3) [1;2;3]) = (List.takeWhile ((>) 3) [1;2;3]) |> should equal true
-    takeWhile ((>) 3) [1; 2; 3; 4; 1; 2; 3; 4] |> should equal [1; 2]
-    takeWhile ((>) 9) [1; 2; 3] |> should equal [1; 2; 3]
-    takeWhile ((>) 0) [1; 2; 3] |> should equal List.empty<int>
+    takeWhile ((>) 3) [1;2;3;4;1;2;3;4] |> should equal [1;2]
+    takeWhile ((>) 9) [1;2;3] |> should equal [1;2;3]
+    takeWhile ((>) 0) [1;2;3] |> should equal List.empty<int>
 
     @"List.tryItem"
     List.tryItem 1 [0..3] |> should equal (Some 1)
@@ -1154,7 +1097,7 @@ module Sequence =
 
     @"Seq.allPairs
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#allPairs"
-    ([1; 2], [3; 4]) ||> Seq.allPairs |> should equal (seq {(1, 3); (1, 4); (2, 3); (2, 4)})
+    ([1;2], [3;4]) ||> Seq.allPairs |> should equal (seq {(1, 3);(1, 4);(2, 3);(2, 4)})
 
     @"Seq.append
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
@@ -1162,13 +1105,13 @@ module Sequence =
 
     @"Seq.average
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#average"
-    [1.0; 2.0; 3.0] |> Seq.average |> should equal 2
+    [1.0;2.0;3.0] |> Seq.average |> should equal 2
 
     @"Seq.averageBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#averageBy"
     module AverageBy =
         type Foo = { Bar: float }
-        seq {{Bar = 2.0}; {Bar = 4.0}}
+        seq {{Bar = 2.0};{Bar = 4.0}}
         |> Seq.averageBy (fun foo -> foo.Bar) |> should equal 3.0
 
     @"Seq.cache
@@ -1180,22 +1123,22 @@ module Sequence =
 
     @"Seq.cast
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cast"
-    [box 1; box 2; box 3] |> Seq.cast<int> |> should equal {1..3}
+    [box 1;box 2;box 3] |> Seq.cast<int> |> should equal {1..3}
 
     @"Seq.choose
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#choose"
-    [Some 1; None; Some 2] |> Seq.choose id |> should equal (seq {1; 2})
+    [Some 1;None;Some 2] |> Seq.choose id |> should equal (seq {1;2})
     [1..3] |> Seq.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal (seq [2])
 
     @"Seq.chunkBySize
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#chunkBySize"
-    [1..3] |> Seq.chunkBySize 2 |> should equal (seq {[|1; 2|]; [|3|]})
+    [1..3] |> Seq.chunkBySize 2 |> should equal (seq {[|1;2|];[|3|]})
 
     @"Seq.collect, Haskell concatMap
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#collect"
     module Collect =
         type Foo = { Bar: int seq }
-        seq { {Bar = [1; 2]}; {Bar = [3; 4]} } |> Seq.collect (fun foo -> foo.Bar)
+        seq { {Bar = [1;2]};{Bar = [3;4]} } |> Seq.collect (fun foo -> foo.Bar)
         |> should equal {1..4}
 
         [[1;2];[3;4]] |> Seq.collect id |> should equal {1..4}
@@ -1204,7 +1147,7 @@ module Sequence =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#compareWith"
     module CompareWith =
         let closerToNextDozen a b = (a % 12).CompareTo(b % 12)
-        ([1; 10], [1; 10]) ||> Seq.compareWith closerToNextDozen |> should equal 0
+        ([1;10], [1;10]) ||> Seq.compareWith closerToNextDozen |> should equal 0
         ([1;5], [1;8]) ||> Seq.compareWith closerToNextDozen |> should equal -1
         ([1;11], [1;13]) ||> Seq.compareWith closerToNextDozen |> should equal 1
         ([1;2], [1]) ||> Seq.compareWith closerToNextDozen |> should equal 1
@@ -1216,16 +1159,16 @@ module Sequence =
 
     @"Seq.contains
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#contains"
-    [1; 2] |> Seq.contains 2 |> should equal true
-    [1; 2] |> Seq.contains 5 |> should equal false
+    [1;2] |> Seq.contains 2 |> should equal true
+    [1;2] |> Seq.contains 5 |> should equal false
 
     @"Seq.countBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#countBy"
     module CountBy =
         type Foo = { Bar: string }
-        let inputs = [{Bar = "a"}; {Bar = "b"}; {Bar = "a"}]
+        let inputs = [{Bar = "a"};{Bar = "b"};{Bar = "a"}]
         inputs |> Seq.countBy (fun foo -> foo.Bar)
-        |> should equal (seq { ("a", 2); ("b", 1) })
+        |> should equal (seq { ("a", 2);("b", 1) })
 
     @"Haskell cycle"
     let cycle xs = Seq.concat <| Seq.initInfinite (fun _ -> xs)
@@ -1243,8 +1186,8 @@ module Sequence =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#distinctBy"
     module DistinctBy =
         type Foo = { Bar: int }
-        [{Bar = 1 };{Bar = 1}; {Bar = 2}; {Bar = 3}] |> Seq.distinctBy (fun foo -> foo.Bar)
-        |> should equal (seq {{ Bar = 1 }; { Bar = 2 }; { Bar = 3 }})
+        [{Bar = 1 };{Bar = 1};{Bar = 2};{Bar = 3}] |> Seq.distinctBy (fun foo -> foo.Bar)
+        |> should equal (seq {{ Bar = 1 };{ Bar = 2 };{ Bar = 3 }})
 
     @"Seq.empty
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#empty"
@@ -1253,7 +1196,7 @@ module Sequence =
     @"Seq.exactlyOne
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exactlyOne"
     ["banana"] |> Seq.exactlyOne |> should equal "banana"
-    // ["pear"; "banana"] |> Seq.exactlyOne // ERROR!
+    // ["pear";"banana"] |> Seq.exactlyOne // ERROR!
     // [] |> Seq.exactlyOne // ERROR!
 
     @"Seq.except
@@ -1296,7 +1239,7 @@ module Sequence =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold"
     module Fold =
         type Charge = | In of int | Out of int
-        let inputs = [In 1; Out 2; In 3]
+        let inputs = [In 1;Out 2;In 3]
         (0, inputs) ||> Seq.fold (fun acc charge ->
             match charge with
             | In i -> acc + i
@@ -1306,8 +1249,8 @@ module Sequence =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold2"
     module Fold2 =
         type CoinToss = Head | Tails
-        let data1 = [Tails; Head; Tails]
-        let data2 = [Tails; Head; Head]
+        let data1 = [Tails;Head;Tails]
+        let data2 = [Tails;Head;Head]
         (0, data1, data2) |||> Seq.fold2 (fun acc a b ->
             match (a, b) with
             | Head, Head -> acc + 1
@@ -1324,10 +1267,10 @@ module Sequence =
     @"Seq.foldBack2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#foldBack2"
     module FoldBack2 =
-        type Count = { Positive: int; Negative: int; Text: string }
-        let inputs1 = [-1; -2; -3]
-        let inputs2 = [3; 2; 1; 0]
-        let initialState = {Positive = 0; Negative = 0; Text = ""}
+        type Count = { Positive: int;Negative: int;Text: string }
+        let inputs1 = [-1;-2;-3]
+        let inputs2 = [3;2;1;0]
+        let initialState = {Positive = 0;Negative = 0;Text = ""}
 
         (inputs1, inputs2, initialState) |||> Seq.foldBack2 (fun a b acc  ->
             let text = acc.Text + "(" + string a + "," + string b + ") "
@@ -1346,25 +1289,25 @@ module Sequence =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
     module Forall =
         let isEven a = a % 2 = 0
-        [2; 42] |> Seq.forall isEven |> should equal true
-        [1; 2] |> Seq.forall isEven |> should equal false
+        [2;42] |> Seq.forall isEven |> should equal true
+        [1;2] |> Seq.forall isEven |> should equal false
 
     @"Seq.forall2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
 
     @"Seq.groupBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"
-    [1; 2; 3; 4; 5] |> Seq.groupBy (fun n -> n % 2)
-    |> should equal (seq [(1, seq [1; 3; 5]); (0, seq [2; 4])])
+    [1;2;3;4;5] |> Seq.groupBy (fun n -> n % 2)
+    |> should equal (seq [(1, seq [1;3;5]);(0, seq [2;4])])
 
     @"Seq.head
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"
-    ["banana"; "pear"] |> Seq.head |> should equal "banana"
+    ["banana";"pear"] |> Seq.head |> should equal "banana"
     {0..9} |> Seq.head |> should equal 0
 
     @"Seq.indexed
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#indexed"
-    Seq.indexed "abc" |> should equal (seq [(0, 'a'); (1, 'b'); (2, 'c')])
+    Seq.indexed "abc" |> should equal (seq [(0, 'a');(1, 'b');(2, 'c')])
 
     @"Seq.init
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#init"
@@ -1402,7 +1345,7 @@ module Sequence =
 
     @"Seq.insertAt
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertAt"
-    seq { 0; 1; 2 } |> Seq.insertAt 1 9 |> should equal (seq [0;9;1;2])
+    seq { 0;1;2 } |> Seq.insertAt 1 9 |> should equal (seq [0;9;1;2])
 
     @"Seq.insertManyAt
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertManyAt"
@@ -1411,7 +1354,7 @@ module Sequence =
     @"Seq.isEmpty
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertManyAt"
     [] |> Seq.isEmpty |> should equal true
-    ["pear"; "banana"] |> Seq.isEmpty |> should equal false
+    ["pear";"banana"] |> Seq.isEmpty |> should equal false
 
     @"Seq.item
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#item"
@@ -1436,14 +1379,14 @@ module Sequence =
 
     @"Seq.iteri
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iteri"
-    ["a"; "b"; "c"] |> Seq.iteri (fun i v -> printfn "{i}: {v}")
+    ["a";"b";"c"] |> Seq.iteri (fun i v -> printfn "{i}: {v}")
 
     @"Seq.iteri2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iteri2"
 
     @"Seq.last
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#last"
-    ["pear"; "banana"] |> Seq.last |> should equal "banana"
+    ["pear";"banana"] |> Seq.last |> should equal "banana"
 
     @"Seq.length
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#length"
@@ -1455,8 +1398,8 @@ module Sequence =
     @"Seq.map2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map2"
     module Map2 =
-        let inputs1 = ["a"; "bad"; "good"]
-        let inputs2 = [0; 2; 1]
+        let inputs1 = ["a";"bad";"good"]
+        let inputs2 = [0;2;1]
         (inputs1, inputs2) ||> Seq.map2 (fun x y -> x.[y]) |> should equal (seq ['a';'d';'o'])
         ([1..4], [11..13]) ||> Seq.map2 (fun x y -> x+y) |> should equal (seq [12;14;16])
 
@@ -1507,7 +1450,7 @@ module Sequence =
 
     @"Seq.pick
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#pick"
-    [1; 2; 3] |> Seq.pick (fun n -> if n % 2 = 0 then Some (string n) else None) |> should equal "2"
+    [1;2;3] |> Seq.pick (fun n -> if n % 2 = 0 then Some (string n) else None) |> should equal "2"
 
     @"Seq.readonly
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#readonly"
@@ -1577,7 +1520,7 @@ module Sequence =
 
     @"Seq.skipWhile, Haskell dropWhile
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#skipWhile"
-    seq {"a";"bbb";"cc";"d"} |> Seq.skipWhile (fun x -> x.Length < 3) |> should equal (seq ["bbb"; "cc"; "d"])
+    seq {"a";"bbb";"cc";"d"} |> Seq.skipWhile (fun x -> x.Length < 3) |> should equal (seq ["bbb";"cc";"d"])
     {0..5} |> Seq.skipWhile (fun x -> x < 3) |> should equal {3..5}
     module DropWhile =
         let rec dropWhile p (xs: seq<'a>) =
@@ -1605,18 +1548,18 @@ module Sequence =
 
     @"Seq.splitInto
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#splitInto"
-    Seq.splitInto 3 [1..5] |> should equal (seq [[|1; 2|]; [|3; 4|]; [|5|]])
+    Seq.splitInto 3 [1..5] |> should equal (seq [[|1;2|];[|3;4|];[|5|]])
 
     @"Seq.sum s = Seq.fold (+) 0 s
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sum"
-    Seq.fold (-) 0 { 0 .. 9 } |> should equal -45
+    Seq.fold (-) 0 { 0..9 } |> should equal -45
 
     @"Seq.sumBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sumBy"
 
     @"Seq.tail
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#tail"
-    Seq.tail (seq {0..3}) |> should equal (seq { 1 .. 3 })
+    Seq.tail (seq {0..3}) |> should equal (seq { 1..3 })
 
     @"Seq.take
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#take"
@@ -1653,11 +1596,11 @@ module Sequence =
     @"Seq.unfold
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#unfold"
     1 |> Seq.unfold (fun state -> if state > 100 then None else Some (state, state * 2))
-    |> should equal (seq { 1; 2; 4; 8; 16; 32; 64 })
+    |> should equal (seq { 1;2;4;8;16;32;64 })
     @"Seq.updateAt"
     @"Seq.where
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#where"
-    [1; 2; 3; 4] |> Seq.where (fun elm -> elm % 2 = 0) |> should equal [2;4]
+    [1;2;3;4] |> Seq.where (fun elm -> elm % 2 = 0) |> should equal [2;4]
     @"Seq.windowed"
     @"Seq.zip"
     @"Seq.zip3"
@@ -1705,7 +1648,7 @@ module String =
     [1;2;1;2;3] |> List.distinct
     |> should equal [1;2;3]
 
-    ["Stefan"; "says:"; "Hello"; "there!"]
+    ["Stefan";"says:";"Hello";"there!"]
     |> String.concat " " |> should equal "Stefan says: Hello there!"
 
     [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
@@ -1788,7 +1731,7 @@ module String =
     @"Split
     文字列を分割する「メソッド」"
     "1 2 3" |> fun s -> s.Split(" ")
-    |> should equal [| "1"; "2"; "3"|]
+    |> should equal [|"1";"2";"3"|]
 
     @"Substring
     部分文字列をとる「メソッド」"
@@ -1817,7 +1760,7 @@ module Function =
     let getTotal2 items =
         (0, items)
         ||> List.fold (fun acc (q, p) -> acc + q * p)
-    [(1,2); (3,4)] |> getTotal2
+    [(1,2);(3,4)] |> getTotal2
 
     @"function composition"
     let twice x = 2 * x
@@ -1914,9 +1857,9 @@ module Type =
 
 module Struct =
     [<Struct>]
-    type Coupon = { B: int; Discount: int }
-    let coupon1 = {B=1; Discount=2}
-    let coupon2 = {B=2; Discount=3}
+    type Coupon = { B: int;Discount: int }
+    let coupon1 = {B=1;Discount=2}
+    let coupon2 = {B=2;Discount=3}
 
 module Map =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html"
@@ -1954,10 +1897,10 @@ module Map =
         let input = Map [(1,"a");(2,"b")]
         input |> Map.change 1 (function
             | Some s -> Some (s + "z")
-            | None -> None) |> should equal (Map [(1, "az"); (2, "b")])
+            | None -> None) |> should equal (Map [(1, "az");(2, "b")])
         input |> Map.change 3 (function
             | Some s -> Some (s + "z")
-            | None -> None) |> should equal (Map [(1, "a"); (2, "b")])
+            | None -> None) |> should equal (Map [(1, "a");(2, "b")])
 
     @"Map.containsKey
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#containsKey"
@@ -1981,7 +1924,7 @@ module Map =
     @"Map.find
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#find"
     module Find =
-        let m = Map [ (1, "a"); (2, "b") ]
+        let m = Map [ (1, "a");(2, "b") ]
         m |> Map.find 1 |> should equal "a"
         m |> Map.find 2 |> should equal "b"
         //m |> Map.find 3 // Error
@@ -1989,7 +1932,7 @@ module Map =
     @"Map.forall
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#forall"
     module Forall =
-    let m = Map [ (1, "a"); (2, "b") ]
+    let m = Map [ (1, "a");(2, "b") ]
     m |> Map.forall (fun n s -> n >= s.Length) |> should equal true
     m |> Map.forall (fun n s -> n = s.Length) |> should equal false
 
@@ -2065,8 +2008,8 @@ module Math =
     cf. ABC123 B, https://atcoder.jp/contests/abc123/submissions/20135376"
     module Oneceil =
         let oneceil x = (x+9) / 10 * 10
-        let xs = [|29; 20; 7; 35; 120|]
-        let ys = [|30; 20; 10; 40; 120|]
+        let xs = [|29;20;7;35;120|]
+        let ys = [|30;20;10;40;120|]
         xs |> Array.map oneceil |> should equal ys
 
     @"compare, Generic comparison
@@ -2140,14 +2083,14 @@ module Math =
                 if (snd state > n)
                 then None
                 else Some(fst state + snd state, (snd state, fst state + snd state)))
-        fibByUnfoldUntilN 1000 |> List.ofSeq |> should equal [2; 3; 5; 8; 13; 21; 34; 55; 89; 144; 233; 377; 610; 987; 1597]
+        fibByUnfoldUntilN 1000 |> List.ofSeq |> should equal [2;3;5;8;13;21;34;55;89;144;233;377;610;987;1597]
 
     @"first digit, 整数の一桁目を得る"
     module FirstDigit =
         let firstDigit x = (10 - x%10) % 10
-        let xs = [|29; 20; 7; 35; 120|]
-        let ys = [|1; 10; 3; 5; 10|]
-        let zs = [|1; 0; 3; 5; 0|]
+        let xs = [|29;20;7;35;120|]
+        let ys = [|1;10;3;5;10|]
+        let zs = [|1;0;3;5;0|]
         xs |> Array.map (fun x -> 10 - x%10) |> should equal ys
         xs |> Array.map firstDigit |> should equal zs
 
@@ -2257,7 +2200,7 @@ module Math =
     参考：https://webbibouroku.com/Blog/Article/haskell-nstring
     AtCoderで出てきた「26進数」：AtCoder/ABC171/C1.fsx"
     module NaryLT16 =
-        let numbersLT16 = [| "0";"1";"2";"3";"4";"5";"6";"7";"8";"9";"a";"b";"c";"d";"e";"f"|]
+        let numbersLT16 = [|"0";"1";"2";"3";"4";"5";"6";"7";"8";"9";"a";"b";"c";"d";"e";"f"|]
         let rec toNary n x =
             if x = 0L then []
             else
@@ -2265,7 +2208,7 @@ module Math =
                 let r = x % n |> int
                 List.append (toNary n q) [ numbersLT16.[r] ]
         let to3ary = toNary 3L
-        [0L..3L] |> List.map to3ary |> should equal  [[]; ["1"]; ["2"]; ["1"; "0"]]
+        [0L..3L] |> List.map to3ary |> should equal  [[];["1"];["2"];["1";"0"]]
 
         let intToNary n x =
             if x = 0L then [ numbersLT16.[0] ]
@@ -2274,10 +2217,10 @@ module Math =
             elif n <= 16L then toNary n x
             else []
         let intTo2ary = intToNary 2L
-        [0L..8L] |> List.map intTo2ary |> should equal [["0"]; ["1"]; ["1"; "0"]; ["1"; "1"]; ["1"; "0"; "0"]; ["1"; "0"; "1"]; ["1"; "1"; "0"]; ["1"; "1"; "1"]; ["1"; "0"; "0"; "0"]]
+        [0L..8L] |> List.map intTo2ary |> should equal [["0"];["1"];["1";"0"];["1";"1"];["1";"0";"0"];["1";"0";"1"];["1";"1";"0"];["1";"1";"1"];["1";"0";"0";"0"]]
 
     module NaryLT26 =
-        let numbersLT26 = [| 'a' .. 'z' |]
+        let numbersLT26 = [|'a'..'z'|]
         let rec toNary n x =
             if x = 0L then []
             else
@@ -2292,7 +2235,7 @@ module Math =
             elif n <= 26L then toNary n x
             else []
         let intTo2ary = intToNary 2L
-        [0L..11L] |> List.map intTo2ary |> should equal  [['a']; ['b']; ['b'; 'a']; ['b'; 'b']; ['b'; 'a'; 'a']; ['b'; 'a'; 'b']; ['b'; 'b'; 'a']; ['b'; 'b'; 'b']; ['b'; 'a'; 'a'; 'a']; ['b'; 'a'; 'a'; 'b']; ['b'; 'a'; 'b'; 'a']; ['b'; 'a'; 'b'; 'b']]
+        [0L..11L] |> List.map intTo2ary |> should equal  [['a'];['b'];['b';'a'];['b';'b'];['b';'a';'a'];['b';'a';'b'];['b';'b';'a'];['b';'b';'b'];['b';'a';'a';'a'];['b';'a';'a';'b'];['b';'a';'b';'a'];['b';'a';'b';'b']]
 
     @"perfect number, 完全数"
     module IsPerfectSquare1 =
@@ -2319,7 +2262,7 @@ module Math =
                 else false
         [1..100]
         |> List.choose (fun x -> if isPerfectSquare x then Some x else None)
-        |> should equal [1; 4; 9; 16; 25; 36; 49; 64; 81; 100]
+        |> should equal [1;4;9;16;25;36;49;64;81;100]
 
     @"Method2 https://www.geeksforgeeks.org/check-if-a-number-is-perfect-square-without-finding-square-root/amp/"
     module IsPerfectSquare3 =
@@ -2332,7 +2275,7 @@ module Math =
             else isPerfectSquare x left (mid-1L)
 
         [1L..100L] |> List.choose (fun x -> if isPerfectSquare x 1L x then Some x else None)
-        |> should equal [1L; 4L; 9L; 16L; 25L; 36L; 49L; 64L; 81L; 100L]
+        |> should equal [1L;4L;9L;16L;25L;36L;49L;64L;81L;100L]
 
     @"Permutation, 順列, Bird-Gibbons, perms1"
     let perms xs =
@@ -2348,14 +2291,14 @@ module Math =
     module PrimeFactorization =
         @"https://atcoder.jp/contests/ABC169/submissions/13872716"
         module PF1 =
-            type Factor = { Number: int64; Count: int }
+            type Factor = { Number: int64;Count: int }
             /// m: origN を割っていった値でどんどん小さくなる
             /// a: 2L からインクリメントしていく値
             /// origN: 入力値
             let rec primes m a origN =
                 // sqrt N 以下の値だけ調べればよい
                 if origN < a * a then
-                    if m = 1L then [] else [ { Number = origN; Count = 1 } ] // 最終的に素数と分かったとき
+                    if m = 1L then [] else [ { Number = origN;Count = 1 } ] // 最終的に素数と分かったとき
                 elif m % a <> 0L then
                     let aPlus = if a = 2L then 3L else a + 2L
                     primes m aPlus origN
@@ -2370,7 +2313,7 @@ module Math =
                     // m がすでに因数として 2 はもっていない。
                     // 2 より大きい偶数を考えても仕方ないので奇数だけ考える
                     let aPlus = if a = 2L then 3L else a + 2L
-                    { Number = a; Count = c }
+                    { Number = a;Count = c }
                     :: (primes m1 aPlus origN)
             let primeFactors n = primes n 2L n
             @"素数判定
@@ -2380,14 +2323,14 @@ module Math =
                 if n < 0L then isprime (-n)
                 elif n = 0L then false
                 elif n = 1L then false
-                else primeFactors n = [ { Number = n; Count = 1 } ]
+                else primeFactors n = [ { Number = n;Count = 1 } ]
             [1L..8L] |> List.filter isprime |> should equal [2L;3L;5L;7L]
 
         @"http://www.fssnip.net/3X"
         module FsSnip =
             let isprime n =
                 let sqrtn = (float >> sqrt >> int) n // square root of integer
-                [| 2 .. sqrtn |] // all numbers from 2 to sqrt'
+                [|2..sqrtn|] // all numbers from 2 to sqrt'
                 |> Array.forall (fun x -> n % x <> 0) // no divisors
 
             let allPrimes =
@@ -2399,7 +2342,7 @@ module Math =
                     }
                 f 2 // starting from 2
 
-            allPrimes |> Seq.take 5 |> should equal (seq  [|2; 3; 5; 7; 11|])
+            allPrimes |> Seq.take 5 |> should equal (seq  [|2;3;5;7;11|])
 
         @"https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-1097596"
         module StackOverflowSieve =
@@ -2411,7 +2354,7 @@ module Math =
         module StackOverflowPrime1 =
             let twoAndOdds n =
                 Array.unfold (fun x -> if x > n then None else if x = 2 then Some(x, x + 1) else Some(x, x + 2)) 2
-            twoAndOdds 15 |> should equal [|2; 3; 5; 7; 9; 11; 13; 15|]
+            twoAndOdds 15 |> should equal [|2;3;5;7;9;11;13;15|]
 
             // https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-35966305
             let infSeq (limit: int64) =
@@ -2458,14 +2401,14 @@ module Math =
         match xs with
         | [] -> []
         | x::xs -> (x, xs) :: List.map (fun (y, ys) -> (y, x::ys)) (choose xs)
-    choose [1;2;3] |> should equal [(1, [2; 3]); (2, [1; 3]); (3, [1; 2])]
+    choose [1;2;3] |> should equal [(1, [2;3]);(2, [1;3]);(3, [1;2])]
     let rec permutations xs =
         match xs with
         | [] -> [[]]
         | xs ->
             choose xs
             |> List.collect (fun (y, ys) -> List.map (fun zs -> y::zs) (permutations ys))
-    permutations [1;2;3] |> should equal [[1; 2; 3]; [1; 3; 2]; [2; 1; 3]; [2; 3; 1]; [3; 1; 2]; [3; 2; 1]]
+    permutations [1;2;3] |> should equal [[1;2;3];[1;3;2];[2;1;3];[2;3;1];[3;1;2];[3;2;1]]
 
 module ActivePattern =
     // 引数で受け取った値を「奇数/偶数」の識別子に分類
@@ -2580,6 +2523,14 @@ module Option =
 
 module Print =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-printfmodule.html"
+    @"Abraham Get Programming with F#-A guide for NET developers
+    %d: int
+    %f: float
+    %b: boolean
+    %s: string
+    %0: .ToString()
+    %A: pretty-print"
+
     @"%A: どんな型でもとにかく出力"
     [1;2;3;4] |> printfn "%A"
     2 |> printfn "%A"
