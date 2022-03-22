@@ -2023,6 +2023,8 @@ module Math =
     compare [1;2;4] [1;2;3] |> should equal 1
 
     @"factorial, 階乗"
+    let fact n = Array.reduce (*) [|1..n|]
+    [|1..6|] |> Array.map fact |> should equal [|1;2;6;24;120;720|]
     module Factorial =
         @"非正の数に対して1を返す: 状況に応じて修正しよう."
         //
