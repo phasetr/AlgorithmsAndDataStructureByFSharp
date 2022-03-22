@@ -1949,12 +1949,13 @@ module Math =
     1.0 (float),
     1.0f (float32),
     1.0m (decimal),
-    1I (BigInteger)"
+    1I (BigInteger)
+    4N (BigRational)"
     @"bigint parse"
     "1" |> bigint.Parse |> should equal 1I
     @"int64 arithmetic"
     1L+1L |> should equal 2L
-    @"float arithmetic"
+    @"decimal arithmetic"
     1.0M/2.0M |> should equal 0.5M
     @"float infinity"
     infinity |> should equal infinity
