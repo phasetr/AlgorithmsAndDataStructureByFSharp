@@ -848,6 +848,7 @@ module List =
     [(1,2);(3,4)] |> getTotal1 |> should equal 14
 
     @"List.foldBack, foldr
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#foldBack
     注意: 引数の順番がHaskellと違う
     In haskell, foldr :: (a -> b -> b) -> b -> [a] -> [b].
     But in F#,  foldBack: ('a -> 'b -> 'b) -> [a] -> b -> 'b list"
@@ -861,29 +862,17 @@ module List =
         ||> List.fold (fun acc (q, p) -> acc + q * p)
     [(1,2);(3,4)] |> getTotal2
 
-    @"group: Haskell の group と同じ
-    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
-    module Group =
-        let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
-            if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
-
-        let rec group = function
-            | SeqEmpty -> Seq.empty
-            | SeqCons (x, xs) ->
-                let ys: 'a seq = Seq.takeWhile ((=) x) xs
-                let zs: 'a seq = Seq.skipWhile ((=) x) xs
-                Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
-        group "Mississippi" |> printfn "%A"
-        // seq [seq ['M'];seq ['i'];seq ['s';'s'];seq ['i'];...]
-
-    @"groupBy: Haskell の groupBy と同じ
-    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:groupBy"
+    @"List.groupBy
+    注意: F#版groupByとHaskell版groupByは挙動が違う."
     module GroupBy =
-        @"groupBy"
-        [1;2;3;4;5;7;6;5;4;3]
-        |> List.groupBy (fun x -> x)
+        @"F#のList.groupBy: !!注意!! Haskellとは違う
+        HaskellのgroupByは下記参照.
+        https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#groupBy"
+        [1;2;3;4;5;7;6;5;4;3] |> List.groupBy (fun x -> x)
         |> should equal [1,[1];2,[2];3,[3;3];4,[4;4];5,[5;5];7,[7];6,[6]]
 
+        @"Haskell List.span
+        cf. Haskell span https://hackage.haskell.org/package/base-4.16.1.0/docs/src/GHC-List.html#span"
         let rec span (p: 'a -> bool) lst =
             match lst with
             | [] -> ([], [])
@@ -891,9 +880,10 @@ module List =
                 if p x then
                     let (ys, zs) = span p xs
                     (x :: ys, zs)
-                else
-                    ([], lst)
+                else ([], lst)
 
+        @"Haskell List.group
+        https://hackage.haskell.org/package/base-4.16.1.0/docs/src/Data-OldList.html#group"
         let rec groupBy (p: 'a -> 'a -> bool) lst: list<list<'a>> =
             match lst with
             | [] -> []
@@ -1294,6 +1284,20 @@ module Sequence =
 
     @"Seq.forall2
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
+
+    @"group: Haskellのgroup, !!注意!! F#のSeq.groupByとは挙動が違う.
+    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
+    module Group =
+        let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
+            if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
+
+        let rec group = function
+            | SeqEmpty -> Seq.empty
+            | SeqCons (x, xs) ->
+                let ys: 'a seq = Seq.takeWhile ((=) x) xs
+                let zs: 'a seq = Seq.skipWhile ((=) x) xs
+                Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
+        group "Mississippi" |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
 
     @"Seq.groupBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"
