@@ -756,7 +756,7 @@ module ComputationExpression =
 
     @"yield
     https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions#yield"
-    seq { for i in 1..10 -> i * i } |> should equal []
+    seq { for i in 1..3 -> i * i } |> should equal [1;4;9]
 
 module Dictionary =
     @"https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
