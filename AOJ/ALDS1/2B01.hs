@@ -1,5 +1,3 @@
-#!/usr/bin/env stack
--- stack script --resolver lts-16.0
 -- http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ALDS1_2_B&lang=ja
 -- http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=3086221#1
 import Control.Monad.State (State, modify, runState)

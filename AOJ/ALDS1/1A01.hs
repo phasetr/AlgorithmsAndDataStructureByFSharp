@@ -1,5 +1,3 @@
-#!/usr/bin/env stack
--- stack script --resolver lts-16.0
 -- http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ALDS1_1_A&lang=ja
 -- http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=2178139#1
 main :: IO ()

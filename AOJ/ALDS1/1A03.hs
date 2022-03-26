@@ -1,5 +1,3 @@
-#!/usr/bin/env stack
--- stack script --resolver lts-16.0
 -- http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ALDS1_1_A&lang=ja
 -- http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=1703447#1
 import Data.List
