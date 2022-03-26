@@ -2,6 +2,7 @@
 https://algo-method.com/tasks/62
 -}
 import Control.Monad (replicateM)
+import Data.List (group,sort)
 main :: IO ()
 main = (getLine >>= (`replicateM` getLine) . read)
   >>= putStr
@@ -9,8 +10,9 @@ main = (getLine >>= (`replicateM` getLine) . read)
   . foldl (\ (l,r) s -> if s=="left" then (l+1,r) else (l,r+1)) (0,0)
 
 solve1 = getLine >> getContents
-  >>= putStrLn . f . (map length) . group . sort . lines where
+  >>= putStrLn . f . map length . group . sort . lines where
   f [l,r]
     |l > r = "left"
     |l < r = "right"
     |otherwise = "same"
+  f _ = error "undefined"
