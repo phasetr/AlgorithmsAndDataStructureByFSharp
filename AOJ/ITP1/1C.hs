@@ -7,3 +7,17 @@ main = do
   let a:b:_ = map read $ words line :: [Int]
   print $ (show $ a*b) ++ " " ++ (show $ 2*(a+b))
   -- printf "%d %d\n" (a * b) (2 * (a + b))
+
+{-
+main = getLine >>= putStrLn . solve . map read . words
+solve [a,b] = (show (a*b)) ++ " " ++ (show (2*(a+b)))
+
+main = getLine >>=
+  print . unwords . map show . (\[a,b] -> [a*b, 2*(a+b)])
+  . map read . words
+
+import Control.Applicative
+main = do
+  [a, b] <- map read . words <$> getLine
+  putStrLn . unwords . map show $ [a*b, 2*(a+b)]
+-}

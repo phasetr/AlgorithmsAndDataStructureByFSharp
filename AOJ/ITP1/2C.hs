@@ -3,5 +3,6 @@
 -- http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ITP1_2_C&lang=ja
 import Data.List
 main :: IO ()
-main =
-  getLine >>= putStrLn . unwords . map show . sort . map (read :: String -> Int) . words
+main = getLine >>=
+  putStrLn . unwords . map show . sort
+  . map read . words
