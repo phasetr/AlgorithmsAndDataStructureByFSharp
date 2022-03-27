@@ -509,6 +509,7 @@ module Array =
     |> should equal [|(3,"tres");(2,"dos");(1,"uno")|]
 
     @"Array.splitAt
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#splitAt
     指定した要素の位置ので配列を 2 つに分けてそれぞれを同じタプルに収める.
     指定された位置の要素はタプルの右側の配列に含まれる.
     位置は 0 か正の整数に限られ, それ以外を指定すると System.ArgumentException.
@@ -520,6 +521,7 @@ module Array =
     //Array.splitAt  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
 
     @"Array.splitInto
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#splitInto
     配列の要素を指定した数に等分する.
     結果は'T [] [] になる.
     分割数が 0 のときは System.ArgumentException.
@@ -529,6 +531,7 @@ module Array =
     Array.splitInto 3 [|'a'..'b'|] |> should equal [|[|'a'|];[|'b'|]|]
 
     @"Array.sub
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sub
     スライスの一種.
     Array.sub を f |> g でつなげられるように引数の順番を変更し、
     引数の意味も変えたバージョン。
@@ -546,6 +549,14 @@ module Array =
     [|'a'..'e'|].[1..3] |> should equal [|'b';'c';'d'|]
     [|'a'..'e'|].[2..] |> should equal [|'c';'d';'e'|]
     [|'a'..'e'|].[..3] |> should equal [|'a';'b';'c';'d'|]
+
+    @"Array.sum
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sum"
+    [|1..3|] |> Array.sum |> should equal 6
+
+    @"Array.sumBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sumBy"
+    [|"aa";"bbb";"cc"|] |> Array.sumBy (fun s -> s.Length) |> should equal 7
 
     @"Array.tail
     先頭の要素をなくした配列を得る.
@@ -2504,6 +2515,15 @@ module Prelude =
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:uncurry"
     let curry f a b = f (a,b)
     let uncurry f (a,b) = f a b
+
+module Operator =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
+
+    @"max
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#max"
+    max 1 2 |> should equal 2
+    max [1;2;3] [1;2;4] |> should equal [1;2;4]
+    max "zoo" "alpha" |> should equal "zoo"
 
 module Option =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
