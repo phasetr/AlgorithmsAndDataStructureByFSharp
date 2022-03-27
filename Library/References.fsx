@@ -76,7 +76,7 @@ module Array =
     Array.chunkBySize 3 [|0..7|] |> should equal [|[|0;1;2|];[|3;4;5|];[|6;7|]|]
     //Array.chunkBySize 0 [|0..7|] // 例外発生「System.ArgumentException: 入力は正である必要があります。」
 
-    @"Array.collect
+    @"Array.collect, Haskell concatMap
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#collect
     配列の各要素に関数を当て、最後にflat化する"
     Array.collect (fun elem -> [|0..elem|]) [|1;5;10|]
@@ -422,7 +422,7 @@ module Array =
     Array.pairwise [|'a'|] |> should equal ([||] : (char * char) [])
     Array.pairwise<char> [||] |> should equal ([||] : (char * char) [])
 
-    @"Array.partition
+    @"Array.partition, Haskell span
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#partition
     predicate の正否でわける"
     [|1..10|] |> Array.partition (fun elem -> elem > 3 && elem < 7)
@@ -732,6 +732,21 @@ module Array2D =
             [|0..(cnum-1)|] |> Array.map (fun i -> newrow i) |> array2D
         let a = array2D [[1;2];[3;4]]
         transpose a |> should equal (array2D [[1;3];[2;4]])
+
+module Bit =
+    // https://midoliy.com/content/fsharp/text/operator/2_bit.html
+    0xFF |> should equal 255
+    ~~~0xFF |> should equal -256
+    0x80 |> should equal 128
+    0xFF ||| 0x80 |> should equal 255
+    0xFF &&& 0x80 |> should equal 128
+    0xFF ^^^ 0x80 |> should equal 127
+    1 <<< 1 |> should equal 2
+    1 <<< 2 |> should equal 4
+    1 <<< 3 |> should equal 8
+    10 >>> 1 |> should equal 5
+    10 >>> 2 |> should equal 2
+    10 >>> 3 |> should equal 1
 
 module Bool =
     @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/symbol-and-operator-reference/boolean-operators"
