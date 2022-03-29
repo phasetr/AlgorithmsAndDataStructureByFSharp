@@ -1760,8 +1760,16 @@ module String =
 
     @"Split
     文字列を分割する「メソッド」"
-    "1 2 3" |> fun s -> s.Split(" ")
-    |> should equal [|"1";"2";"3"|]
+    "1 2 3" |> fun s -> s.Split(" ") |> should equal [|"1";"2";"3"|]
+
+    @"sprintf, 文字列埋め込み"
+    module Sprintf =
+        sprintf "%s%02d" "TEST" 1 |> should equal "TEST01"
+        // %のエスケープは%%を重ねる
+        sprintf "%%%s%02d" "TEST" 1 |> should equal "%TEST01"
+
+        let template = sprintf "%s%02d"
+        template "TEST" 1 |> should equal "TEST01"
 
     @"Substring
     部分文字列をとる「メソッド」"
@@ -1845,6 +1853,20 @@ module Function =
         | [] -> []
         | x::xs -> f x :: map f xs
     map (fun x -> x+1) [1;2;3] |> should equal [2;3;4]
+
+module IO =
+    @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0
+    https://www.dotnetperls.com/file-fs?msclkid=d0f677a5af2711ec9c9679c85f806250"
+    module File =
+        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.writealllines?view=net-6.0"
+        let xa = seq [1..10] |> Seq.map string
+        System.IO.File.WriteAllLines ("1.tmp.txt", xa)
+        System.IO.File.WriteAllText("1.tmp.txt", "test")
+        System.IO.File.WriteAllText("1.tmp.txt", "あいうえお")
+        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readalltext?view=net-6.0"
+        System.IO.File.ReadAllText("1.tmp.txt") |> fun s -> s.Split("\r\n")
+        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0"
+        System.IO.File.ReadLines("1.tmp.txt") |> should equal (Array.map string [|1..10|])
 
 module PatternMatch =
     exception DivideByZeroException
