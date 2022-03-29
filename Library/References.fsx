@@ -1875,6 +1875,12 @@ module PatternMatch =
         try Ok (x/y)
         with | :? DivideByZeroException as ex -> Error ex
 
+module RegularExpression =
+    let input = @"\\contentsline a{bcd}{efg}{hij}{lmn}"
+    let pattern = @"{(.*)}{(.*)}{(.*)}{(.*)}"
+    let capture = System.Text.RegularExpressions.Regex.Match(input, pattern)
+    capture.Groups.Values |> Seq.iter (printfn "%A")
+
 module Tuple =
     // 値の取得
     match (1, "abc") with
