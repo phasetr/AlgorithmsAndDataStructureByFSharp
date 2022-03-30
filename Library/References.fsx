@@ -2630,3 +2630,16 @@ module TypeSample =
         let e = elem(1, "test")
         e.id |> should equal 1
         e.name |> should equal "test"
+
+module ValueOption =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-valueoption.html"
+
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-valueoption.html#bind"
+    module Bind =
+        let tryParse input =
+            match System.Int32.TryParse (input: string) with
+            | true, v -> ValueSome v
+            | false, _ -> ValueNone
+        //ValueNone |> ValueOption.bind tryParse |> should equal ValueNone
+        ValueSome "42" |> ValueOption.bind tryParse |> should equal (ValueSome 42)
+        //ValueSome "Forty-two" |> ValueOption.bind tryParse |> should equal ValueNone
