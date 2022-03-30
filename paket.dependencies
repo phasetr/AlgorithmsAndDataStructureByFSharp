@@ -1,5 +1,0 @@
-source https://api.nuget.org/v3/index.json
-nuget FsUnit
-
-storage: packages
-framework: netcore3.1

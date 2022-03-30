@@ -1868,6 +1868,19 @@ module IO =
         @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0"
         System.IO.File.ReadLines("1.tmp.txt") |> should equal (Array.map string [|1..10|])
 
+    @"外部コマンド実行
+    https://natsutan.hatenablog.com/entry/20111014/1318589673
+    https://stackoverflow.com/questions/11960297/external-program-launch-and-output-redirect-in-fsi-and-f"
+    System.Diagnostics.ProcessStartInfo(
+        "cat", "1.tmp.txt",
+        RedirectStandardOutput = true,
+        StandardOutputEncoding = System.Text.Encoding.UTF8,
+        UseShellExecute = false)
+    |> System.Diagnostics.Process.Start
+    |> fun p -> p.StandardOutput.ReadToEnd()
+    |> fun s -> s.Split("\n")
+
+
 module PatternMatch =
     exception DivideByZeroException
     // match a specified type of subtypes
