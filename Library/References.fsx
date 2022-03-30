@@ -1771,6 +1771,9 @@ module String =
         let template = sprintf "%s%02d"
         template "TEST" 1 |> should equal "TEST01"
 
+        let a = "TEST"
+        $"{a}" |> should equal "TEST"
+
     @"Substring
     部分文字列をとる「メソッド」"
     let s = "0123456789"
@@ -1872,7 +1875,8 @@ module IO =
     https://natsutan.hatenablog.com/entry/20111014/1318589673
     https://stackoverflow.com/questions/11960297/external-program-launch-and-output-redirect-in-fsi-and-f"
     System.Diagnostics.ProcessStartInfo(
-        "cat", "1.tmp.txt",
+        FileName="dotnet",
+        Arguments="fsi --help",
         RedirectStandardOutput = true,
         StandardOutputEncoding = System.Text.Encoding.UTF8,
         UseShellExecute = false)
