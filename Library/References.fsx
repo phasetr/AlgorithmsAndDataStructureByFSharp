@@ -2,8 +2,20 @@
 open FsUnit
 #nowarn "40"
 
-@"参考：色々な言語でのリスト処理関数の対応
-https://qiita.com/dico_leque/items/4662a0223cb6bfb19bd3"
+module ActivePattern =
+    // 引数で受け取った値を「奇数/偶数」の識別子に分類
+    let (|Even|Odd|) input =
+        if input % 2 = 0 then Even else Odd
+
+    // アクティブパターンのパターンマッチ
+    let testNumber input =
+        match input with
+        | Even -> "even"
+        | Odd -> "odd"
+
+    testNumber 7  |> should equal "odd"
+    testNumber 11 |> should equal "odd"
+    testNumber 32 |> should equal "even"
 
 module Array =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html"
@@ -793,11 +805,109 @@ module Dictionary =
     @"Dict literal, read only"
     dict [(1,"a");(2,"b");(3,"c")]
 
+module Function =
+    @"Define an operator
+    Bird, Gibbons, P.130"
+    let (<<=): list<'a> -> list<'a> -> bool = fun xs ys ->
+        List.forall id [for x in xs do for y in ys do x <= y]
+    [1..3] <<= [4..6] |> should equal true
+    [1..3] <<= [2..4] |> should equal false
+
+    @"forward-pipe operator"
+    let getTotal2 items =
+        (0, items)
+        ||> List.fold (fun acc (q, p) -> acc + q * p)
+    [(1,2);(3,4)] |> getTotal2
+
+    @"function composition"
+    let twice x = 2 * x
+    let cubic x = pown x 3
+    let twiceCubic = cubic >> twice
+    twiceCubic 3 |> should equal 54
+
+    @"memoized recursion"
+    module MemRec =
+        let memorec f =
+            let memo = System.Collections.Generic.Dictionary<_, _>()
+            let rec frec j =
+                match memo.TryGetValue j with
+                | exist, value when exist -> value
+                | _ ->
+                    let value = f frec j
+                    memo.Add(j, value)
+                    value
+            frec
+        let fact frec i =
+            if i = 1L then 1L
+            else i * frec (i-1L)
+        (memorec fact) 20L
+
+    @"相互再帰関数, mutual recursion"
+    let rec even x = if x = 0 then true else odd (x-1)
+    and odd x = if x = 0 then false else even (x-1)
+    let isEven x = if (x < 0) then even (-x) else even x
+    isEven 9 |> should equal false
+    isEven 10 |> should equal true
+
+    module MutualRecursion1 =
+        // https://stackoverflow.com/a/3621143
+        // `and`を使わなくても次のように書ける
+        let rec even odd x = if x = 0 then true else odd (x-1)
+        let rec odd x = if x = 0 then false else even odd (x-1)
+        let isEven x = if (x < 0) then even odd (-x) else even odd x
+        isEven 9 |> should equal false
+        isEven 10 |> should equal true
+
+    @"パターンマッチ・引数の場合分けによる定義,
+    Haskellでいう次のような定義
+    f [] = []
+    f x:xs = undefined
+    "
+    let rec factSlow = function
+    | 1 -> 1
+    | n -> n * factSlow (n-1)
+
+    let rec map: ('a -> 'b) -> 'a list -> 'b list = fun f ys ->
+        match ys with
+        | [] -> []
+        | x::xs -> f x :: map f xs
+    map (fun x -> x+1) [1;2;3] |> should equal [2;3;4]
+
+module IO =
+    @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0
+    https://www.dotnetperls.com/file-fs?msclkid=d0f677a5af2711ec9c9679c85f806250"
+    module File =
+        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.writealllines?view=net-6.0"
+        let xa = seq [1..10] |> Seq.map string
+        System.IO.File.WriteAllLines ("1.tmp.txt", xa)
+        System.IO.File.WriteAllText("1.tmp.txt", "test")
+        System.IO.File.WriteAllText("1.tmp.txt", "あいうえお")
+        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readalltext?view=net-6.0"
+        System.IO.File.ReadAllText("1.tmp.txt") |> fun s -> s.Split("\r\n")
+        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0"
+        System.IO.File.ReadLines("1.tmp.txt") |> should equal (Array.map string [|1..10|])
+
+    @"外部コマンド実行
+    https://natsutan.hatenablog.com/entry/20111014/1318589673
+    https://stackoverflow.com/questions/11960297/external-program-launch-and-output-redirect-in-fsi-and-f"
+    System.Diagnostics.ProcessStartInfo(
+        FileName="dotnet",
+        Arguments="fsi --help",
+        RedirectStandardOutput = true,
+        StandardOutputEncoding = System.Text.Encoding.UTF8,
+        UseShellExecute = false)
+    |> System.Diagnostics.Process.Start
+    |> fun p -> p.StandardOutput.ReadToEnd()
+    |> fun s -> s.Split("\n")
+
 module List =
     @"docs for List
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html
     https://github.com/dotnet/fsharp/blob/main/src/fsharp/FSharp.Core/list.fs
     https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/lists"
+
+    @"参考：色々な言語でのリスト処理関数の対応
+    https://qiita.com/dico_leque/items/4662a0223cb6bfb19bd3"
 
     @"List literal
     https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/lists"
@@ -1107,847 +1217,17 @@ module List =
     until ((<) 100) ((*) 2) 1 |> should equal 128
     until (fun x -> x%2=1) (fun x -> x / 2) 400 |> should equal 25
 
-module Sequence =
-    @"docs
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
-
-    @"Sequence literal"
-    {0..3} |> should equal (seq [0..3])
-
-    @"Seq.allPairs
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#allPairs"
-    ([1;2], [3;4]) ||> Seq.allPairs |> should equal (seq {(1, 3);(1, 4);(2, 3);(2, 4)})
-
-    @"Seq.append
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
-    Seq.append [1;2] [3;4]|> should equal {1..4}
-
-    @"Seq.average
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#average"
-    [1.0;2.0;3.0] |> Seq.average |> should equal 2
-
-    @"Seq.averageBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#averageBy"
-    module AverageBy =
-        type Foo = { Bar: float }
-        seq {{Bar = 2.0};{Bar = 4.0}}
-        |> Seq.averageBy (fun foo -> foo.Bar) |> should equal 3.0
-
-    @"Seq.cache
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cache"
-    module Cache =
-        let fibSeq = (0, 1) |> Seq.unfold (fun (a,b) -> Some(a + b, (b, a + b)))
-        let fibSeq3 = fibSeq |> Seq.take 3 |> Seq.cache
-        fibSeq3 |> should equal {1..3}
-
-    @"Seq.cast
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cast"
-    [box 1;box 2;box 3] |> Seq.cast<int> |> should equal {1..3}
-
-    @"Seq.choose
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#choose"
-    [Some 1;None;Some 2] |> Seq.choose id |> should equal (seq {1;2})
-    [1..3] |> Seq.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal (seq [2])
-
-    @"Seq.chunkBySize
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#chunkBySize"
-    [1..3] |> Seq.chunkBySize 2 |> should equal (seq {[|1;2|];[|3|]})
-
-    @"Seq.collect, Haskell concatMap
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#collect"
-    module Collect =
-        type Foo = { Bar: int seq }
-        seq { {Bar = [1;2]};{Bar = [3;4]} } |> Seq.collect (fun foo -> foo.Bar)
-        |> should equal {1..4}
-
-        [[1;2];[3;4]] |> Seq.collect id |> should equal {1..4}
-
-    @"Seq.compareWith
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#compareWith"
-    module CompareWith =
-        let closerToNextDozen a b = (a % 12).CompareTo(b % 12)
-        ([1;10], [1;10]) ||> Seq.compareWith closerToNextDozen |> should equal 0
-        ([1;5], [1;8]) ||> Seq.compareWith closerToNextDozen |> should equal -1
-        ([1;11], [1;13]) ||> Seq.compareWith closerToNextDozen |> should equal 1
-        ([1;2], [1]) ||> Seq.compareWith closerToNextDozen |> should equal 1
-        ([1], [1;2]) ||> Seq.compareWith closerToNextDozen |> should equal -1
-
-    @"Seq.concat
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#concat"
-    [[1;2];[3];[4;5]] |> Seq.concat |> should equal {1..5}
-
-    @"Seq.contains
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#contains"
-    [1;2] |> Seq.contains 2 |> should equal true
-    [1;2] |> Seq.contains 5 |> should equal false
-
-    @"Seq.countBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#countBy"
-    module CountBy =
-        type Foo = { Bar: string }
-        let inputs = [{Bar = "a"};{Bar = "b"};{Bar = "a"}]
-        inputs |> Seq.countBy (fun foo -> foo.Bar)
-        |> should equal (seq { ("a", 2);("b", 1) })
-
-    @"Haskell cycle"
-    let cycle xs = Seq.concat <| Seq.initInfinite (fun _ -> xs)
-    cycle [1..2] |> Seq.take 4 |> should equal [1;2;1;2]
-
-    @"Seq.delay
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#delay"
-    Seq.delay (fun () -> {1..3}) |> should equal {1..3}
-
-    @"Seq.distinct
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#distinct"
-    [1;1;2;3] |> Seq.distinct |> should equal {1..3}
-
-    @"Seq.distinctBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#distinctBy"
-    module DistinctBy =
-        type Foo = { Bar: int }
-        [{Bar = 1 };{Bar = 1};{Bar = 2};{Bar = 3}] |> Seq.distinctBy (fun foo -> foo.Bar)
-        |> should equal (seq {{ Bar = 1 };{ Bar = 2 };{ Bar = 3 }})
-
-    @"Seq.empty
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#empty"
-    Seq.empty |> should equal (seq [])
-
-    @"Seq.exactlyOne
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exactlyOne"
-    ["banana"] |> Seq.exactlyOne |> should equal "banana"
-    // ["pear";"banana"] |> Seq.exactlyOne // ERROR!
-    // [] |> Seq.exactlyOne // ERROR!
-
-    @"Seq.except
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#except"
-    [1..5] |> Seq.except [1..2..5] |> should equal (seq {2;4})
-
-    @"Seq.exists, Haskell any
-    cf. Seq.forall (= Haskell all)
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists"
-    [1..5] |> Seq.exists (fun elm -> elm % 4 = 0) |> should equal true
-    [1..5] |> Seq.exists (fun elm -> elm % 6 = 0) |> should equal false
-
-    @"Seq.exists2 TODO
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists2"
-    ([1;2], [1;2;0]) ||> Seq.exists2 (fun a b -> a > b) |> should equal false
-    ([1;4], [1;3;4]) ||> Seq.exists2 (fun a b -> a > b) |> should equal true
-
-    @"Seq.filter
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists2"
-    [1..4] |> Seq.filter (fun elm -> elm % 2 = 0) |> should equal [2;4]
-
-    @"Seq.find, 条件をみたす第一要素を取る
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#find"
-    [1..4] |> Seq.find (fun elm -> elm % 2 = 0) |> should equal 2
-    // [1..3] |> Seq.find (fun elm -> elm % 6 = 0) // KeyNotFoundException
-
-    @"Seq.findBack, 後ろから探して第一要素を取る
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#findBack"
-    [2..4] |> Seq.findBack (fun x -> x%2=0) |> should equal 4
-
-    @"Seq.findIndex
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#findIndex"
-    [1..5] |> Seq.findIndex (fun x -> x % 2 = 0) |> should equal 1
-
-    @"Seq.findIndexBack
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#findIndexBack"
-    [1..5] |> Seq.findIndexBack (fun x -> x % 2 = 0) |> should equal 3
-
-    @"Seq.fold
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold"
-    module Fold =
-        type Charge = | In of int | Out of int
-        let inputs = [In 1;Out 2;In 3]
-        (0, inputs) ||> Seq.fold (fun acc charge ->
-            match charge with
-            | In i -> acc + i
-            | Out o -> acc - o) |> should equal 2
-
-    @"Seq.fold2
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold2"
-    module Fold2 =
-        type CoinToss = Head | Tails
-        let data1 = [Tails;Head;Tails]
-        let data2 = [Tails;Head;Head]
-        (0, data1, data2) |||> Seq.fold2 (fun acc a b ->
-            match (a, b) with
-            | Head, Head -> acc + 1
-            | Tails, Tails -> acc + 1
-            | _ -> acc - 1)
-            |> should equal 1
-
-    @"Seq.foldBack
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#foldBack"
-    Seq.foldBack (+) [1..5] 10 |> should equal 25
-    Seq.foldBack (-) [1..5] 0 |> should equal 3
-    Seq.fold (-) 0 [1..5] |> should equal -15
-
-    @"Seq.foldBack2
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#foldBack2"
-    module FoldBack2 =
-        type Count = { Positive: int;Negative: int;Text: string }
-        let inputs1 = [-1;-2;-3]
-        let inputs2 = [3;2;1;0]
-        let initialState = {Positive = 0;Negative = 0;Text = ""}
-
-        (inputs1, inputs2, initialState) |||> Seq.foldBack2 (fun a b acc  ->
-            let text = acc.Text + "(" + string a + "," + string b + ") "
-            if a + b >= 0 then
-                { acc with
-                    Positive = acc.Positive + 1
-                    Text = text }
-            else
-                { acc with
-                    Negative = acc.Negative + 1
-                    Text = text }
-                    )
-        |> should equal {Positive=2;Negative=1;Text="(-3,1) (-2,2) (-1,3) "}
-
-    @"Seq.forall
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
-    module Forall =
-        let isEven a = a % 2 = 0
-        [2;42] |> Seq.forall isEven |> should equal true
-        [1;2] |> Seq.forall isEven |> should equal false
-
-    @"Seq.forall2
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
-
-    @"group: Haskellのgroup, !!注意!! F#のSeq.groupByとは挙動が違う.
-    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
-    module Group =
-        let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
-            if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
-
-        let rec group = function
-            | SeqEmpty -> Seq.empty
-            | SeqCons (x, xs) ->
-                let ys: 'a seq = Seq.takeWhile ((=) x) xs
-                let zs: 'a seq = Seq.skipWhile ((=) x) xs
-                Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
-        group "Mississippi" |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
-
-    @"Seq.groupBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"
-    [1;2;3;4;5] |> Seq.groupBy (fun n -> n % 2)
-    |> should equal (seq [(1, seq [1;3;5]);(0, seq [2;4])])
-
-    @"Seq.head
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"
-    ["banana";"pear"] |> Seq.head |> should equal "banana"
-    {0..9} |> Seq.head |> should equal 0
-
-    @"Seq.indexed
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#indexed"
-    Seq.indexed "abc" |> should equal (seq [(0, 'a');(1, 'b');(2, 'c')])
-
-    @"Seq.init
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#init"
-    Seq.init 4 (fun v -> v + 5) |> should equal (seq [5..8])
-
-    @"Seq.initInfinite, infinite seq
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#initInfinite
-    https://atcoder.jp/contests/abc169/tasks/abc169_d
-    Seqに対するhead-tailの分解
-    Active Pattern利用"
-    module InitInfinite =
-        let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
-            if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
-        Seq.initInfinite id |> Seq.take 3 |> should equal {0..2}
-        Seq.initInfinite (fun x -> x + 1) |> Seq.take 3 |> should equal {1..3}
-
-        @"initInfinite64
-        https://atcoder.jp/contests/abc169/tasks/abc169_d
-        `return!`を使った再帰ではなく`mutable`を使っているのは`return!`で生成されるステートマシンのコストが（数を出して1増やすだけの処理より）高いため"
-        let initInfinite64 f =
-            seq {
-                let mutable i = 0L
-                while true do
-                    yield f i
-                    i <- i + 1L
-            }
-        @"initInfiniteBigInteger"
-        let initInfiniteBigInteger f =
-            seq {
-                let mutable i = 0I
-                while true do
-                    yield f i
-                    i <- i + 1I
-            }
-
-    @"Seq.insertAt
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertAt"
-    seq { 0;1;2 } |> Seq.insertAt 1 9 |> should equal (seq [0;9;1;2])
-
-    @"Seq.insertManyAt
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertManyAt"
-    seq {0;1;2} |> Seq.insertManyAt 1 [8;9] |> should equal (seq {0;8;9;1;2})
-
-    @"Seq.isEmpty
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertManyAt"
-    [] |> Seq.isEmpty |> should equal true
-    ["pear";"banana"] |> Seq.isEmpty |> should equal false
-
-    @"Seq.item
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#item"
-    ["a";"b";"c"] |> Seq.item 1 |> should equal "b"
-
-    @"Seq.iter
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iter"
-    ["a";"b";"c"] |> Seq.iter (printfn "%s")
-
-    @"haskell iterate
-    http://fssnip.net/18/title/Haskell-function-iterate
-    iterate :: (a -> a) -> a -> [a]
-    iterate f x = x : iterate f (f x)"
-    let rec iterate f x = seq {
-        yield x
-        yield! iterate f (f x)
-    }
-    Seq.take 10 (iterate ((*) 2) 1) |> should equal (seq [1;2;4;8;16;32;64;128;256;512])
-
-    @"Seq.iter2
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iter2"
-
-    @"Seq.iteri
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iteri"
-    ["a";"b";"c"] |> Seq.iteri (fun i v -> printfn "{i}: {v}")
-
-    @"Seq.iteri2
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iteri2"
-
-    @"Seq.last
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#last"
-    ["pear";"banana"] |> Seq.last |> should equal "banana"
-
-    @"Seq.length
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#length"
-    {1..3} |> Seq.length |> should equal 3
-
-    @"Seq.map
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map"
-
-    @"Seq.map2
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map2"
-    module Map2 =
-        let inputs1 = ["a";"bad";"good"]
-        let inputs2 = [0;2;1]
-        (inputs1, inputs2) ||> Seq.map2 (fun x y -> x.[y]) |> should equal (seq ['a';'d';'o'])
-        ([1..4], [11..13]) ||> Seq.map2 (fun x y -> x+y) |> should equal (seq [12;14;16])
-
-    @"Seq.map3
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map3"
-
-    @"Seq.mapFold
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapFold"
-
-    @"Seq.mapFoldBack
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapFoldBack"
-
-    @"Seq.mapi
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapi"
-
-    @"Seq.mapi2
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapi2"
-
-    @"Seq.max
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#max"
-
-    @"Seq.maxBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#maxBy"
-
-    @"Seq.min
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#min"
-
-    @"Seq.minBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#minBy"
-    module MinBy =
-        let inputs =
-        ["aaa";"b";"cccc"] |> Seq.minBy (fun s -> s.Length) |> should equal "b"
-
-    @"Seq.ofArray
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#ofArray"
-
-    @"Seq.ofList
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#ofList"
-    [1;2;5] |> Seq.ofList |> should equal (seq {1;2;5})
-
-    @"Seq.pairwise
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#pairwise"
-    seq {1..4} |> Seq.pairwise |> should equal (seq [(1,2);(2,3);(3,4)])
-
-    @"Seq.permute
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#permute"
-    [1..4] |> Seq.permute (fun x -> (x + 1) % 4) |> should equal (seq [4;1;2;3])
-
-    @"Seq.pick
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#pick"
-    [1;2;3] |> Seq.pick (fun n -> if n % 2 = 0 then Some (string n) else None) |> should equal "2"
-
-    @"Seq.readonly
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#readonly"
-    [|1..3|] |> Seq.readonly |> should equal (seq [1..3])
-
-    @"Seq.reduce
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#reduce"
-    {0..9} |> Seq.reduce (-) |> should equal -45
-
-    @"Seq.reduceBack
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#reduceBack"
-
-    @"Seq.removeAt
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#removeAt"
-    Seq.removeAt 1 {0..2} |> should equal (seq [0;2])
-
-    @"Seq.removeManyAt
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#removeManyAt"
-    Seq.removeManyAt 1 2 {0..3} |> should equal (seq [0;3])
-
-    @"Seq.replicate
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#replicate"
-    Seq.replicate 3 "a" |> should equal (seq ["a";"a";"a"])
-
-    @"Seq.rev
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#rev"
-
-    @"repeat, Haskell
-    https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html"
-    let rec repeat x = seq {
-        yield x
-        yield! repeat x
-    }
-    Seq.take 3 (repeat 1) |> should equal (seq [1;1;1])
-
-    @"Seq.scan
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#scan"
-    module Scan =
-        type Charge = | In of int | Out of int
-        let inputs = seq {In 1;Out 2;In 3}
-        (0, inputs) ||> Seq.scan (fun acc charge ->
-            match charge with
-                | In i -> acc + i
-                | Out o -> acc - o)
-        |> should equal [0;1;-1;2]
-
-    @"Seq.scanBack
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#scanBack"
-    module ScanBack =
-        type Charge = | In of int | Out of int
-        let inputs = [In 1;Out 2;In 3]
-        (inputs, 0) ||> Seq.scanBack (fun charge acc ->
-            match charge with
-                | In i -> acc + i
-                | Out o -> acc - o)
-        |> should equal [2;1;3;0]
-
-    @"Seq.singleton
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#singleton"
-    Seq.singleton 0 |> should equal (seq [0])
-
-    @"Seq.skip, Haskell drop
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#skip"
-    Seq.skip 2 [1..4] |> should equal [3;4]
-    // Seq.skip 5 [1..4] // ERROR!
-    Seq.skip -1 [1..4] |> should equal [1..4]
-
-    @"Seq.skipWhile, Haskell dropWhile
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#skipWhile"
-    seq {"a";"bbb";"cc";"d"} |> Seq.skipWhile (fun x -> x.Length < 3) |> should equal (seq ["bbb";"cc";"d"])
-    {0..5} |> Seq.skipWhile (fun x -> x < 3) |> should equal {3..5}
-    module DropWhile =
-        let rec dropWhile p (xs: seq<'a>) =
-            match xs with
-            | s when Seq.isEmpty s -> Seq.empty
-            | _ ->
-                if p (Seq.head xs) then dropWhile p (Seq.tail xs)
-                else xs
-        {0..5} |> dropWhile (fun x -> x < 3) |> should equal {3..5}
-
-    @"slice, subseq, お手製
-    https://stackoverflow.com/questions/34093543/f-take-subsequence-of-a-sequence"
-    module SliceSubseq =
-        let sub i n = Seq.skip i >> Seq.take n
-        let slice s e = sub s (e - s + 1)
-        sub 1 3 {0..10} |> should equal {1..3}
-        sub 2 4 {0..10} |> should equal {2..5}
-        slice 1 3 {0..10} |> should equal {1..3}
-        slice 2 4 {0..10} |> should equal {2..4}
-
-    @"Seq.sort
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sort"
-
-    @"Seq.sortBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortBy"
-
-    @"Seq.sortByDescending
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortByDescending"
-
-    @"Seq.sortDescending
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortDescending"
-
-    @"Seq.sortWith
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortWith"
-
-    @"Seq.splitInto
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#splitInto"
-    Seq.splitInto 3 [1..5] |> should equal (seq [[|1;2|];[|3;4|];[|5|]])
-
-    @"Seq.sum s = Seq.fold (+) 0 s
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sum"
-    Seq.fold (-) 0 { 0..9 } |> should equal -45
-
-    @"Seq.sumBy
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sumBy"
-
-    @"Seq.tail
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#tail"
-    Seq.tail (seq {0..3}) |> should equal (seq { 1..3 })
-
-    @"Seq.take
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#take"
-    Seq.take 2 [1..4] |> should equal (seq [1;2])
-
-    @"Seq.takeWhile
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#takeWhile"
-    {0..9} |> Seq.takeWhile (fun x -> x < 3) |> should equal {0..2}
-
-    @"Seq.toArray
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#toArray"
-
-    @"Seq.toList
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#toList"
-
-    @"Seq.transpose
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#transpose"
-    Seq.transpose [[10;20;30];[11;21;31]] |> should equal [[10;11];[20;21];[30;31]]
-
-    @"Seq.truncate, 高々n個の要素を取る
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#truncate"
-
-    @"Seq.tryExactlyOne
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#tryExactlyOne"
-
-    @"Seq.tryFind"
-    @"Seq.tryFindBack"
-    @"Seq.tryFindIndex"
-    @"Seq.tryFindIndexBack"
-    @"Seq.tryHead"
-    @"Seq.tryItem"
-    @"Seq.tryLast"
-    @"Seq.tryPick"
-    @"Seq.unfold
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#unfold"
-    1 |> Seq.unfold (fun state -> if state > 100 then None else Some (state, state * 2))
-    |> should equal (seq { 1;2;4;8;16;32;64 })
-    @"Seq.updateAt"
-    @"Seq.where
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#where"
-    [1;2;3;4] |> Seq.where (fun elm -> elm % 2 = 0) |> should equal [2;4]
-    @"Seq.windowed"
-    @"Seq.zip"
-    @"Seq.zip3"
-
-module String =
-    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
-
-    @"文字列結合"
-    "abc" + "def" |> should equal "abcdef"
-
-    @"文字列の反転, reverse"
-    "abcde" |> Seq.toArray |> Array.rev |> System.String |> should equal"edcba"
-
-    @"文字列を一文字ずつ切り出して数値化する"
-    Seq.map (string >> int) "0123" |> should equal [0..3]
-
-    @"埋め込み文字列"
-    let text = "TEXT"
-    $"text: {text}" |> should equal "text: TEXT"
-
-    @"部分文字列の検索
-    https://www.dotnetperls.com/indexof-fs"
-    module Contains =
-        let words = "fish frog dog"
-        words.IndexOf("frog") |> should equal 5
-        words.IndexOf("bird") |> should equal -1
-
-    @"String.collect
-    mapと違って文字を文字列に変換する関数を使ってmapする
-    https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d"
-    "Hello, World"
-    |> String.collect (fun c -> sprintf "%c " c)
-    |> should equal "H e l l o ,   W o r l d "
-
-    @"String.concat
-    配列やリストの要素を連結して文字列化"
-    [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
-    [|'a'..'e'|] |> System.String |> should equal "abcde"
-
-    [1..5]
-    |> List.map string
-    |> String.concat " "
-    |> should equal "1 2 3 4 5"
-
-    [1;2;1;2;3] |> List.distinct
-    |> should equal [1;2;3]
-
-    ["Stefan";"says:";"Hello";"there!"]
-    |> String.concat " " |> should equal "Stefan says: Hello there!"
-
-    [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
-    [0..9] |> List.map string |> String.concat ", " |> should equal "0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
-    ["No comma"] |> String.concat "," |> should equal "No comma"
-
-    @"System.String.Concat
-    文字(char)のリストを文字列化.
-    注意: `['1';'2';'3'] |> String.concat`はエラー."
-    ['1';'2';'3'] |> System.String.Concat |> should equal "123"
-
-    @"exists
-    文字列中に与えられた条件をみたす文字が存在するか"
+module Literal =
+    // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/literals
+    uint 100 |> should equal 100u
+    int64 100 |> should equal 100L
+    uint64 100 |> should equal 100UL
+    bigint 100 |> should equal 100I
+
+    @"bottom, undefined, ⊥, _|_
+    https://stackoverflow.com/questions/20337249/bottom-undefined-value-in-f
     open System
-    "Hello World!" |> String.exists System.Char.IsUpper |> should equal true
-    "Yoda" |> String.exists Char.IsUpper |> should equal true
-    "nope" |> String.exists Char.IsUpper |> should equal false
-
-    @"filter"
-    // Filtering out just alphanumeric characters
-    "0 1 2 3 4 5 6 7 8 9 a A m M"
-    |> String.filter Uri.IsHexDigit |> should equal "0123456789aA"
-
-    //Filtering out just digits
-    "hello" |> String.filter Char.IsDigit |> should equal ""
-
-    @"forall"
-    "all are lower" |> System.String.forall System.Char.IsLower |> should equal false
-    "allarelower" |> System.String.forall System.Char.IsLower |> should equal true
-
-    @"forall
-    文字列中のすべての文字が条件を満たすか"
-    "helloworld"
-    |> String.forall System.Char.IsLower
-    |> should equal true
-    // space がある
-    "hello world"
-    |> String.forall System.Char.IsLower
-    |> should equal false
-
-    @"init
-    インデックスに対して関数を作用させた結果の文字列を連結する"
-    String.init 10 (fun i -> i.ToString())
-    |> should equal "0123456789"
-    String.init 26 (fun i -> sprintf "%c" (char (i + int 'A')))
-    |> should equal "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    String.init 10 (fun i -> int '0' + i |> sprintf "%d ")
-    |> should equal "48 49 50 51 52 53 54 55 56 57 "
-
-    @"iter"
-    "Hello" |> String.iter (fun c -> printfn "%c %d" c (int c))
-
-    @"iteri"
-    "Hello" |> String.iteri (fun i c -> printfn "%d. %c %d" (i + 1) c (int c))
-
-    @"length
-    文字列の長さ"
-    "aiueo" |> String.length |> should equal 5
-    String.length null  |> should equal 0
-    String.length ""    |> should equal 0
-    String.length "123" |> should equal 3
-
-    @"map
-    各文字に作用"
-    "hello, world" |> String.map System.Char.ToUpper
-    |> should equal "HELLO, WORLD"
-
-    "Hello there!" |> String.map Char.ToUpper
-    |> should equal "HELLO THERE!"
-
-    @"mapi"
-    "OK!" |> String.mapi (fun i c -> char c)
-    |> should equal "OK!"
-
-    @"String.replicate
-    文字列のくり返し."
-    "Do it!" |> String.replicate 3
-    |> should equal "Do it!Do it!Do it!"
-
-    @"Split
-    文字列を分割する「メソッド」"
-    "1 2 3" |> fun s -> s.Split(" ") |> should equal [|"1";"2";"3"|]
-
-    @"sprintf, 文字列埋め込み"
-    module Sprintf =
-        sprintf "%s%02d" "TEST" 1 |> should equal "TEST01"
-        // %のエスケープは%%を重ねる
-        sprintf "%%%s%02d" "TEST" 1 |> should equal "%TEST01"
-
-        let template = sprintf "%s%02d"
-        template "TEST" 1 |> should equal "TEST01"
-
-        let a = "TEST"
-        $"{a}" |> should equal "TEST"
-
-    @"Substring
-    部分文字列をとる「メソッド」"
-    let s = "0123456789"
-    s.Substring(s.Length - 5) |> should equal "56789"
-    s.Substring(1, 5) |> should equal "12345"
-
-    @"Seq.take"
-    seq {0..4} |> Seq.take 2 |> should equal (seq {0;1})
-
-    @"Seq.truncate
-    Seq.takeとの違いは指定の要素数以上取れないときにエラーにならず,
-    取れるだけ取ってくれる点."
-    seq {0..4} |> Seq.truncate 2 |> should equal (seq {0;1})
-    seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
-
-module Function =
-    @"Define an operator
-    Bird, Gibbons, P.130"
-    let (<<=): list<'a> -> list<'a> -> bool = fun xs ys ->
-        List.forall id [for x in xs do for y in ys do x <= y]
-    [1..3] <<= [4..6] |> should equal true
-    [1..3] <<= [2..4] |> should equal false
-
-    @"forward-pipe operator"
-    let getTotal2 items =
-        (0, items)
-        ||> List.fold (fun acc (q, p) -> acc + q * p)
-    [(1,2);(3,4)] |> getTotal2
-
-    @"function composition"
-    let twice x = 2 * x
-    let cubic x = pown x 3
-    let twiceCubic = cubic >> twice
-    twiceCubic 3 |> should equal 54
-
-    @"memoized recursion"
-    module MemRec =
-        let memorec f =
-            let memo = System.Collections.Generic.Dictionary<_, _>()
-            let rec frec j =
-                match memo.TryGetValue j with
-                | exist, value when exist -> value
-                | _ ->
-                    let value = f frec j
-                    memo.Add(j, value)
-                    value
-            frec
-        let fact frec i =
-            if i = 1L then 1L
-            else i * frec (i-1L)
-        (memorec fact) 20L
-
-    @"相互再帰関数, mutual recursion"
-    let rec even x = if x = 0 then true else odd (x-1)
-    and odd x = if x = 0 then false else even (x-1)
-    let isEven x = if (x < 0) then even (-x) else even x
-    isEven 9 |> should equal false
-    isEven 10 |> should equal true
-
-    module MutualRecursion1 =
-        // https://stackoverflow.com/a/3621143
-        // `and`を使わなくても次のように書ける
-        let rec even odd x = if x = 0 then true else odd (x-1)
-        let rec odd x = if x = 0 then false else even odd (x-1)
-        let isEven x = if (x < 0) then even odd (-x) else even odd x
-        isEven 9 |> should equal false
-        isEven 10 |> should equal true
-
-    @"パターンマッチ・引数の場合分けによる定義,
-    Haskellでいう次のような定義
-    f [] = []
-    f x:xs = undefined
-    "
-    let rec factSlow = function
-    | 1 -> 1
-    | n -> n * factSlow (n-1)
-
-    let rec map: ('a -> 'b) -> 'a list -> 'b list = fun f ys ->
-        match ys with
-        | [] -> []
-        | x::xs -> f x :: map f xs
-    map (fun x -> x+1) [1;2;3] |> should equal [2;3;4]
-
-module IO =
-    @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0
-    https://www.dotnetperls.com/file-fs?msclkid=d0f677a5af2711ec9c9679c85f806250"
-    module File =
-        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.writealllines?view=net-6.0"
-        let xa = seq [1..10] |> Seq.map string
-        System.IO.File.WriteAllLines ("1.tmp.txt", xa)
-        System.IO.File.WriteAllText("1.tmp.txt", "test")
-        System.IO.File.WriteAllText("1.tmp.txt", "あいうえお")
-        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readalltext?view=net-6.0"
-        System.IO.File.ReadAllText("1.tmp.txt") |> fun s -> s.Split("\r\n")
-        @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0"
-        System.IO.File.ReadLines("1.tmp.txt") |> should equal (Array.map string [|1..10|])
-
-    @"外部コマンド実行
-    https://natsutan.hatenablog.com/entry/20111014/1318589673
-    https://stackoverflow.com/questions/11960297/external-program-launch-and-output-redirect-in-fsi-and-f"
-    System.Diagnostics.ProcessStartInfo(
-        FileName="dotnet",
-        Arguments="fsi --help",
-        RedirectStandardOutput = true,
-        StandardOutputEncoding = System.Text.Encoding.UTF8,
-        UseShellExecute = false)
-    |> System.Diagnostics.Process.Start
-    |> fun p -> p.StandardOutput.ReadToEnd()
-    |> fun s -> s.Split("\n")
-
-
-module PatternMatch =
-    exception DivideByZeroException
-    // match a specified type of subtypes
-    let tryDivide2: decimal -> decimal -> Result<decimal,DivideByZeroException> = fun x y ->
-        try Ok (x/y)
-        with | :? DivideByZeroException as ex -> Error ex
-
-module RegularExpression =
-    let input = @"\\contentsline a{bcd}{efg}{hij}{lmn}"
-    let pattern = @"{(.*)}{(.*)}{(.*)}{(.*)}"
-    let capture = System.Text.RegularExpressions.Regex.Match(input, pattern)
-    capture.Groups.Values |> Seq.iter (printfn "%A")
-
-module Tuple =
-    // 値の取得
-    match (1, "abc") with
-    | (a,b) -> printfn "%A, %A" a b
-
-    let (a, b) = (100, 200)
-    should equal 100 a
-    should equal 200 b
-
-    fst (10, 20) |> should equal 10
-    snd (10, 20) |> should equal 20
-
-module Type =
-    type Tax = decimal
-    type Spend = decimal
-    type Total = decimal
-    type CalcTotal = Spend -> Tax -> Total
-    let calcTotal: CalcTotal = fun spend tax ->
-        spend * tax
-    calcTotal 3.0M 1.08M |> should equal 3.24M
-
-    module Type2 =
-        // Single case discriminated union
-        type ValidationError = | InputOutOfRange of string
-        type Spend = private Spend of decimal with
-            member this.Value = this |> fun (Spend value) -> value
-            static member Create input =
-                if input >= 0.0M && input <= 1000.0M then Ok (Spend input)
-                else Error (InputOutOfRange "You can only spend between 0 and 1000")
-
-    // TODO Record Type
-
-module Struct =
-    [<Struct>]
-    type Coupon = { B: int;Discount: int }
-    let coupon1 = {B=1;Discount=2}
-    let coupon2 = {B=2;Discount=3}
+    let undefined<'T> : 'T = raise (NotImplementedException())"
 
 module Map =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html"
@@ -2501,33 +1781,6 @@ module Math =
             |> List.collect (fun (y, ys) -> List.map (fun zs -> y::zs) (permutations ys))
     permutations [1;2;3] |> should equal [[1;2;3];[1;3;2];[2;1;3];[2;3;1];[3;1;2];[3;2;1]]
 
-module ActivePattern =
-    // 引数で受け取った値を「奇数/偶数」の識別子に分類
-    let (|Even|Odd|) input =
-        if input % 2 = 0 then Even else Odd
-
-    // アクティブパターンのパターンマッチ
-    let testNumber input =
-        match input with
-        | Even -> "even"
-        | Odd -> "odd"
-
-    testNumber 7  |> should equal "odd"
-    testNumber 11 |> should equal "odd"
-    testNumber 32 |> should equal "even"
-
-module Literal =
-    // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/literals
-    uint 100 |> should equal 100u
-    int64 100 |> should equal 100L
-    uint64 100 |> should equal 100UL
-    bigint 100 |> should equal 100I
-
-    @"bottom, undefined, ⊥, _|_
-    https://stackoverflow.com/questions/20337249/bottom-undefined-value-in-f
-    open System
-    let undefined<'T> : 'T = raise (NotImplementedException())"
-
 module Operator =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
 
@@ -2554,6 +1807,12 @@ module Operator =
     flip (/) 3 2 |> should equal 0
     (><) (/) 3 2 |> should equal 0
 
+    @"max
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#max"
+    max 1 2 |> should equal 2
+    max [1;2;3] [1;2;4] |> should equal [1;2;4]
+    max "zoo" "alpha" |> should equal "zoo"
+
     @"not equal"
     1 <> 2 |> should equal true
     'b' <> 'a' |> should equal true
@@ -2566,22 +1825,6 @@ module Operator =
     count.Value |> should equal 0
     count.Value <- 1  // Updates the value
     count.Value |> should equal 1
-
-module Prelude =
-    @"uncurry,
-    http://fssnip.net/3n/title/Curry-Uncurry
-    https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:uncurry"
-    let curry f a b = f (a,b)
-    let uncurry f (a,b) = f a b
-
-module Operator =
-    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
-
-    @"max
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#max"
-    max 1 2 |> should equal 2
-    max [1;2;3] [1;2;4] |> should equal [1;2;4]
-    max "zoo" "alpha" |> should equal "zoo"
 
 module Option =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
@@ -2621,6 +1864,20 @@ module Option =
     Some "42" |> Option.bind tryParse |> should equal (Some 42)
     Some "Forty-two" |> Option.bind tryParse |> should equal None
 
+module PatternMatch =
+    exception DivideByZeroException
+    // match a specified type of subtypes
+    let tryDivide2: decimal -> decimal -> Result<decimal,DivideByZeroException> = fun x y ->
+        try Ok (x/y)
+        with | :? DivideByZeroException as ex -> Error ex
+
+module Prelude =
+    @"uncurry,
+    http://fssnip.net/3n/title/Curry-Uncurry
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:uncurry"
+    let curry f a b = f (a,b)
+    let uncurry f (a,b) = f a b
+
 module Print =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-printfmodule.html"
     @"Abraham Get Programming with F#-A guide for NET developers
@@ -2642,6 +1899,553 @@ module Print =
 
     "str" |> printfn "%A" // クオートつきで出力
     "str" |> printfn "%s" // クオートなしで出力
+
+module RegularExpression =
+    let input = @"\\contentsline a{bcd}{efg}{hij}{lmn}"
+    let pattern = @"{(.*)}{(.*)}{(.*)}{(.*)}"
+    let capture = System.Text.RegularExpressions.Regex.Match(input, pattern)
+    capture.Groups.Values |> Seq.iter (printfn "%A")
+
+module Sequence =
+    @"docs
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
+
+    @"Sequence literal"
+    {0..3} |> should equal (seq [0..3])
+
+    @"Seq.allPairs
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#allPairs"
+    ([1;2], [3;4]) ||> Seq.allPairs |> should equal (seq {(1, 3);(1, 4);(2, 3);(2, 4)})
+
+    @"Seq.append
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
+    Seq.append [1;2] [3;4]|> should equal {1..4}
+
+    @"Seq.average
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#average"
+    [1.0;2.0;3.0] |> Seq.average |> should equal 2
+
+    @"Seq.averageBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#averageBy"
+    module AverageBy =
+        type Foo = { Bar: float }
+        seq {{Bar = 2.0};{Bar = 4.0}}
+        |> Seq.averageBy (fun foo -> foo.Bar) |> should equal 3.0
+
+    @"Seq.cache
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cache"
+    module Cache =
+        let fibSeq = (0, 1) |> Seq.unfold (fun (a,b) -> Some(a + b, (b, a + b)))
+        let fibSeq3 = fibSeq |> Seq.take 3 |> Seq.cache
+        fibSeq3 |> should equal {1..3}
+
+    @"Seq.cast
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#cast"
+    [box 1;box 2;box 3] |> Seq.cast<int> |> should equal {1..3}
+
+    @"Seq.choose
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#choose"
+    [Some 1;None;Some 2] |> Seq.choose id |> should equal (seq {1;2})
+    [1..3] |> Seq.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal (seq [2])
+
+    @"Seq.chunkBySize
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#chunkBySize"
+    [1..3] |> Seq.chunkBySize 2 |> should equal (seq {[|1;2|];[|3|]})
+
+    @"Seq.collect, Haskell concatMap
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#collect"
+    module Collect =
+        type Foo = { Bar: int seq }
+        seq { {Bar = [1;2]};{Bar = [3;4]} } |> Seq.collect (fun foo -> foo.Bar)
+        |> should equal {1..4}
+
+        [[1;2];[3;4]] |> Seq.collect id |> should equal {1..4}
+
+    @"Seq.compareWith
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#compareWith"
+    module CompareWith =
+        let closerToNextDozen a b = (a % 12).CompareTo(b % 12)
+        ([1;10], [1;10]) ||> Seq.compareWith closerToNextDozen |> should equal 0
+        ([1;5], [1;8]) ||> Seq.compareWith closerToNextDozen |> should equal -1
+        ([1;11], [1;13]) ||> Seq.compareWith closerToNextDozen |> should equal 1
+        ([1;2], [1]) ||> Seq.compareWith closerToNextDozen |> should equal 1
+        ([1], [1;2]) ||> Seq.compareWith closerToNextDozen |> should equal -1
+
+    @"Seq.concat
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#concat"
+    [[1;2];[3];[4;5]] |> Seq.concat |> should equal {1..5}
+
+    @"Seq.contains
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#contains"
+    [1;2] |> Seq.contains 2 |> should equal true
+    [1;2] |> Seq.contains 5 |> should equal false
+
+    @"Seq.countBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#countBy"
+    module CountBy =
+        type Foo = { Bar: string }
+        let inputs = [{Bar = "a"};{Bar = "b"};{Bar = "a"}]
+        inputs |> Seq.countBy (fun foo -> foo.Bar)
+        |> should equal (seq { ("a", 2);("b", 1) })
+
+    @"Haskell cycle"
+    let cycle xs = Seq.concat <| Seq.initInfinite (fun _ -> xs)
+    cycle [1..2] |> Seq.take 4 |> should equal [1;2;1;2]
+
+    @"Seq.delay
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#delay"
+    Seq.delay (fun () -> {1..3}) |> should equal {1..3}
+
+    @"Seq.distinct
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#distinct"
+    [1;1;2;3] |> Seq.distinct |> should equal {1..3}
+
+    @"Seq.distinctBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#distinctBy"
+    module DistinctBy =
+        type Foo = { Bar: int }
+        [{Bar = 1 };{Bar = 1};{Bar = 2};{Bar = 3}] |> Seq.distinctBy (fun foo -> foo.Bar)
+        |> should equal (seq {{ Bar = 1 };{ Bar = 2 };{ Bar = 3 }})
+
+    @"Seq.empty
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#empty"
+    Seq.empty |> should equal (seq [])
+
+    @"Seq.exactlyOne
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exactlyOne"
+    ["banana"] |> Seq.exactlyOne |> should equal "banana"
+    // ["pear";"banana"] |> Seq.exactlyOne // ERROR!
+    // [] |> Seq.exactlyOne // ERROR!
+
+    @"Seq.except
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#except"
+    [1..5] |> Seq.except [1..2..5] |> should equal (seq {2;4})
+
+    @"Seq.exists, Haskell any
+    cf. Seq.forall (= Haskell all)
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists"
+    [1..5] |> Seq.exists (fun elm -> elm % 4 = 0) |> should equal true
+    [1..5] |> Seq.exists (fun elm -> elm % 6 = 0) |> should equal false
+
+    @"Seq.exists2 TODO
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists2"
+    ([1;2], [1;2;0]) ||> Seq.exists2 (fun a b -> a > b) |> should equal false
+    ([1;4], [1;3;4]) ||> Seq.exists2 (fun a b -> a > b) |> should equal true
+
+    @"Seq.filter
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exists2"
+    [1..4] |> Seq.filter (fun elm -> elm % 2 = 0) |> should equal [2;4]
+
+    @"Seq.find, 条件をみたす第一要素を取る
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#find"
+    [1..4] |> Seq.find (fun elm -> elm % 2 = 0) |> should equal 2
+    // [1..3] |> Seq.find (fun elm -> elm % 6 = 0) // KeyNotFoundException
+
+    @"Seq.findBack, 後ろから探して第一要素を取る
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#findBack"
+    [2..4] |> Seq.findBack (fun x -> x%2=0) |> should equal 4
+
+    @"Seq.findIndex
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#findIndex"
+    [1..5] |> Seq.findIndex (fun x -> x % 2 = 0) |> should equal 1
+
+    @"Seq.findIndexBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#findIndexBack"
+    [1..5] |> Seq.findIndexBack (fun x -> x % 2 = 0) |> should equal 3
+
+    @"Seq.fold
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold"
+    module Fold =
+        type Charge = | In of int | Out of int
+        let inputs = [In 1;Out 2;In 3]
+        (0, inputs) ||> Seq.fold (fun acc charge ->
+            match charge with
+            | In i -> acc + i
+            | Out o -> acc - o) |> should equal 2
+
+    @"Seq.fold2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#fold2"
+    module Fold2 =
+        type CoinToss = Head | Tails
+        let data1 = [Tails;Head;Tails]
+        let data2 = [Tails;Head;Head]
+        (0, data1, data2) |||> Seq.fold2 (fun acc a b ->
+            match (a, b) with
+            | Head, Head -> acc + 1
+            | Tails, Tails -> acc + 1
+            | _ -> acc - 1)
+            |> should equal 1
+
+    @"Seq.foldBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#foldBack"
+    Seq.foldBack (+) [1..5] 10 |> should equal 25
+    Seq.foldBack (-) [1..5] 0 |> should equal 3
+    Seq.fold (-) 0 [1..5] |> should equal -15
+
+    @"Seq.foldBack2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#foldBack2"
+    module FoldBack2 =
+        type Count = { Positive: int;Negative: int;Text: string }
+        let inputs1 = [-1;-2;-3]
+        let inputs2 = [3;2;1;0]
+        let initialState = {Positive = 0;Negative = 0;Text = ""}
+
+        (inputs1, inputs2, initialState) |||> Seq.foldBack2 (fun a b acc  ->
+            let text = acc.Text + "(" + string a + "," + string b + ") "
+            if a + b >= 0 then
+                { acc with
+                    Positive = acc.Positive + 1
+                    Text = text }
+            else
+                { acc with
+                    Negative = acc.Negative + 1
+                    Text = text }
+                    )
+        |> should equal {Positive=2;Negative=1;Text="(-3,1) (-2,2) (-1,3) "}
+
+    @"Seq.forall
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
+    module Forall =
+        let isEven a = a % 2 = 0
+        [2;42] |> Seq.forall isEven |> should equal true
+        [1;2] |> Seq.forall isEven |> should equal false
+
+    @"Seq.forall2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
+
+    @"group: Haskellのgroup, !!注意!! F#のSeq.groupByとは挙動が違う.
+    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
+    module Group =
+        let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
+            if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
+
+        let rec group = function
+            | SeqEmpty -> Seq.empty
+            | SeqCons (x, xs) ->
+                let ys: 'a seq = Seq.takeWhile ((=) x) xs
+                let zs: 'a seq = Seq.skipWhile ((=) x) xs
+                Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
+        group "Mississippi" |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
+
+    @"Seq.groupBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"
+    [1;2;3;4;5] |> Seq.groupBy (fun n -> n % 2)
+    |> should equal (seq [(1, seq [1;3;5]);(0, seq [2;4])])
+
+    @"Seq.head
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"
+    ["banana";"pear"] |> Seq.head |> should equal "banana"
+    {0..9} |> Seq.head |> should equal 0
+
+    @"Seq.indexed
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#indexed"
+    Seq.indexed "abc" |> should equal (seq [(0, 'a');(1, 'b');(2, 'c')])
+
+    @"Seq.init
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#init"
+    Seq.init 4 (fun v -> v + 5) |> should equal (seq [5..8])
+
+    @"Seq.initInfinite, infinite seq
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#initInfinite
+    https://atcoder.jp/contests/abc169/tasks/abc169_d
+    Seqに対するhead-tailの分解
+    Active Pattern利用"
+    module InitInfinite =
+        let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
+            if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
+        Seq.initInfinite id |> Seq.take 3 |> should equal {0..2}
+        Seq.initInfinite (fun x -> x + 1) |> Seq.take 3 |> should equal {1..3}
+
+        @"initInfinite64
+        https://atcoder.jp/contests/abc169/tasks/abc169_d
+        `return!`を使った再帰ではなく`mutable`を使っているのは`return!`で生成されるステートマシンのコストが（数を出して1増やすだけの処理より）高いため"
+        let initInfinite64 f =
+            seq {
+                let mutable i = 0L
+                while true do
+                    yield f i
+                    i <- i + 1L
+            }
+        @"initInfiniteBigInteger"
+        let initInfiniteBigInteger f =
+            seq {
+                let mutable i = 0I
+                while true do
+                    yield f i
+                    i <- i + 1I
+            }
+
+    @"Seq.insertAt
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertAt"
+    seq { 0;1;2 } |> Seq.insertAt 1 9 |> should equal (seq [0;9;1;2])
+
+    @"Seq.insertManyAt
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertManyAt"
+    seq {0;1;2} |> Seq.insertManyAt 1 [8;9] |> should equal (seq {0;8;9;1;2})
+
+    @"Seq.isEmpty
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#insertManyAt"
+    [] |> Seq.isEmpty |> should equal true
+    ["pear";"banana"] |> Seq.isEmpty |> should equal false
+
+    @"Seq.item
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#item"
+    ["a";"b";"c"] |> Seq.item 1 |> should equal "b"
+
+    @"Seq.iter
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iter"
+    ["a";"b";"c"] |> Seq.iter (printfn "%s")
+
+    @"haskell iterate
+    http://fssnip.net/18/title/Haskell-function-iterate
+    iterate :: (a -> a) -> a -> [a]
+    iterate f x = x : iterate f (f x)"
+    let rec iterate f x = seq {
+        yield x
+        yield! iterate f (f x)
+    }
+    Seq.take 10 (iterate ((*) 2) 1) |> should equal (seq [1;2;4;8;16;32;64;128;256;512])
+
+    @"Seq.iter2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iter2"
+
+    @"Seq.iteri
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iteri"
+    ["a";"b";"c"] |> Seq.iteri (fun i v -> printfn "{i}: {v}")
+
+    @"Seq.iteri2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#iteri2"
+
+    @"Seq.last
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#last"
+    ["pear";"banana"] |> Seq.last |> should equal "banana"
+
+    @"Seq.length
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#length"
+    {1..3} |> Seq.length |> should equal 3
+
+    @"Seq.map
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map"
+
+    @"Seq.map2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map2"
+    module Map2 =
+        let inputs1 = ["a";"bad";"good"]
+        let inputs2 = [0;2;1]
+        (inputs1, inputs2) ||> Seq.map2 (fun x y -> x.[y]) |> should equal (seq ['a';'d';'o'])
+        ([1..4], [11..13]) ||> Seq.map2 (fun x y -> x+y) |> should equal (seq [12;14;16])
+
+    @"Seq.map3
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map3"
+
+    @"Seq.mapFold
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapFold"
+
+    @"Seq.mapFoldBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapFoldBack"
+
+    @"Seq.mapi
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapi"
+
+    @"Seq.mapi2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapi2"
+
+    @"Seq.max
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#max"
+
+    @"Seq.maxBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#maxBy"
+
+    @"Seq.min
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#min"
+
+    @"Seq.minBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#minBy"
+    module MinBy =
+        let inputs =
+        ["aaa";"b";"cccc"] |> Seq.minBy (fun s -> s.Length) |> should equal "b"
+
+    @"Seq.ofArray
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#ofArray"
+
+    @"Seq.ofList
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#ofList"
+    [1;2;5] |> Seq.ofList |> should equal (seq {1;2;5})
+
+    @"Seq.pairwise
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#pairwise"
+    seq {1..4} |> Seq.pairwise |> should equal (seq [(1,2);(2,3);(3,4)])
+
+    @"Seq.permute
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#permute"
+    [1..4] |> Seq.permute (fun x -> (x + 1) % 4) |> should equal (seq [4;1;2;3])
+
+    @"Seq.pick
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#pick"
+    [1;2;3] |> Seq.pick (fun n -> if n % 2 = 0 then Some (string n) else None) |> should equal "2"
+
+    @"Seq.readonly
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#readonly"
+    [|1..3|] |> Seq.readonly |> should equal (seq [1..3])
+
+    @"Seq.reduce
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#reduce"
+    {0..9} |> Seq.reduce (-) |> should equal -45
+
+    @"Seq.reduceBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#reduceBack"
+
+    @"Seq.removeAt
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#removeAt"
+    Seq.removeAt 1 {0..2} |> should equal (seq [0;2])
+
+    @"Seq.removeManyAt
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#removeManyAt"
+    Seq.removeManyAt 1 2 {0..3} |> should equal (seq [0;3])
+
+    @"Seq.replicate
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#replicate"
+    Seq.replicate 3 "a" |> should equal (seq ["a";"a";"a"])
+
+    @"Seq.rev
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#rev"
+
+    @"repeat, Haskell
+    https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html"
+    let rec repeat x = seq {
+        yield x
+        yield! repeat x
+    }
+    Seq.take 3 (repeat 1) |> should equal (seq [1;1;1])
+
+    @"Seq.scan
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#scan"
+    module Scan =
+        type Charge = | In of int | Out of int
+        let inputs = seq {In 1;Out 2;In 3}
+        (0, inputs) ||> Seq.scan (fun acc charge ->
+            match charge with
+                | In i -> acc + i
+                | Out o -> acc - o)
+        |> should equal [0;1;-1;2]
+
+    @"Seq.scanBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#scanBack"
+    module ScanBack =
+        type Charge = | In of int | Out of int
+        let inputs = [In 1;Out 2;In 3]
+        (inputs, 0) ||> Seq.scanBack (fun charge acc ->
+            match charge with
+                | In i -> acc + i
+                | Out o -> acc - o)
+        |> should equal [2;1;3;0]
+
+    @"Seq.singleton
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#singleton"
+    Seq.singleton 0 |> should equal (seq [0])
+
+    @"Seq.skip, Haskell drop
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#skip"
+    Seq.skip 2 [1..4] |> should equal [3;4]
+    // Seq.skip 5 [1..4] // ERROR!
+    Seq.skip -1 [1..4] |> should equal [1..4]
+
+    @"Seq.skipWhile, Haskell dropWhile
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#skipWhile"
+    seq {"a";"bbb";"cc";"d"} |> Seq.skipWhile (fun x -> x.Length < 3) |> should equal (seq ["bbb";"cc";"d"])
+    {0..5} |> Seq.skipWhile (fun x -> x < 3) |> should equal {3..5}
+    module DropWhile =
+        let rec dropWhile p (xs: seq<'a>) =
+            match xs with
+            | s when Seq.isEmpty s -> Seq.empty
+            | _ ->
+                if p (Seq.head xs) then dropWhile p (Seq.tail xs)
+                else xs
+        {0..5} |> dropWhile (fun x -> x < 3) |> should equal {3..5}
+
+    @"slice, subseq, お手製
+    https://stackoverflow.com/questions/34093543/f-take-subsequence-of-a-sequence"
+    module SliceSubseq =
+        let sub i n = Seq.skip i >> Seq.take n
+        let slice s e = sub s (e - s + 1)
+        sub 1 3 {0..10} |> should equal {1..3}
+        sub 2 4 {0..10} |> should equal {2..5}
+        slice 1 3 {0..10} |> should equal {1..3}
+        slice 2 4 {0..10} |> should equal {2..4}
+
+    @"Seq.sort
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sort"
+
+    @"Seq.sortBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortBy"
+
+    @"Seq.sortByDescending
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortByDescending"
+
+    @"Seq.sortDescending
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortDescending"
+
+    @"Seq.sortWith
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortWith"
+
+    @"Seq.splitInto
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#splitInto"
+    Seq.splitInto 3 [1..5] |> should equal (seq [[|1;2|];[|3;4|];[|5|]])
+
+    @"Seq.sum s = Seq.fold (+) 0 s
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sum"
+    Seq.fold (-) 0 { 0..9 } |> should equal -45
+
+    @"Seq.sumBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sumBy"
+
+    @"Seq.tail
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#tail"
+    Seq.tail (seq {0..3}) |> should equal (seq { 1..3 })
+
+    @"Seq.take
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#take"
+    Seq.take 2 [1..4] |> should equal (seq [1;2])
+
+    @"Seq.takeWhile
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#takeWhile"
+    {0..9} |> Seq.takeWhile (fun x -> x < 3) |> should equal {0..2}
+
+    @"Seq.toArray
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#toArray"
+
+    @"Seq.toList
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#toList"
+
+    @"Seq.transpose
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#transpose"
+    Seq.transpose [[10;20;30];[11;21;31]] |> should equal [[10;11];[20;21];[30;31]]
+
+    @"Seq.truncate, 高々n個の要素を取る
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#truncate"
+
+    @"Seq.tryExactlyOne
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#tryExactlyOne"
+
+    @"Seq.tryFind"
+    @"Seq.tryFindBack"
+    @"Seq.tryFindIndex"
+    @"Seq.tryFindIndexBack"
+    @"Seq.tryHead"
+    @"Seq.tryItem"
+    @"Seq.tryLast"
+    @"Seq.tryPick"
+    @"Seq.unfold
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#unfold"
+    1 |> Seq.unfold (fun state -> if state > 100 then None else Some (state, state * 2))
+    |> should equal (seq { 1;2;4;8;16;32;64 })
+    @"Seq.updateAt"
+    @"Seq.where
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#where"
+    [1;2;3;4] |> Seq.where (fun elm -> elm % 2 = 0) |> should equal [2;4]
+    @"Seq.windowed"
+    @"Seq.zip"
+    @"Seq.zip3"
 
 module Set =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html"
@@ -2680,7 +2484,204 @@ module Set =
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#union"
     Set.union (set [1;2;3]) (set [3;4;5]) |> should equal (set [1..5])
 
-module TypeSample =
+module String =
+    @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
+
+    @"文字列結合"
+    "abc" + "def" |> should equal "abcdef"
+
+    @"文字列の反転, reverse"
+    "abcde" |> Seq.toArray |> Array.rev |> System.String |> should equal"edcba"
+
+    @"文字列を一文字ずつ切り出して数値化する"
+    Seq.map (string >> int) "0123" |> should equal [0..3]
+
+    @"埋め込み文字列"
+    let text = "TEXT"
+    $"text: {text}" |> should equal "text: TEXT"
+
+    @"部分文字列の検索
+    https://www.dotnetperls.com/indexof-fs"
+    module Contains =
+        let words = "fish frog dog"
+        words.IndexOf("frog") |> should equal 5
+        words.IndexOf("bird") |> should equal -1
+
+    @"String.collect
+    mapと違って文字を文字列に変換する関数を使ってmapする
+    https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d"
+    "Hello, World"
+    |> String.collect (fun c -> sprintf "%c " c)
+    |> should equal "H e l l o ,   W o r l d "
+
+    @"String.concat
+    配列やリストの要素を連結して文字列化"
+    [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
+    [|'a'..'e'|] |> System.String |> should equal "abcde"
+
+    [1..5]
+    |> List.map string
+    |> String.concat " "
+    |> should equal "1 2 3 4 5"
+
+    [1;2;1;2;3] |> List.distinct
+    |> should equal [1;2;3]
+
+    ["Stefan";"says:";"Hello";"there!"]
+    |> String.concat " " |> should equal "Stefan says: Hello there!"
+
+    [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
+    [0..9] |> List.map string |> String.concat ", " |> should equal "0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+    ["No comma"] |> String.concat "," |> should equal "No comma"
+
+    @"System.String.Concat
+    文字(char)のリストを文字列化.
+    注意: `['1';'2';'3'] |> String.concat`はエラー."
+    ['1';'2';'3'] |> System.String.Concat |> should equal "123"
+
+    @"exists
+    文字列中に与えられた条件をみたす文字が存在するか"
+    open System
+    "Hello World!" |> String.exists System.Char.IsUpper |> should equal true
+    "Yoda" |> String.exists Char.IsUpper |> should equal true
+    "nope" |> String.exists Char.IsUpper |> should equal false
+
+    @"filter"
+    // Filtering out just alphanumeric characters
+    "0 1 2 3 4 5 6 7 8 9 a A m M"
+    |> String.filter Uri.IsHexDigit |> should equal "0123456789aA"
+
+    //Filtering out just digits
+    "hello" |> String.filter Char.IsDigit |> should equal ""
+
+    @"forall"
+    "all are lower" |> System.String.forall System.Char.IsLower |> should equal false
+    "allarelower" |> System.String.forall System.Char.IsLower |> should equal true
+
+    @"forall
+    文字列中のすべての文字が条件を満たすか"
+    "helloworld"
+    |> String.forall System.Char.IsLower
+    |> should equal true
+    // space がある
+    "hello world"
+    |> String.forall System.Char.IsLower
+    |> should equal false
+
+    @"init
+    インデックスに対して関数を作用させた結果の文字列を連結する"
+    String.init 10 (fun i -> i.ToString())
+    |> should equal "0123456789"
+    String.init 26 (fun i -> sprintf "%c" (char (i + int 'A')))
+    |> should equal "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    String.init 10 (fun i -> int '0' + i |> sprintf "%d ")
+    |> should equal "48 49 50 51 52 53 54 55 56 57 "
+
+    @"iter"
+    "Hello" |> String.iter (fun c -> printfn "%c %d" c (int c))
+
+    @"iteri"
+    "Hello" |> String.iteri (fun i c -> printfn "%d. %c %d" (i + 1) c (int c))
+
+    @"length
+    文字列の長さ"
+    "aiueo" |> String.length |> should equal 5
+    String.length null  |> should equal 0
+    String.length ""    |> should equal 0
+    String.length "123" |> should equal 3
+
+    @"map
+    各文字に作用"
+    "hello, world" |> String.map System.Char.ToUpper
+    |> should equal "HELLO, WORLD"
+
+    "Hello there!" |> String.map Char.ToUpper
+    |> should equal "HELLO THERE!"
+
+    @"mapi"
+    "OK!" |> String.mapi (fun i c -> char c)
+    |> should equal "OK!"
+
+    @"String.replicate
+    文字列のくり返し."
+    "Do it!" |> String.replicate 3
+    |> should equal "Do it!Do it!Do it!"
+
+    @"Split
+    文字列を分割する「メソッド」"
+    "1 2 3" |> fun s -> s.Split(" ") |> should equal [|"1";"2";"3"|]
+
+    @"sprintf, 文字列埋め込み"
+    module Sprintf =
+        sprintf "%s%02d" "TEST" 1 |> should equal "TEST01"
+        // %のエスケープは%%を重ねる
+        sprintf "%%%s%02d" "TEST" 1 |> should equal "%TEST01"
+
+        let template = sprintf "%s%02d"
+        template "TEST" 1 |> should equal "TEST01"
+
+        let a = "TEST"
+        $"{a}" |> should equal "TEST"
+
+    @"Substring
+    部分文字列をとる「メソッド」"
+    let s = "0123456789"
+    s.Substring(s.Length - 5) |> should equal "56789"
+    s.Substring(1, 5) |> should equal "12345"
+
+    @"Seq.take"
+    seq {0..4} |> Seq.take 2 |> should equal (seq {0;1})
+
+    @"Seq.truncate
+    Seq.takeとの違いは指定の要素数以上取れないときにエラーにならず,
+    取れるだけ取ってくれる点."
+    seq {0..4} |> Seq.truncate 2 |> should equal (seq {0;1})
+    seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
+
+module SystemIODirectory
+    @".NET
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory?view=net-6.0"
+
+    @"EnumerateDirectories
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory.enumeratedirectories?view=net-6.0"
+    System.IO.Directory.EnumerateDirectories "." |> should equal (seq ["./C++"])
+
+    @"GetCurrentDirectory
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory.getcurrentdirectory?view=net-6.0"
+    System.IO.Directory.GetCurrentDirectory ()
+
+    @"SetCurrentDirectory
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory.setcurrentdirectory?view=net-6.0"
+    System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__
+
+module Struct =
+    [<Struct>]
+    type Coupon = { B: int;Discount: int }
+    let coupon1 = {B=1;Discount=2}
+    let coupon2 = {B=2;Discount=3}
+
+module Tuple =
+    // 値の取得
+    match (1, "abc") with
+    | (a,b) -> printfn "%A, %A" a b
+
+    let (a, b) = (100, 200)
+    should equal 100 a
+    should equal 200 b
+
+    fst (10, 20) |> should equal 10
+    snd (10, 20) |> should equal 20
+
+module Type =
+    type Tax = decimal
+    type Spend = decimal
+    type Total = decimal
+    type CalcTotal = Spend -> Tax -> Total
+    let calcTotal: CalcTotal = fun spend tax ->
+        spend * tax
+    calcTotal 3.0M 1.08M |> should equal 3.24M
+
+    @"Type Sample"
     module Sample1 =
         type elem (id, name) =
             member this.id = id
@@ -2688,6 +2689,17 @@ module TypeSample =
         let e = elem(1, "test")
         e.id |> should equal 1
         e.name |> should equal "test"
+
+    module Type2 =
+        // Single case discriminated union
+        type ValidationError = | InputOutOfRange of string
+        type Spend = private Spend of decimal with
+            member this.Value = this |> fun (Spend value) -> value
+            static member Create input =
+                if input >= 0.0M && input <= 1000.0M then Ok (Spend input)
+                else Error (InputOutOfRange "You can only spend between 0 and 1000")
+
+    // TODO Record Type
 
 module ValueOption =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-valueoption.html"
