@@ -479,6 +479,23 @@ module Array =
     Array.skipWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|5;4;1|]
     Array.takeWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|3;2|]
 
+    @"slice: お手製
+    Array.sub を f |> g でつなげられるように引数の順番を変更し、
+    引数の意味も変えたバージョン。
+    Array.sub とは少し挙動が違うので注意。
+
+    Array.sub は Array.sub array start count
+    Array.sub [|0;2;4;6;8;10|] 2 3 // [|4;6;8|]
+
+    ここでの slice は slice start end array：end は end 番目までを含む"
+    let slice s e a = Array.sub a s (e - s + 1)
+    slice 2 3 [|0;2;4;6;8;10|] |> should equal [|4;6|]
+    @"参考: 配列が定義できているときの標準のスライス"
+    [|'a'..'e'|].[2] |> should equal 'c'
+    [|'a'..'e'|].[1..3] |> should equal [|'b';'c';'d'|]
+    [|'a'..'e'|].[2..] |> should equal [|'c';'d';'e'|]
+    [|'a'..'e'|].[..3] |> should equal [|'a';'b';'c';'d'|]
+
     @"Array.sortBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sortBy
     関数指定でソートする"
@@ -533,22 +550,8 @@ module Array =
     @"Array.sub
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sub
     スライスの一種.
-    Array.sub を f |> g でつなげられるように引数の順番を変更し、
-    引数の意味も変えたバージョン。
-    Array.sub とは少し挙動が違うので注意。
-
-    Array.sub は Array.sub array start count
-    Array.sub [|0;2;4;6;8;10|] 2 3 // [|4;6;8|]
-
-    ここでの slice は slice start end array：end は end 番目までを含む
-    slice 2 3 [|0;2;4;6;8;10|] // [|4;6|]"
-    let slice s e a = Array.sub a s (e - s + 1)
-    slice 2 3 [|0;2;4;6;8;10|] |> should equal [|4;6|]
-    /// 配列が定義できているときの標準のスライス
-    [|'a'..'e'|].[2] |> should equal 'c'
-    [|'a'..'e'|].[1..3] |> should equal [|'b';'c';'d'|]
-    [|'a'..'e'|].[2..] |> should equal [|'c';'d';'e'|]
-    [|'a'..'e'|].[..3] |> should equal [|'a';'b';'c';'d'|]
+    slice参照"
+    Array.sub [|0..5|] 2 3 |> should equal [|2..4|]
 
     @"Array.sum
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sum"
@@ -1560,6 +1563,16 @@ module Sequence =
                 if p (Seq.head xs) then dropWhile p (Seq.tail xs)
                 else xs
         {0..5} |> dropWhile (fun x -> x < 3) |> should equal {3..5}
+
+    @"slice, subseq, お手製
+    https://stackoverflow.com/questions/34093543/f-take-subsequence-of-a-sequence"
+    module SliceSubseq =
+        let sub i n = Seq.skip i >> Seq.take n
+        let slice s e = sub s (e - s + 1)
+        sub 1 3 {0..10} |> should equal {1..3}
+        sub 2 4 {0..10} |> should equal {2..5}
+        slice 1 3 {0..10} |> should equal {1..3}
+        slice 2 4 {0..10} |> should equal {2..4}
 
     @"Seq.sort
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sort"
