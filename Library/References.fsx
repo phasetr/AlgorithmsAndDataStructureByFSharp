@@ -2,6 +2,12 @@
 open FsUnit
 #nowarn "40"
 
+@"
+F# https://fsharp.github.io/fsharp-core-docs/reference
+.NET API Browser https://docs.microsoft.com/ja-jp/dotnet/api/?view=net-6.0
+.NET CLI https://docs.microsoft.com/ja-jp/dotnet/core/tools/
+.NET Cloud https://cloud.google.com/dotnet/docs/reference "
+
 module ActivePattern =
     // 引数で受け取った値を「奇数/偶数」の識別子に分類
     let (|Even|Odd|) input =
@@ -949,6 +955,8 @@ module List =
     1 :: [2;3;4] |> should equal [1;2;3;4]
     @"list comprehension, `for`"
     [for i in 1..3 do i] |> should equal [1;2;3]
+    @"filtered list comprehension, `for`"
+    [for i in 1..10 do if i <= 5 then yield i] |> should equal [1..5]
 
     @"List.contains
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#contains"
