@@ -8,6 +8,9 @@ F# https://fsharp.github.io/fsharp-core-docs/reference
 .NET CLI https://docs.microsoft.com/ja-jp/dotnet/core/tools/
 .NET Cloud https://cloud.google.com/dotnet/docs/reference "
 
+@"MISC, MEMO
+FTP: Use FluentFTP, https://github.com/robinrodricks/FluentFTP"
+
 module ActivePattern =
     // 引数で受け取った値を「奇数/偶数」の識別子に分類
     let (|Even|Odd|) input =
