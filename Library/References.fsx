@@ -6,9 +6,10 @@ open FsUnit
 F# https://fsharp.github.io/fsharp-core-docs/reference
 .NET API Browser https://docs.microsoft.com/ja-jp/dotnet/api/?view=net-6.0
 .NET CLI https://docs.microsoft.com/ja-jp/dotnet/core/tools/
-.NET Cloud https://cloud.google.com/dotnet/docs/reference "
+.NET Cloud https://cloud.google.com/dotnet/docs/reference"
 
 @"MISC, MEMO
+FsUnit: https://fsprojects.github.io/FsUnit/
 FTP: Use FluentFTP, https://github.com/robinrodricks/FluentFTP"
 
 module ActivePattern =
@@ -194,7 +195,7 @@ module Array =
     "@Array.find
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#find"
     [|1..3|] |> Array.find (fun elm -> elm % 2 = 0) |> should equal 2
-    //[|1..3|] |> Array.find (fun elm -> elm % 6 = 0) // ERROR!
+    (fun () -> [|1..3|] |> Array.find (fun elm -> elm % 6 = 0) |> ignore) |> should throw typeof<System.Collections.Generic.KeyNotFoundException>
     [|1..3|] |> Array.tryFind (fun elm -> elm % 6 = 0) |> should equal None
 
     "@Array.findBack
@@ -357,6 +358,7 @@ module Array =
     必要に応じてSeq.map2を使おう.
     https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.map2%5b't1,'t2,'u%5d-function-%5bfsharp%5d"
     Array.map2 (+) [|1..3|] [|4..6|] |> should equal [|5;7;9|]
+    (fun () -> Array.map2 (+) [|1..3|] [|4..7|] |> ignore) |> should throw typeof<System.ArgumentException>
 
     @"Array.map3
     同じ数の要素を持つ 3 つの配列のそれぞれから順次取り出した要素を引数とする関数を実行し,
@@ -1126,7 +1128,7 @@ module List =
     @"List.skip, Haskell drop
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#skip"
     List.skip 3 [1..5] |> should equal [4;5]
-    // List.skip 3 [] |> should equal [] // ERROR!
+    (fun () -> List.skip 3 ([]:list<int>) |> ignore) |> should throw typeof<System.ArgumentException>
     List.skip (-1) [1;2] |> should equal [1;2]
     List.skip 0 [1;2] |> should equal [1;2]
     module Drop =
@@ -1192,8 +1194,7 @@ module List =
     @"List.take
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#take"
     ['a'..'d'] |> List.take 2 |> should equal ['a';'b']
-    // ERROR: InvalidOperationException
-    // ['a'..'d'] |> List.take 6
+    (fun () -> ['a'..'d'] |> List.take 6 |> ignore) |> should throw typeof<System.InvalidOperationException>
     ['a'..'d'] |> List.take 0 |> should equal List.empty<char>
 
     @"Haskell tails
@@ -1303,10 +1304,10 @@ module Map =
     @"Map.find
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#find"
     module Find =
-        let m = Map [ (1, "a");(2, "b") ]
+        let m = Map [(1, "a");(2, "b")]
         m |> Map.find 1 |> should equal "a"
         m |> Map.find 2 |> should equal "b"
-        //m |> Map.find 3 // Error
+        (fun () -> m |> Map.find 3 |> ignore) |> should throw typeof<System.Collections.Generic.KeyNotFoundException>
 
     @"Map.forall
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#forall"
@@ -1794,11 +1795,16 @@ module Math =
 
 module Operator =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
+    let near0 x y = (abs (x-y)) < 0.0000001
 
     @"self definition
     https://stackoverflow.com/questions/2210854/can-you-define-your-own-operators-in-f"
     let (+.) x s = [for y in s -> x + y]
     1 +. [2;3;4] |> should equal [3;4;5]
+
+    @"atan
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#atan"
+    near0 (atan 1.0) 0.7853981634 |> should be True
 
     @"Boolean Operators
     https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/symbol-and-operator-reference/boolean-operators"
@@ -2025,8 +2031,8 @@ module Sequence =
     @"Seq.exactlyOne
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#exactlyOne"
     ["banana"] |> Seq.exactlyOne |> should equal "banana"
-    // ["pear";"banana"] |> Seq.exactlyOne // ERROR!
-    // [] |> Seq.exactlyOne // ERROR!
+    (fun () -> ["pear";"banana"] |> Seq.exactlyOne |> ignore) |> should throw typeof<System.ArgumentException>
+    (fun () -> ([]:list<int>) |> Seq.exactlyOne |> ignore) |> should throw typeof<System.ArgumentException>
 
     @"Seq.except
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#except"
@@ -2358,7 +2364,7 @@ module Sequence =
     @"Seq.skip, Haskell drop
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#skip"
     Seq.skip 2 [1..4] |> should equal [3;4]
-    // Seq.skip 5 [1..4] // ERROR!
+    // (fun () -> Seq.skip 5 [1..4] |> ignore) |> should throw typeof<System.InvalidOperationException>
     Seq.skip -1 [1..4] |> should equal [1..4]
 
     @"Seq.skipWhile, Haskell dropWhile
@@ -2664,6 +2670,19 @@ module SystemIODirectory
     @"SetCurrentDirectory
     https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory.setcurrentdirectory?view=net-6.0"
     System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__
+
+module SystemMath =
+    let near0 x y = (abs (x-y)) < 0.0000001
+
+    "Atan, 逆正接, arctan, atan
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.math.atan?view=net-6.0
+    See atan in the above `module Math`."
+    near0 (System.Math.Atan 1) 0.7853981634 |> should be True
+    near0 (atan 1) 0.7853981634 |> should be True
+
+    @"PI, 円周率
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.math.atan?view=net-6.0"
+    near0 System.Math.PI 3.141592654 |> should be True
 
 module Struct =
     [<Struct>]
