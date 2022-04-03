@@ -1185,6 +1185,19 @@ module List =
     @"String to List, 文字列をリストに変換"
     Seq.toList "abc" |> should equal ['a';'b';'c']
 
+    @"Haskell subsequences
+    https://hackage.haskell.org/package/base-4.16.1.0/docs/src/Data-OldList.html#subsequences"
+    module Subsequences =
+        let rec nonEmptySubsequences = function
+            | [] -> []
+            | x::xs ->
+                let f ys r = ys :: (x :: ys) :: r
+                [x] :: List.foldBack f (nonEmptySubsequences xs) []
+        nonEmptySubsequences [1..3] |> should equal [[1];[2];[1;2];[3];[1;3];[2;3];[1;2;3]]
+
+        let subsequences xs =  [] :: nonEmptySubsequences xs
+        subsequences [1..3] |> should equal [[];[1];[2];[1;2];[3];[1;3];[2;3];[1;2;3]]
+
     @"sum"
     [1..9] |> List.sum |> should equal 45
 
@@ -1205,6 +1218,7 @@ module List =
     tails [1;2;3;4] |> should equal [[1;2;3;4];[2;3;4];[3;4];[4];[]]
 
     @"takeWhile: Haskell の takeWhile と同じ
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#takeWhile
     List.takeWhileは標準ライブラリにある.
     下の例では不等号の向きに注意しよう：意図通りか実際に REPL で確かめるのがベスト"
     let rec takeWhile (p: 'a -> bool) lst =
@@ -1228,6 +1242,10 @@ module List =
         go x
     until ((<) 100) ((*) 2) 1 |> should equal 128
     until (fun x -> x%2=1) (fun x -> x / 2) 400 |> should equal 25
+
+    @"List.zip
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#zip"
+    List.zip [1;2] ["one";"two"] |> should equal [(1,"one");(2,"two")]
 
 module Literal =
     // https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/literals
