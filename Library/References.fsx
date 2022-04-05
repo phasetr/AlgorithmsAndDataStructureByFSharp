@@ -37,11 +37,24 @@ module Array =
     a.[1..] |> should equal [|1;2;3;4|]
     a.[..3] |> should equal [|0;1;2;3|]
 
-    @"Haskell accumArray"
-    let accumArray: ('e -> 'v -> 'e) -> 'e -> ('i * 'i) -> list<'i * 'v> -> array<'i*'e> = fun f e (l,r) ivs ->
-        [for j in [l..r] do (j, List.fold f e [for (i,v) in ivs do if i=j then yield v])]
-        |> Array.ofList
-    accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1, 60);(2, 80);(3, 0)|]
+    @"Haskell, Array.accum, Vector.accum
+    http://zvon.org/other/haskell/Outputarray/accum_f.html"
+    module Accum =
+        @"TODO この実装はあまり効率がよくない模様.
+        本家Haskellの実装をきちんと見て実装し直したい."
+        let accum f is xs =
+            Array.indexed is
+            |> Array.map (fun (i,v) -> Array.fold f v [|for (j,x) in xs do if i=j then yield x|])
+        accum (+) [|1000;2000;3000|] [|(2,4);(1,6);(0,3);(1,10)|] |> should equal [|1003;2016;3004|]
+
+    @"Haskell accumArray, cf. Bird, Gibbons
+    http://zvon.org/other/haskell/Outputarray/accumArray_f.html
+    https://hackage.haskell.org/package/base-4.16.1.0/docs/GHC-Arr.html#v:accumArray"
+    module AccumArray =
+        let accumArray: ('e -> 'v -> 'e) -> 'e -> ('i * 'i) -> list<'i * 'v> -> array<'i*'e> = fun f e (l,r) ivs ->
+            [for j in [l..r] do (j, List.fold f e [for (i,v) in ivs do if i=j then yield v])]
+            |> Array.ofList
+        accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1, 60);(2, 80);(3, 0)|]
 
     @"Array.allPairs
     配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
