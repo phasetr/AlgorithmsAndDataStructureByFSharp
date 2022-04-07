@@ -1740,6 +1740,27 @@ module Math =
                 else primeFactors n = [ { Number = n;Count = 1 } ]
             [1L..8L] |> List.filter isprime |> should equal [2L;3L;5L;7L]
 
+        @"https://jeremybytes.blogspot.com/2016/07/getting-prime-factors-in-f-with-good.html"
+        module PF2 =
+            let rec getFactors n proposed (acc:list<int64>) =
+                if n<=0L then failwith "be positive"
+                elif n=1L then [1L]
+                elif proposed = n then proposed::acc
+                elif n % proposed = 0L then getFactors (n/proposed) proposed (proposed::acc)
+                else getFactors n (proposed+1L) acc
+            let primeFactor n = getFactors n 2 []
+            primeFactor 36 |> should equal [3;3;2;2]
+
+        @"https://atcoder.jp/contests/caddi2018/submissions/9944877"
+        module PF3 =
+            let rec f c i p =
+                if p%i=0L then f (c+1L) i (p/i)
+                elif c<>0L then (i,c) :: f 0L (i+1L) p
+                elif p < i*i then [(p,1L)]
+                else (i,c) :: f 0L (i+1L) p
+            let pf p = f 0L 2L p
+            pf 36 |> should equal [(2L,2L);(3L,2L);(1L,1L)]
+
         @"http://www.fssnip.net/3X"
         module FsSnip =
             let isprime n =
