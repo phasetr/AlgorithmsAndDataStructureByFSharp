@@ -1948,6 +1948,11 @@ module Print =
     "str" |> printfn "%A" // クオートつきで出力
     "str" |> printfn "%s" // クオートなしで出力
 
+module Random =
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    let random = System.Random()
+    [|0..4|] |> Array.map (fun _ -> chars.[random.Next(chars.Length)]) |> System.String.Concat
+
 module RegularExpression =
     let input = @"\\contentsline a{bcd}{efg}{hij}{lmn}"
     let pattern = @"{(.*)}{(.*)}{(.*)}{(.*)}"
