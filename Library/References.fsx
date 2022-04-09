@@ -475,8 +475,8 @@ module Array =
     @"Array.scan
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#scan
     foldの「途中の値」をすべて集めた配列を返す関数というイメージを持つといい。
-    Array.fold (+) 1 [2..4] == ((1 + 2) + 3) + 4
-    Array.scan (+) 1 [2..4] == [1;1 + 2;(1 + 2) + 3;((1 + 2) + 3) + 4]"
+    Array.fold (+) 1 [|2..4|] = ((1 + 2) + 3) + 4
+    Array.scan (+) 1 [|2..4|] = [|1;1 + 2;(1 + 2) + 3;((1 + 2) + 3) + 4|]"
     Array.scan (+) 1 [|2..4|] |> should equal [|1;3;6;10|]
 
     @"Array.set, もとの配列を書き換える破壊的な関数
