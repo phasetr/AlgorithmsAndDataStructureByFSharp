@@ -109,7 +109,7 @@ module Array =
     一次元配列の要素を指定された数ごとに区切ったジャグ配列 (配列の配列) を得る。
     要素数に正の整数を指定しないと System.ArgumentException が起きる。"
     Array.chunkBySize 3 [|0..7|] |> should equal [|[|0;1;2|];[|3;4;5|];[|6;7|]|]
-    //Array.chunkBySize 0 [|0..7|] // 例外発生「System.ArgumentException: 入力は正である必要があります。」
+    (fun () -> Array.chunkBySize 0 [|0..7|] |> ignore) |> should throw typeof<System.ArgumentException>
 
     @"Array.collect, Haskell concatMap
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#collect
@@ -613,9 +613,9 @@ module Array =
     逆に先頭から指定された数の要素をなくした配列を得られる Array.skip もある."
     Array.take 3 [|'a'..'e'|] |> should equal [|'a';'b';'c'|]
     Array.take 0 [|'a'..'e'|] |> should equal ([||] : char [])
-    // Array.take -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
-    // Array.take  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
-    // Array.take 6 [|3;2;5;4;1|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
+    (fun () -> Array.take -1 [|'a'..'e'|] |> ignore) |> should throw typeof<System.ArgumentException>
+    (fun () -> Array.take  6 [|'a'..'e'|] |> ignore) |> should throw typeof<System.InvalidOperationException>
+    (fun () -> Array.take 6 [|3;2;5;4;1|] |> ignore) |> should throw typeof<System.InvalidOperationException>
     Array.takeWhile (fun n -> n < 4) [|3;2;5;4;1|] |> should equal [|3;2|]
     Array.skip 3 [|'a'..'e'|] |> should equal [|'d';'e'|]
     Array.take 3 [|3;2;5;4;1|] |> should equal [|3;2;5|]
@@ -1109,6 +1109,11 @@ module List =
     let zipWith f xs ys =
         List.zip xs ys |> List.map (fun (x, y) -> f x y)
     zipWith (+) [1;2;3] [2;4;6] |> should equal [3;6;9]
+
+    @"List.minBy
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#minBy"
+    ["aaa";"b";"cccc"] |> List.minBy (fun s -> s.Length) |> should equal "b"
+    (fun () -> [] |> List.minBy (fun (s: string) -> s.Length) |> ignore) |> should throw typeof<System.ArgumentException>
 
     @"reduce
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#reduce"
@@ -1941,7 +1946,7 @@ module PatternMatch =
         with | :? DivideByZeroException as ex -> Error ex
 
 module Prelude =
-    @"uncurry,
+    @"uncurry, Haskell
     http://fssnip.net/3n/title/Curry-Uncurry
     https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:uncurry"
     let curry f a b = f (a,b)
@@ -2421,7 +2426,7 @@ module Sequence =
     @"Seq.skip, Haskell drop
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#skip"
     Seq.skip 2 [1..4] |> should equal [3;4]
-    // (fun () -> Seq.skip 5 [1..4] |> ignore) |> should throw typeof<System.InvalidOperationException>
+    // (fun () -> Seq.skip 5 [1..4] |> ignore) |> should throw typeof<System.ArgumentException>
     Seq.skip -1 [1..4] |> should equal [1..4]
 
     @"Seq.skipWhile, Haskell dropWhile
