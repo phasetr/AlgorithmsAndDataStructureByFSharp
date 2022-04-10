@@ -21,8 +21,8 @@ open FsUnit
 
 let solve N Ha = 1
 let N = stdin.ReadLine() |> int
-let hs = stdin.ReadLine().Split() |> Array.map int
-solve N hs |> stdout.WriteLine
+let Ha = stdin.ReadLine().Split() |> Array.map int
+solve N Ha |> stdout.WriteLine
 
 solve 4 [|10;30;40;20|] |> should equal 30
 solve 2 [|10;10|] |> should equal 0

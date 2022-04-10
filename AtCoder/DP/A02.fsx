@@ -8,7 +8,6 @@ let solve N hs =
     hs
     |> Array.fold f [|0;0;hs.[0];0|]
     |> Array.last
-
 let N = stdin.ReadLine() |> int
 let hs = stdin.ReadLine().Split() |> Array.map int
 solve N hs |> stdout.WriteLine
