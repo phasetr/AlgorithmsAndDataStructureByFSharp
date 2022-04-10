@@ -5,9 +5,9 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.IntMap as IM
 
 main = do
-    [_,k] <- unfoldr (B.readInt . B.dropWhile isSpace) <$> B.getLine
-    hs <- unfoldr (B.readInt . B.dropWhile isSpace) <$> B.getLine
-    print $ solve k hs
+  [_,k] <- unfoldr (B.readInt . B.dropWhile isSpace) <$> B.getLine
+  hs <- unfoldr (B.readInt . B.dropWhile isSpace) <$> B.getLine
+  print $ solve k hs
 
 solve :: Int -> [Int] -> Int
 solve k (h0:hs) = cEnd where

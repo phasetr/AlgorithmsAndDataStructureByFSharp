@@ -1993,7 +1993,7 @@ module Sequence =
 
     @"Seq.append
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
-    Seq.append [1;2] [3;4]|> should equal {1..4}
+    Seq.append [1;2] [3;4] |> should equal {1..4}
 
     @"Seq.average
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#average"
