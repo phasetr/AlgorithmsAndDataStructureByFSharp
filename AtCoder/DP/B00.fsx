@@ -18,6 +18,7 @@ N 個の足場があります。
 #r "nuget: FsUnit"
 open FsUnit
 
+let N,K,Ha = 5,3,[|10;30;40;50;20|]
 let solve N K (Ha:int[]) = 1
 let N,K = stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0], x.[1]
 let Ha = stdin.ReadLine().Split() |> Array.map int

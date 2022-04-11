@@ -245,7 +245,7 @@ module Array =
     ([|1..3|], [|1..3|]) ||> Array.forall2 (=) |> should equal true
     ([|2017;1;1|], [|2019;19;8|]) ||> Array.forall2 (=) |> should equal false
 
-    @"Array.fold
+    @"Array.fold, 初項を初期値に取りたいならArray.reduce
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#fold"
     module Fold =
         type Charge = | In of int | Out of int
@@ -1093,6 +1093,38 @@ module List =
         |> List.map (fun i -> List.take i xs)
     inits [1..3] |> should equal [[];[1];[1;2];[1;2;3]]
 
+    @"Haskell isSomethingOf
+    https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isInfixOf
+    https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isPrefixOf
+    https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isSubsequenceOf
+    https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isSuffixOf"
+    module IsSomethingOf =
+        let rec tails = function
+            | [] -> [[]]
+            | x::xs -> (x::xs)::(tails xs)
+        let rec isPrefixOf xs ys = match (xs,ys) with
+            | ([],_) -> true
+            | (_,[]) -> false
+            | otherwise ->
+                let (w::ws,z::zs) = (xs,ys)
+                w = z && isPrefixOf ws zs
+        isPrefixOf (List.ofSeq "Hello") (List.ofSeq "Hello World!") |> should equal true
+        isPrefixOf (List.ofSeq "Hello") (List.ofSeq "Wello Horld!") |> should equal false
+
+        let isInfixOf needle haystack = List.exists (isPrefixOf needle) (tails haystack)
+        isInfixOf (List.ofSeq "Haskell") (List.ofSeq "I really like Haskell.") |> should equal true
+        isInfixOf (List.ofSeq "Ial") (List.ofSeq "I really like Haskell.") |> should equal false
+
+        let rec isSubsequenceOf xs ys = match (xs,ys) with
+            | ([],_) -> true
+            | (_,[]) -> false
+            | otherwise ->
+                if List.head xs = List.head ys
+                then isSubsequenceOf (List.tail xs) (List.tail ys)
+                else isSubsequenceOf xs (List.tail ys)
+        isSubsequenceOf ('a'::['d'..'z']) ['a'..'z'] |> should equal true
+        isSubsequenceOf [1..10] (10::[9..0]) |> should equal false
+
     @"List.Item"
     module Item =
         let l = [0..9]
@@ -1115,7 +1147,7 @@ module List =
     ["aaa";"b";"cccc"] |> List.minBy (fun s -> s.Length) |> should equal "b"
     (fun () -> [] |> List.minBy (fun (s: string) -> s.Length) |> ignore) |> should throw typeof<System.ArgumentException>
 
-    @"reduce
+    @"List.reduce, 初項を初期値にするList.fold
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#reduce"
     List.reduce min [1..9] |> should equal 1
 

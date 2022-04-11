@@ -20,7 +20,7 @@ N 個の足場があります。
 open FsUnit
 
 let N,Ha = 4,[|10;30;40;20|]
-let solve N Ha = 1
+let solve N (Ha:int[]) = 1
 let N = stdin.ReadLine() |> int
 let Ha = stdin.ReadLine().Split() |> Array.map int
 solve N Ha |> stdout.WriteLine
