@@ -10,8 +10,7 @@ main = do
   print $ solve k hs
 
 solve :: Int -> [Int] -> Int
-solve k (h0:hs) = cEnd where
-  cEnd = snd $ head $ foldl' step s0 hs
+solve k (h0:hs) = snd $ head $ foldl' step s0 hs where
   step l h = (h,c) : l where
     c = minimum $ map (\(hi,ci) -> ci + abs (hi - h)) $ take k l
   s0 = [(h0,0)]
