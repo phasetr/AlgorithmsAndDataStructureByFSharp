@@ -25,7 +25,7 @@ let N,W,wva = 3,8,[|(3,30L);(4,50L);(5,60L)|]
 let solve N W (wva: array<int*int64>) = 1L
 let N, W = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0], x.[1])
 let wva = [| for i in 1..N do (stdin.ReadLine().Split() |> fun x -> int x.[0], int64 x.[1]) |]
-solve N W wva |> stdout.WriteLine
+solve1 N W wva |> stdout.WriteLine
 
 solve 3 8 [|(3,30L);(4,50L);(5,60L)|] |> should equal 90L
 solve 5 5 [|(1,1000000000L);(1,1000000000L);(1,1000000000L);(1,1000000000L);(1,1000000000L)|] |> should equal 5000000000L

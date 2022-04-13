@@ -18,7 +18,7 @@ C: 家で宿題をする。 幸福度 ci を得る。
 #r "nuget: FsUnit"
 open FsUnit
 
-let N,Ha = 3,[|[|10,40,70|];[|20,50,80|];[|30,60,90|]|]
+let N,Ha = 3,[|(10,40,70);(20,50,80);(30,60,90)|]
 let solve N Ha = 1
 let N = stdin.ReadLine() |> int
 let Ha = [| for i in 1..N do (stdin.ReadLine().Split() |> Array.map int) |]
