@@ -1,4 +1,4 @@
-﻿@"https://atcoder.jp/contests/dp/tasks/dp_e"
+@"https://atcoder.jp/contests/dp/tasks/dp_e"
 #r "nuget: FsUnit"
 open FsUnit
 
@@ -6,14 +6,10 @@ open FsUnit
 @"dp[i][j]=(i番目までの品物を価値がjになるように選んだときの最小重さ)"
 @"初期化
 必要なテーブル: 現在の配列(不変), 一つ先の配列(内側のループで生成)
-結果:一つ先の配列の末尾
+結果: 一つ先の配列の末尾
 foldで渡す必要があるdpは現在の配列(不変)だけ."
-// 初期化
-// 必要なテーブル: 現在の配列(不変), 一つ先の配列(内側のループで生成)
-// 結果:一つ先の配列の末尾が答えになる
-// foldで渡す必要があるdpは現在の配列(不変)だけ
 let chmax wvs dp i v =
-    let (w0, v0) = Array.item i wvs
+    let (w0,v0) = Array.item i wvs
     let s =
         if v - v0 >= 0 then Array.item (v - v0) dp |> Option.map ((+) w0)
         else None

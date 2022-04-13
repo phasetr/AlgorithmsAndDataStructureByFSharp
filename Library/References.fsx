@@ -469,8 +469,7 @@ module Array =
     数値が 0 以上の整数でなければ System.ArgumentException.
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html"
     Array.replicate 3 "F#" |> should equal [|"F#";"F#";"F#"|]
-    // Array.replicate -1 "F#" |> should throw typeof<System.ArgumentException>
-    // 例外発生「System.ArgumentException: 入力は負以外である必要がある」.
+    (fun () -> Array.replicate -1 "F#" |> ignore) |> should throw typeof<System.ArgumentException>
 
     @"Array.scan
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#scan
@@ -570,8 +569,8 @@ module Array =
     Array.splitAt 3 [|'a'..'e'|] |> should equal ([|'a';'b';'c'|], [|'d';'e'|])
     Array.splitAt 0 [|'a'..'e'|] |> should equal ([||], [|'a';'b';'c';'d';'e'|])
     Array.splitAt 5 [|'a'..'e'|] |> should equal ([|'a';'b';'c';'d';'e'|], [||])
-    //Array.splitAt -1 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は負以外である必要がある」.
-    //Array.splitAt  6 [|'a'..'e'|]  // 例外発生「 System.InvalidOperationException: 入力シーケンスには十分な数の要素がありません」.
+    (fun () -> Array.splitAt -1 [|'a'..'e'|] |> ignore) |> should throw typeof<System.ArgumentException>
+    (fun () -> Array.splitAt  6 [|'a'..'e'|] |> ignore) |> should throw typeof<System.InvalidOperationException>
 
     @"Array.splitInto
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#splitInto
@@ -580,7 +579,7 @@ module Array =
     分割数が 0 のときは System.ArgumentException.
     分割数が配列の要素の数より大きくても例外は起きない."
     Array.splitInto 3 [|'a'..'e'|] |> should equal ([|[|'a';'b'|];[|'c';'d'|];[|'e'|]|] : char [] [])
-    //Array.splitInto 0 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は正である必要がある」.
+    (fun () -> Array.splitInto 0 [|'a'..'e'|] |> ignore) |> should throw typeof<System.ArgumentException>
     Array.splitInto 3 [|'a'..'b'|] |> should equal [|[|'a'|];[|'b'|]|]
 
     @"Array.sub
@@ -657,12 +656,12 @@ module Array =
     見つかったら 「Some 結果」, 見つからなかったら None を返す.
     結果が option ではない Array.findBack もあるほか,
     先頭の要素から順に関数を実行する Array.tryFind や Array.find もある."
-    (* 結果が見つかったとき *)
+    @"結果が見つかったとき"
     Array.tryFindBack (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 3)
     Array.findBack (fun n -> n % 2 = 1) [|1..3|] |> should equal 3
-    (* 結果が見つからないとき *)
+    @"結果が見つからないとき"
     Array.tryFindBack (fun n -> n > 3) [|1..3|] |> should equal None
-    // Array.findBack (fun n -> n > 3) [|1;2;3|]  // 例外発生「 System.Collections.Generic.KeyNotFoundException 」
+    (fun () -> Array.findBack (fun n -> n > 3) [|1;2;3|] |> ignore) |> should throw typeof<System.Collections.Generic.KeyNotFoundException>
     Array.tryFind (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 1)
     Array.find (fun n -> n % 2 = 1) [|1..3|] |> should equal 1
 
@@ -680,24 +679,24 @@ module Array =
     要素が存在すれば Some 要素, 要素が存在しなければ None となります.
     結果を option ではなく実際の値で得られる Array.head や,
     末尾の要素を得る Array.tryLast もある."
-    (* 先頭の要素が存在するとき *)
+    @"先頭の要素が存在するとき"
     Array.tryHead [|3;1;2|] |> should equal (Some 3)
     Array.head [|3;1;2|] |> should equal 3
-    (* 先頭の要素が存在しないとき *)
+    @"先頭の要素が存在しないとき"
     Array.tryHead<int> [||] |> should equal None
-    //Array.head<int>    [||]  // 例外発生「 System.ArgumentException: 入力配列が空でした」.
+    (fun () -> Array.head<int> [||] |> ignore) |> should throw typeof<System.ArgumentException>
     Array.tryLast [|3;1;2|] |> should equal (Some 2)
 
     @"Array.tryItem
     指定した位置の要素を取り出します.
     要素が存在すれば Some 要素, 存在しなければ None.
     結果が option ではなく要素で得られる Array.item もある."
-    (* 指定した位置に要素が存在するとき *)
+    @"指定した位置に要素が存在するとき"
     Array.tryItem 2 [|'c';'a';'b'|] |> should equal (Some 'b')
     Array.item 2 [|'c';'a';'b'|] |> should equal 'b'
-    (* 指定した位置に要素が存在しないとき *)
+    @"指定した位置に要素が存在しないとき"
     Array.tryItem 4 [|'c';'a';'b'|] |> should equal None
-    // Array.item 4 [|'c';'a';'b'|] // 例外発生「 System.IndexOutOfRangeException 」
+    (fun () -> Array.item 4 [|'c';'a';'b'|] |> ignore) |> should throw typeof<System.IndexOutOfRangeException>
 
     @"Array.tryLast
     配列の末尾の要素が得られたら 「Some 要素」, 得られなければ None.
@@ -713,9 +712,9 @@ module Array =
     関数の引数は初期値および前回の結果とし,
     戻り値は次回も関数を実行するときは Some (結果となる配列の要素, 次回実行時の引数),
     関数の実行を終了するときは None とする."
-    Array.unfold (fun n -> if n > 5 then None else Some(n, n + 1)) 1 // [|1;2;3;4;5|]
-    (* フィボナッチ数列の配列 (Array.unfold) *)
+    Array.unfold (fun n -> if n > 5 then None else Some(n, n + 1)) 1 |> should equal [|1;2;3;4;5|]
     module Fib =
+        @"フィボナッチ数列の配列 (Array.unfold)"
         let fibs n =
             Array.unfold (fun (x, y, z) ->
                 if z > 0 then
@@ -725,7 +724,7 @@ module Array =
             <| (1, 1, n)
         fibs 10 |> should equal [|1;1;2;3;5;8;13;21;34;55|]
 
-        (* フィボナッチ数 (Array.fold) *)
+        @"フィボナッチ数 (Array.fold)"
         let fib n =
             fst
             <| Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [|1..n|] // fib 10 = 55
@@ -746,12 +745,12 @@ module Array =
     Array.chunkBySize との違いは, ただ配列の要素を区切るのではなく,
     先頭の要素から順次要素数だけ連続する要素を 1 つの配列にまとめていること."
     Array.windowed 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'b';'c';'d'|];[|'c';'d';'e'|]|]
-    //Array.windowed 0 [|'a'..'e'|]  // 例外発生「 System.ArgumentException: 入力は正である必要がある」.
+    (fun () -> Array.windowed 0 [|'a'..'e'|] |> ignore) |> should throw typeof<System.ArgumentException>
     Array.windowed 6 [|'a'..'e'|] |> should equal ([||] : char [] [])
-    (* windowed と pairwise との違い *)
+    @"windowed と pairwise との違い"
     Array.windowed 2 [|'a'..'e'|] |> should equal [|[|'a';'b'|];[|'b';'c'|];[|'c';'d'|];[|'d';'e'|]|]
     Array.pairwise [|'a'..'e'|] |> should equal [|('a', 'b');('b', 'c');('c', 'd');('d', 'e')|]
-    (* windowed と chunBySize との違い *)
+    @"windowed と chunBySize との違い"
     Array.windowed 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'b';'c';'d'|];[|'c';'d';'e'|]|]
     Array.chunkBySize 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'d';'e'|]|]
 
