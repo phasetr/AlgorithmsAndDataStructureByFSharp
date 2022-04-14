@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 module BinTree (BinTree(..),emptyTree,inTree,addTree,delTree,buildTree,inorder) where
 
 inTree    :: (Ord a,Show a) => a -> BinTree a -> Bool

@@ -1,4 +1,4 @@
-module Stack (Stack,push,pop,top,emptyStack,stackEmpty) where
+module Stack (Stack(..),push,pop,top,emptyStack,stackEmpty) where
 
 -- | P.87
 emptyStack :: Stack a
@@ -35,6 +35,3 @@ pop (Stk _ s) = s
 -- | P.88
 top EmptyStk  = error "top from an empty stack"
 top (Stk x _) = x
-
-main :: IO ()
-main = print $ push 3 (push 2 (push 1 emptyStack)) == Stk 3 (Stk 2 (Stk 1 EmptyStk))

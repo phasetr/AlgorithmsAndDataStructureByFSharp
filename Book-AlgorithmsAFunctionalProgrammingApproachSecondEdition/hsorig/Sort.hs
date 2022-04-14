@@ -1,5 +1,6 @@
 module Sort where
 import Data.Array ( Ix, Array, elems, accumArray )
+import Graph ( adjacent, nodes, Graph )
 import PQueue ( frontPQ, dePQ, enPQ, pqEmpty, emptyPQ, PQueue )
 import BinTree ( buildTree, inorder )
 
@@ -99,3 +100,13 @@ rsort p bnds l = rsort (p-1) bnds (concatA (split (p-1) bnds l)) where
   split k bnds l = accumArray f [] bnds [(x!!k,x) | x <- l]
     where f l key = key : l
 
+-- | P.145
+inDegree :: (Ix a, Num w, Eq w) => Graph a w -> a -> Int
+inDegree g n  = length [t | v<-nodes g, t<-adjacent g v, n==t]
+-- | P.144, 7.4 Topological sort, P.145
+topologicalSort :: (Ix n, Num w, Eq w) => Graph n w -> [n]
+topologicalSort g = tsort [n | n<-nodes g , inDegree g n == 0] [] where
+  tsort [] r      = r
+  tsort (c:cs) vis
+    | c `elem` vis = tsort cs vis
+    | otherwise  = tsort cs (c : tsort (adjacent g c) vis)
