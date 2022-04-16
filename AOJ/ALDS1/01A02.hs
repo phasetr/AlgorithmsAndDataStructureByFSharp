@@ -25,6 +25,7 @@ solve n i x
       | k <= x    = k:x:xs
       | otherwise = x:insSort k xs
 
+test :: Bool
 test = solve 6 0 [5,2,4,6,1,3] ==
   [[5,2,4,6,1,3]
   ,[2,5,4,6,1,3]
