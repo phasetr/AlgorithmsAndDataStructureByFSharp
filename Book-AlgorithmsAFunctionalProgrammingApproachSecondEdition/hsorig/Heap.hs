@@ -1,25 +1,24 @@
 module Heap(Heap(..),emptyHeap,heapEmpty,findHeap,insHeap,delHeap,rank,makeHP,merge) where
 
-emptyHeap :: (Ord a) => Heap a
-heapEmpty :: (Ord a) => Heap a -> Bool
-findHeap  :: (Ord a) => Heap a -> a
-insHeap   :: (Ord a) => a -> Heap a -> Heap a
-delHeap   :: (Ord a) => Heap a -> Heap a
-
 -- | IMPLEMENTATION with Leftist Heap
 -- adapted from C. Okasaki Purely Functional Data Structures p 197
 data Heap a = EmptyHP | HP a Int (Heap a) (Heap a) deriving (Show,Eq)
 
+emptyHeap :: (Ord a) => Heap a
 emptyHeap = EmptyHP
 
+heapEmpty :: (Ord a) => Heap a -> Bool
 heapEmpty EmptyHP = True
 heapEmpty _       = False
 
+findHeap  :: (Ord a) => Heap a -> a
 findHeap EmptyHP      = error "findHeap:empty heap"
 findHeap (HP x _ a b) = x
 
+insHeap   :: (Ord a) => a -> Heap a -> Heap a
 insHeap x = merge (HP x 1 EmptyHP EmptyHP)
 
+delHeap   :: (Ord a) => Heap a -> Heap a
 delHeap EmptyHP      = error "delHeap:empty heap"
 delHeap (HP x _ a b) = merge a b
 

@@ -185,3 +185,12 @@ searchPfs succ goal x = search' (enPQ x emptyPQ) 0 where
     | otherwise        = let x = frontPQ q
                          in search' (foldr enPQ (dePQ q) (succ x)) (t+1)
 
+-- |P.170 8.4 Greedy algorithms
+-- P.171 8.4.1 The greedy higher-order function
+searchGreedy :: (Ord node) => (node -> [node]) -> (node -> Bool) -> node -> [node]
+searchGreedy succ goal x = search' (enPQ x emptyPQ) where
+  search' q
+    | pqEmpty q        = []
+    | goal (frontPQ q) = [frontPQ q]
+    | otherwise        = let x = frontPQ q
+                         in search' (foldr enPQ emptyPQ (succ x))

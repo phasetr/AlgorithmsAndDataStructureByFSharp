@@ -1,11 +1,11 @@
 module PQueue(PQueue,emptyPQ,pqEmpty,enPQ,dePQ,frontPQ) where
 import Heap (Heap,emptyHeap,heapEmpty,findHeap,insHeap,delHeap)
 
-emptyPQ :: (Ord a) => PQueue a
-pqEmpty :: (Ord a) => PQueue a -> Bool
-enPQ    :: (Ord a) => a -> PQueue a -> PQueue a
-dePQ    :: (Ord a) => PQueue a -> PQueue a
-frontPQ :: (Ord a) => PQueue a -> a
+emptyPQ :: (Eq a,Ord a) => PQueue a
+pqEmpty :: (Eq a,Ord a) => PQueue a -> Bool
+enPQ    :: (Eq a,Ord a) => a -> PQueue a -> PQueue a
+dePQ    :: (Eq a,Ord a) => PQueue a -> PQueue a
+frontPQ :: (Eq a,Ord a) => PQueue a -> a
 
 newtype PQueue a = PQ (Heap a) deriving Show
 
