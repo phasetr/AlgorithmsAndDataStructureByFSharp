@@ -1551,7 +1551,9 @@ module Math =
 
     @"gcd, lcm
     http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ALDS1_1_B&lang=ja
+    https://onlinejudge.u-aizu.ac.jp/courses/lesson/1/ALDS1/all/ALDS1_1_B
     http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=2116711#1"
+
     module GCD =
         module GCD1 =
             let gcd: int64 -> int64 -> int64 = fun x y ->
