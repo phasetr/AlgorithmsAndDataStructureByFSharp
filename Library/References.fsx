@@ -315,20 +315,19 @@ module Array =
         Array.empty |> Array.isEmpty // true
         [|1|] |> Array.isEmpty // false
 
-    module Item =
-        // Array.item
-        // 配列から指定した位置の要素を得る.
-        // 指定した位置に要素が存在しなければ System.IndexOutOfRangeException.
-        // 結果が option になる Array.tryItem もある.
-        Array.item 2 [|'a'..'c'|] // 'c'
-        //Array.item<int> 1 [||]  // 例外発生「 System.IndexOutOfRangeException: インデックスが配列の境界外です」.
-        Array.tryItem 2 [|'a'..'c'|] // Some 'c'
-        Array.tryItem<int> 0 [||] // None
+    @"Array.item
+    検索用キーワード: get
+    配列から指定した位置の要素を得る.
+    指定した位置に要素が存在しなければ System.IndexOutOfRangeException.
+    結果が option になる Array.tryItem もある."
+    Array.item 2 [|'a'..'c'|] |> should equal 'c'
+    (fun () -> Array.item<int> 1 [||] |> ignore) |> should throw typeof<System.IndexOutOfRangeException>
+    Array.tryItem 2 [|'a'..'c'|] |> should equal (Some 'c')
+    Array.tryItem<int> 0 [||] |> should equal None
 
-    module Iter =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter%5b't%5d-function-%5bfsharp%5d
-        [|for i in 1..5 -> (i, i * i)|]
-        |> Array.iter (fun (a, b) -> printf "(%d, %d) " a b) // (1, 1) (2, 4) (3, 9) (4, 16) (5, 25)
+    @"Array.iter
+    https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter%5b't%5d-function-%5bfsharp%5d"
+    [|for i in 1..3 -> (i, i * i)|] |> should equal [|(1,1);(2,4);(3,9)|]
 
     @"Array.iter2
     https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter2%5b't1,'t2%5d-function-%5bfsharp%5d"
