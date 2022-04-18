@@ -949,8 +949,8 @@ module List =
         |> should equal [(1, "Kirk");(1, "Spock");(1, "McCoy");(2, "Kirk");(2, "Spock");(2, "McCoy")]
 
     @"List.append"
-    List.append [ 0..3 ] [ 5..7]
-    |> should equal [ 0;1;2;3;5;6;7 ]
+    List.append [0..3] [4..7] |> should equal [0..7]
+    List.append [0..3] [4..7] = [0..3]@[4..7] |> should be True
 
     @"List.collect, Haskell concatMap
     `let concatMap f xs = List.map f xs |> List.concat`"
