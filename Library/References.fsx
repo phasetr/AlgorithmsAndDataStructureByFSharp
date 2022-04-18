@@ -144,7 +144,8 @@ module Array =
     Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
     Array.create 4 0 |> should equal [|0;0;0;0|]
 
-    @"Array.delete, あるk番目の要素だけ取り除く"
+    @"Array.delete, あるk番目の要素だけ取り除く,
+    See Array.removeAt"
     module Delete =
         let delete k xa = Array.append (Array.take k xa) (Array.skip (k+1) xa)
         let xa = [|0..4|]
