@@ -144,7 +144,8 @@ module Array =
     Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
     Array.create 4 0 |> should equal [|0;0;0;0|]
 
-    @"Array.delete, あるk番目の要素だけ取り除く"
+    @"Array.delete, あるk番目の要素だけ取り除く,
+    See also Array.removeAt."
     module Delete =
         let delete k xa = Array.append (Array.take k xa) (Array.skip (k+1) xa)
         let xa = [|0..4|]
@@ -949,8 +950,8 @@ module List =
         |> should equal [(1, "Kirk");(1, "Spock");(1, "McCoy");(2, "Kirk");(2, "Spock");(2, "McCoy")]
 
     @"List.append"
-    List.append [ 0..3 ] [ 5..7]
-    |> should equal [ 0;1;2;3;5;6;7 ]
+    List.append [0..3] [4..7] |> should equal [0..7]
+    List.append [0..3] [4..7] = [0..3]@[4..7] |> should be True
 
     @"List.collect, Haskell concatMap
     `let concatMap f xs = List.map f xs |> List.concat`"
@@ -996,9 +997,7 @@ module List =
     deleteAll 4 [ 1;2;3;1;1;2;3 ] |> should equal [1;2;3;1;1;2;3]
 
     @"filter"
-    [1..9]
-    |> List.filter (fun x -> x % 2 = 0)
-    |> should equal [2;4;6;8]
+    [1..9] |> List.filter (fun x -> x % 2 = 0) |> should equal [2;4;6;8]
 
     @"fold
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#fold
