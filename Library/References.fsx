@@ -989,9 +989,7 @@ module List =
     delete 1 [1..3] |> should equal [2;3]
     delete 4 [1..3] |> should equal [1;2;3]
 
-    """delete と違い全ての要素を削除する
-    deleteAll 1 [ 1;2;3;1;1;2;3 ] |> printfn "%A" // [2;3;2;3]
-    deleteAll 4 [ 1;2;3;1;1;2;3 ] |> printfn "%A" // [1;2;3;1;1;2;3]"""
+    @"delete と違い全ての要素を削除する"
     let deleteAll x = List.filter ((<>) x)
     deleteAll 1 [ 1;2;3;1;1;2;3 ] |> should equal [2;3;2;3]
     deleteAll 4 [ 1;2;3;1;1;2;3 ] |> should equal [1;2;3;1;1;2;3]
