@@ -2028,7 +2028,7 @@ module Sequence =
     ([1;2], [3;4]) ||> Seq.allPairs |> should equal (seq {(1, 3);(1, 4);(2, 3);(2, 4)})
 
     @"Seq.append
-    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html"
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#append"
     Seq.append [1;2] [3;4] |> should equal {1..4}
 
     @"Seq.average
