@@ -987,7 +987,9 @@ module List =
         | [] -> []
         | y :: ys -> if x = y then ys else y :: delete x ys
     delete 1 [1..3] |> should equal [2;3]
+    delete 1 [1;1;2;3] |> should equal [1..3]
     delete 4 [1..3] |> should equal [1;2;3]
+    delete 'a' ("banana" |> Seq.toList) |> System.String.Concat |> should equal "bnana"
 
     """delete と違い全ての要素を削除する
     deleteAll 1 [ 1;2;3;1;1;2;3 ] |> printfn "%A" // [2;3;2;3]
