@@ -17,32 +17,63 @@ dp[i][j]=(sをi文字目、tをj文字目までみた時の最長共通部分列
 s[i]==t[j]のときこの文字は使ったほうがいいからdp[i−1][j−1]+1、
 そうじゃないときは、
 どっちかの最後の1文字は使わないからmax(dp[i−1][j],dp[i][j−1])になるね。
+
+rep(i,1,slen+1)rep(j,1,tlen+1){
+    if(s[i]==t[j])dp[i][j]=dp[i-1][j-1]+1;
+    else dp[i][j]=max(dp[i-1][j],dp[i][j-1]);
+}
 dp[slen][tlen]が求める長さ
+
 具体的に文字列を作るのはDP配列を逆にたどればできるよ。
 もしs[i]==t[j]なら、
 求める最長共通部分列の最後の文字はs[i]で、
 それより前の部分はdp[i−1][j−1]の結果からわかって、
 そうじゃないならどっちかの最後の文字は使わないから、
-dpの値が減らない方に移動すればいいね。"""
-let sOrig,tOrig = "axyb","abyxb"
-let sOrig,tOrig = "aa","xayaz"
-let solve (sOrig:string) (tOrig:string) =
-    let (s,t) = (seq sOrig, seq tOrig)
-    let f xs si =
-        let g (n,l) ((x0,l0),(x1,l1),tj) =
-            if si=tj then (x0+1, Seq.append (seq [si]) l0)
-            elif n>x1 then (n,l)
-            else (x1,l1)
-        Seq.zip3 (Seq.append (seq [(0,seq [])]) xs) xs t
-        |> Seq.scan g (0,seq []) //|> Seq.tail
-    Seq.fold f (Seq.replicate (Seq.length s + 1) (0,[])) s
-//    |> Seq.toArray |> printfn "%A"
-    |> Seq.last |> snd |> Seq.rev |> System.String.Concat
-let S = stdin.ReadLine()
-let T = stdin.ReadLine()
-solve Xa |> stdout.WriteLine
+dpの値が減らない方に移動すればいいね。
 
-solve "axyb" "abyxb" |> should equal "axb"
+len=dp[slen][tlen];
+i=slen;
+j=teln;
+while(len>0){
+    if(s[i]==t[j]){
+        ans[len]=s[i];
+        i--;
+        j--;
+        len--;
+    }else if(dp[i][j]==dp[i-1][j]){
+        i--;
+    }else{
+        j--;
+    }
+}
+"""
+let solve (s:string) (t:string) =
+    let rec substr (dp:_[,]) i j =
+        if dp.[i,j] = 0 then []
+        elif dp.[i,j] = dp.[i-1,j] then substr dp (i-1) j
+        elif dp.[i,j] = dp.[i,j-1] then substr dp i (j-1)
+        else t.[i-1] :: substr dp (i-1) (j-1)
+
+    ([Array.zeroCreate (s.Length+1)], [|0..t.Length-1|])
+    ||> Array.fold (fun dp j ->
+        ([],[0..s.Length])
+        ||> List.fold (fun acc i ->
+            let dp0 = List.head dp
+            match i with
+            | 0 -> 0 :: acc
+            | i when s.[i-1] = t.[j] -> (dp0.[i-1]+1) :: acc
+            | i -> (max dp0.[i] (List.head acc)) :: acc)
+        |> (List.rev >> List.toArray >> (fun e -> e::dp)))
+    |> (List.rev >> List.toArray >> array2D)
+    |> (fun (dp:int[,]) ->
+        let i = Array2D.length1 dp - 1
+        let j = Array2D.length2 dp - 1
+        substr dp i j |> (List.rev >> List.toArray >> System.String))
+let s = stdin.ReadLine()
+let t = stdin.ReadLine()
+solve s t |> stdout.WriteLine
+
+solve "axyb" "abyxb" |> should equal "ayb"
 solve "aa" "xayaz" |> should equal "aa"
 solve "a" "z" |> should equal ""
 solve "abracadabra" "avadakedavra" |> should equal "aaadara"
