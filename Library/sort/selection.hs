@@ -13,6 +13,7 @@ ssort2 xs = foldl f xs [0..n]
     f xs i = as++ys where
         (as,bs) = splitAt i xs
         ys = swap bs $ minIndex bs
+swap :: [a] -> Int -> [a]
 swap xs minj = if minj>0 then m:ys++y:zs else xs
   where (y:ys,m:zs) = splitAt minj xs
 minIndex :: [Int] -> Int
