@@ -757,7 +757,7 @@ module Array2D =
     @"array2D, constructor"
     array2D [[1..2];[2..3]]
 
-    @"行または列だけ取る"
+    @"行または列だけ取る, slice"
     module TakeColOrRow =
         let a = array2D [[1..10];[11..20]]
         a.[0..,0] |> should equal [|1;11|]

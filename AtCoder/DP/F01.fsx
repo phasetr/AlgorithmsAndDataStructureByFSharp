@@ -58,8 +58,8 @@ let solve (s:string) (t:string) =
 
     ([Array.zeroCreate (s.Length+1)], [|0..t.Length-1|])
     ||> Array.fold (fun dp j ->
-        ([],[0..s.Length])
-        ||> List.fold (fun acc i ->
+        ([],[|0..s.Length|])
+        ||> Array.fold (fun acc i ->
             let dp0 = List.head dp
             match i with
             | 0 -> 0 :: acc
