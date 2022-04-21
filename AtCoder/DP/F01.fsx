@@ -47,6 +47,8 @@ while(len>0){
     }
 }
 """
+@"TODO 大元の初期値[Array.zeroCreate (s.Length+1)]を配列にして,
+上記のアルゴリズムをそのままで書いてみたい."
 let solve (s:string) (t:string) =
     let rec substr (dp:_[,]) i j =
         if dp.[i,j] = 0 then []

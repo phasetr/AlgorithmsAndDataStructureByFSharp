@@ -486,10 +486,7 @@ module Array =
         inputs |> should equal [|"a";"B";"c"|]
 
         @"初期化した配列からfoldで配列を更新する"
-        [|1..5|] |> Array.fold (fun a i ->
-            Array.set a (i-1) (i*i)
-            a) (Array.create 10 -1)
-        |> should equal [|1;4;9;16;25;-1;-1;-1;-1;-1|]
+        (Array.create 10 -1, [|1..5|]) ||> Array.fold (fun a i -> Array.set a (i-1) (i*i); a) |> should equal [|1;4;9;16;25;-1;-1;-1;-1;-1|]
 
     @"Array.singleton
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#singleton
@@ -771,6 +768,13 @@ module Array2D =
         let a = array2D [[1..10];[11..20]]
         Array2D.length1 a |> should equal 2
         Array2D.length2 a |> should equal 10
+
+    @"Array2D.set
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#set"
+    module Array2DSet =
+        let array:int[,] = Array2D.zeroCreate 2 2
+        Array2D.set array 0 1 2
+        array |> should equal (array2D [[0; 2];[0; 0]])
 
     @"transpose, 転置"
     module Transpose =
