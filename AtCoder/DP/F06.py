@@ -9,7 +9,6 @@ def solve(s,t):
                 dp[i][j] = dp[i-1][j-1] + 1
             else:
                 dp[i][j] = max(dp[i][j-1], dp[i-1][j])
-    #print(dp)
 
     ans = []
     i, j = ls, lt
@@ -25,8 +24,8 @@ def solve(s,t):
 
     return ''.join(reversed(ans))
 
-print(solve("axyb","abyxb"))
-
 def main():
     s = input()
     t = input()
+
+print(solve("axyb","abyxb") == "ayb")

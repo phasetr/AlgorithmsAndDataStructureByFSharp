@@ -1,3 +1,4 @@
+module Bubble where
 {-
 See ../../AOJ/ALDS1/02D01.hs
 選択ソートとの比較: 安定ソートか否か

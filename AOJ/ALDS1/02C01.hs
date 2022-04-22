@@ -1,61 +1,37 @@
-{-
-https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_3_C/review/2890701/lvs7k/Haskell
+-- https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_2_C
+import Data.List ( unfoldr, minimumBy )
+import Data.Ord ( comparing )
 
-For Data.Sequence
-https://hackage.haskell.org/package/containers-0.6.5.1/docs/Data-Sequence.html
-The implementation uses 2-3 finger trees
--}
-{-# LANGUAGE BangPatterns      #-}
-{-# LANGUAGE OverloadedStrings #-}
+bsort :: [String] -> [String]
+bsort = unfoldr bubble where
+  bubble = foldr step Nothing where
+    xs `step` Nothing = Just (xs,[])
+    xs `step` Just (ys,yss)
+      | comparing last ys xs == LT = Just (ys,xs:yss)
+      | otherwise                  = Just (xs,ys:yss)
 
-import qualified Data.ByteString.Char8 as B
-import           Data.Foldable (toList)
-import qualified Data.Sequence         as S
-
-insert :: a -> S.Seq a -> S.Seq a
-insert = (S.<|)
-
-delete :: Eq a => a -> S.Seq a -> S.Seq a
-delete x s =
-  case S.viewl r of
-    S.EmptyL -> s
-    x S.:< xs -> l S.>< xs
-  where (l,r) = S.breakl (== x) s
-
-deleteFirst :: S.Seq a -> S.Seq a
-deleteFirst s =
-  case S.viewl s of
-    S.EmptyL -> s
-    x S.:< xs -> xs
-
-deleteLast :: S.Seq a -> S.Seq a
-deleteLast s =
-  case S.viewr s of
-    S.EmptyR -> s
-    xs S.:> x -> xs
-
-solve :: [(B.ByteString, Int)] -> String
-solve = unwords . map show . toList . procLine S.empty where
-  procLine !seq [] = seq
-  procLine !seq ((com,n):cs)
-    | com == "insert"      = procLine (insert n seq) cs
-    | com == "delete"      = procLine (delete n seq) cs
-    | com == "deleteFirst" = procLine (deleteFirst seq) cs
-    | com == "deleteLast"  = procLine (deleteLast seq) cs
-  procLine _ _ = undefined
+ssort :: [String] -> [String]
+ssort = unfoldr select where
+  select []       = Nothing
+  select [xs]     = Just (xs,[])
+  select (xs:xss) =
+    if comparing last min xs == LT
+    then Just (min,takeWhile (/=min) xss ++ xs : tail (dropWhile (/=min) xss))
+    else Just (xs,xss)
+    where min = minimumBy (comparing last) xss
 
 main :: IO ()
-main = B.getLine >> B.getContents >>=
-  putStrLn . solve . map (f . B.words) . B.lines
-
-f :: [B.ByteString] -> (B.ByteString, Int)
-f [a] = (a,0)
-f [a,b] = (a,n) where Just (n,_) = B.readInt b
-f _ = undefined
+main = do
+  getLine
+  cs <- fmap words getLine
+  let bs = unwords . bsort $ cs
+  let ss = unwords . ssort $ cs
+  putStrLn bs
+  putStrLn "Stable"
+  putStrLn ss
+  putStrLn $ if bs == ss then "Stable" else "Not stable"
 
 test :: IO ()
 test = do
-  print $ solve [(B.pack "insert",5),(B.pack "insert",2),(B.pack "insert",3),(B.pack "insert",1),(B.pack "delete",3),(B.pack "insert",6),(B.pack "delete",5)]
-    == "6 1 2"
-  print $ solve [(B.pack "insert",2),(B.pack "insert",3),(B.pack "insert",1),(B.pack "delete",3),(B.pack "insert",6),(B.pack "delete",5),(B.pack "deleteFirst",0),(B.pack "deleteLast",0)]
-    == "1"
+  print $ bsort ["H4","C9","S4","D2","C3"] == ["D2","C3","H4","S4","C9"]
+  print $ ssort ["H4","C9","S4","D2","C3"] == ["D2","C3","S4","H4","C9"]

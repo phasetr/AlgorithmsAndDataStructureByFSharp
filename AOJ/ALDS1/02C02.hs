@@ -1,69 +1,65 @@
--- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_3_C/review/2890701/lvs7k/Haskell
-{-# LANGUAGE BangPatterns      #-}
-{-# LANGUAGE OverloadedStrings #-}
+-- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_2_C/review/2192980/a143753/Haskell
+import Data.List ( minimumBy )
+import Text.Printf ( printf )
 
-import           Control.Applicative
-import           Control.Monad
-import qualified Data.ByteString.Char8 as B
-import           Debug.Trace
+rd :: String -> (Char,Int)
+rd (c:n) = (c,read n)
+rd _ = undefined
+sh :: (Char,Int) -> String
+sh (c,n) = printf "%c%d" c n
 
-import           Data.Sequence         (Seq (..), ViewL (..), ViewR (..), (<|),
-                                        (><), (|>))
-import qualified Data.Sequence         as S
+cmp :: Ord a1 => (a2, a1) -> (a3, a1) -> Ordering
+cmp (_,n1) (_,n2) = compare n1 n2
+gt :: Ord a1 => (a2, a1) -> (a3, a1) -> Bool
+gt (_,n1) (_,n2) = n1 > n2
+lt :: Ord a1 => (a2, a1) -> (a3, a1) -> Bool
+lt (_,n1) (_,n2) = n1 < n2
 
-readInt' :: B.ByteString -> Int
-readInt' bs | Just (n, _) <- B.readInt bs = n
+-- bubble sort
+bubbleIter :: (Num b, Ord a1) => [(a2, a1)] -> (Bool, b, [(a2, a1)])
+bubbleIter []     = (False,0,[])
+bubbleIter [x] = (False,0,[x])
+bubbleIter (x0:x1:xs) =
+  let (f,n,x) = if x0 `gt` x1
+                then bubbleIter (x0:xs)
+                else bubbleIter (x1:xs)
+  in
+    if x0 `gt` x1
+    then (True,n+1,x1:x)
+    else (f,   n  ,x0:x)
+bubbleSort :: (Num a1, Ord a2) => a1 -> [(a3, a2)] -> (a1, [(a3, a2)])
+bubbleSort n x =
+  let (f,n',x') = bubbleIter x
+  in
+    if f
+    then bubbleSort (n'+n) x'
+    else (n'+n,x')
 
-insert :: a -> Seq a -> Seq a
-insert = (<|)
-
-delete :: Eq a => a -> Seq a -> Seq a
-delete x s =
-    case S.viewl r of
-        EmptyL -> s
-        x :< xs -> l >< xs
-  where
-    (l, r) = S.breakl (== x) s
-
-deleteFirst :: Seq a -> Seq a
-deleteFirst s =
-    case S.viewl s of
-        x :< xs -> xs
-
-deleteLast :: Seq a -> Seq a
-deleteLast s =
-    case S.viewr s of
-        xs :> x -> xs
-
-make :: [(B.ByteString, Int)] -> Seq Int
-make xs = go S.empty xs
-  where
-    go !seq [] = seq
-    go !seq ((com,n):cs)
-        | com == "insert" = go (insert n seq) cs
-        | com == "delete" = go (delete n seq) cs
-        | com == "deleteFirst" = go (deleteFirst seq) cs
-        | com == "deleteLast"  = go (deleteLast seq) cs
-
-print' :: Seq Int -> IO ()
-print' s =
-    case S.viewl s of
-        EmptyL -> putStrLn ""
-        a :< s' -> putStr (show a) >> go s'
-  where
-    go s =
-        case S.viewl s of
-            EmptyL -> putStrLn ""
-            a :< s' -> putStr (" " ++ show a) >> go s'
+selectSort :: (Ord a1, Eq a2) => [(a2, a1)] -> [(a2, a1)]
+selectSort [] = []
+selectSort [x] = [x]
+selectSort xs@[x0,x1] = if x1 `lt` x0 then [x1,x0] else xs
+selectSort (x0:xs) =
+  let m = minimumBy cmp xs
+      h = takeWhile (/= m) xs
+      t = tail $ dropWhile (/= m) xs
+  in
+    if m `lt` x0
+    then m:selectSort (h ++ [x0] ++ t)
+    else x0:selectSort xs
 
 main :: IO ()
 main = do
-    B.getLine
-    let f xs =
-            case xs of
-                [a]    -> (a, 0)
-                [a, b] -> (a, readInt' b)
-    xs <- fmap (f . B.words) . B.lines <$> B.getContents
-    print' $ make xs
-
-
+  n <- getLine
+  c <- getLine
+  let i = words c
+      o = map rd i
+      (_,b) = bubbleSort 0 o
+      s = selectSort o
+  putStrLn $ unwords $ map sh b
+  putStrLn "Stable"
+  putStrLn $ unwords $ map sh s
+  let r = if b == s
+          then "Stable"
+          else "Not stable"
+  putStrLn r

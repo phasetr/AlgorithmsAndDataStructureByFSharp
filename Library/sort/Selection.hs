@@ -1,3 +1,4 @@
+module Selection where
 import Data.List (minimum, minimumBy, delete, unfoldr)
 
 -- See ../../AOJ/ALDS1/02B01.hs
