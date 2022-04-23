@@ -54,7 +54,7 @@ module Array =
         let accumArray: ('e -> 'v -> 'e) -> 'e -> ('i * 'i) -> list<'i * 'v> -> array<'i*'e> = fun f e (l,r) ivs ->
             [for j in [l..r] do (j, List.fold f e [for (i,v) in ivs do if i=j then yield v])]
             |> Array.ofList
-        accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1, 60);(2, 80);(3, 0)|]
+        accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1,60);(2,80);(3,0)|]
 
     @"Array.allPairs
     配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
@@ -859,10 +859,7 @@ module Function =
             let rec frec j =
                 match memo.TryGetValue j with
                 | exist, value when exist -> value
-                | _ ->
-                    let value = f frec j
-                    memo.Add(j, value)
-                    value
+                | _ -> let value = f frec j in memo.Add(j, value); value
             frec
         let fact frec i =
             if i = 1L then 1L
