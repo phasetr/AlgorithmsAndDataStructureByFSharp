@@ -56,6 +56,15 @@ let solve N M Aa =
     let targets s0 = ([], [ for (s,t) in Aa do if s-1=s0 then yield t-1 ]) ||> List.fold (fun x y -> y::x) |> Array.ofList
     let g = [|0..N-1|] |> Array.map (fun s0 -> targets s0)
 
+    let dp = Array.replicate N 0 in
+    let rec f v =
+        if dp.[v] <> 0 then dp.[v]
+        else
+            let a = if Array.isEmpty g.[v] then 0 else g.[v] |> Array.map (fun x -> dp.[x]+1) |> Array.max
+            Array.set dp v (max dp.[v] a)
+            dp.[v] in
+    Array.map f [|0..(N-1)|] |> Array.map ((+)1) |> Array.max
+
 let N,M = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0], x.[1])
 let Aa = [| for i in 1..M do (stdin.ReadLine().Split |> Array.map int |> fun x -> x.[0],x.[1]) |]
 solve N M Aa |> stdout.WriteLine
