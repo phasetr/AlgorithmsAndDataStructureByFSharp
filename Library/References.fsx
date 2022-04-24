@@ -852,7 +852,7 @@ module Function =
     let twiceCubic = cubic >> twice
     twiceCubic 3 |> should equal 54
 
-    @"memoized recursion"
+    @"memoized recursion, メモ化再帰"
     module MemRec =
         let memorec f =
             let memo = System.Collections.Generic.Dictionary<_, _>()
