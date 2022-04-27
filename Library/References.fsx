@@ -753,6 +753,9 @@ module Array =
 
 module Array2D =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html"
+    @"Array3D, Array4Dもある
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array3dmodule.html
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array4dmodule.html"
 
     @"array2D, constructor"
     array2D [[1..2];[2..3]]

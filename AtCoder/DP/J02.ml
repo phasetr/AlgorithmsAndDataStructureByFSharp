@@ -6,8 +6,7 @@ let a =
   Str.split (Str.regexp " ") @@ read_line ()
   |> List.map int_of_string
 
-let c
-nt = Array.make 4 0
+let cnt = Array.make 4 0
 let dp = Array.make (n+1) @@ Array.make_matrix (0) (0) (-1.0)
 
 let rec calc: int -> int -> int -> float = fun i1 i2 i3 ->
