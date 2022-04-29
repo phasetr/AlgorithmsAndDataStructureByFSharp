@@ -303,7 +303,7 @@ module Array =
     Array.indexed [|'a'..'c'|] |> should equal [|(0,'a');(1,'b');(2,'c')|]
     Array.indexed<char> [||] |> should equal [||]
 
-    @"Array.init
+    @"Array.init, OCaml Array.init
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#init
     https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.init%5b't%5d-function-%5bfsharp%5d"
     Array.init 10 (fun i -> i * i)
@@ -649,6 +649,7 @@ module Array =
     Array.tryFind (fun x -> x%2=0) [|1;5;3|] |> should equal  None
 
     @"Array.tryFindBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFindBack
     末尾の要素から順次関数を実行し, 結果が true となる要素を見つける.
     見つかったら 「Some 結果」, 見つからなかったら None を返す.
     結果が option ではない Array.findBack もあるほか,
@@ -663,6 +664,7 @@ module Array =
     Array.find (fun n -> n % 2 = 1) [|1..3|] |> should equal 1
 
     @"Array.tryFindIndexBack
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFindIndexBack
     Array.tryFindBack の結果となる要素の位置を見つける.
     見つかったら Some 位置, 見つからなかったら None.
     要素の位置を先頭から見つける Array.tryFindIndex や,
@@ -672,6 +674,7 @@ module Array =
     Array.findIndexBack (fun n -> n % 2 = 1) [|1..3|] |> should equal 2
 
     @"Array.tryHead
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryHead
     配列の先頭の要素を取り出します.
     要素が存在すれば Some 要素, 要素が存在しなければ None となります.
     結果を option ではなく実際の値で得られる Array.head や,
@@ -685,6 +688,7 @@ module Array =
     Array.tryLast [|3;1;2|] |> should equal (Some 2)
 
     @"Array.tryItem
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryItem
     指定した位置の要素を取り出します.
     要素が存在すれば Some 要素, 存在しなければ None.
     結果が option ではなく要素で得られる Array.item もある."
@@ -696,6 +700,7 @@ module Array =
     (fun () -> Array.item 4 [|'c';'a';'b'|] |> ignore) |> should throw typeof<System.IndexOutOfRangeException>
 
     @"Array.tryLast
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryLast
     配列の末尾の要素が得られたら 「Some 要素」, 得られなければ None.
     結果が option ではなく要素自身となる Array.last もあるが,
     こちらは配列が空だと例外が起きる.
@@ -705,6 +710,7 @@ module Array =
     Array.last [|3;1;2|] |> should equal 2
 
     @"Array.unfold
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#unfold
     初期値を元に関数を累積的に実行して列をつくる.
     関数の引数は初期値および前回の結果とし,
     戻り値は次回も関数を実行するときは Some (結果となる配列の要素, 次回実行時の引数),
@@ -727,6 +733,7 @@ module Array =
             <| Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [|1..n|] // fib 10 = 55
 
     @"Array.where
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#where
     Array.filter と同じく配列の各要素で実行した関数の結果が true となるものをすべて取り出す.
     Array.find では最初に true となる要素だけとなるのが違う."
     Array.where (fun n -> n % 2 = 0) [|1..5|] |> should equal [|2;4|]
@@ -734,6 +741,7 @@ module Array =
     Array.find (fun n -> n % 2 = 0) [|1..5|] |> should equal 2
 
     @"Array.windowed
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#windowed
     指定した要素数だけ位置が連続する配列を要素とするジャグ配列を得る.
     要素数が正の整数でないときは System.ArgumentException.
     要素数が配列の要素の数を上回ると結果の配列は空.
@@ -750,6 +758,12 @@ module Array =
     @"windowed と chunBySize との違い"
     Array.windowed 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'b';'c';'d'|];[|'c';'d';'e'|]|]
     Array.chunkBySize 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'d';'e'|]|]
+
+    @"
+    Array.zeroCreate
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#zeroCreate"
+    (Array.zeroCreate 4 : int[]) |> should equal [|0;0;0;0|]
+    (Array.zeroCreate 4 : int64[]) |> should equal [|0L;0L;0L;0L|]
 
 module Array2D =
     @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html"
