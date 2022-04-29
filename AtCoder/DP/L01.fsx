@@ -45,7 +45,7 @@ let solve N (Aa:int64[]) =
         (dp, [|0..N-w|]) ||> Array.fold (fun dp i -> Array2D.set dp i (i+w) (max (Aa.[i]-dp.[i+1,i+w]) (Aa.[i+w-1]-dp.[i,i+w-1])); dp))
     |> fun dp -> dp.[0,N]
 let N = stdin.ReadLine() |> int
-let Aa = stdin.ReadLine().Split() |> Array.map int
+let Aa = stdin.ReadLine().Split() |> Array.map int64
 solve N Aa |> stdout.WriteLine
 
 solve 4 [|10L;80L;90L;30L|] |> should equal 10L
