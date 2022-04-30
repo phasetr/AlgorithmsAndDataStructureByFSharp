@@ -22,9 +22,9 @@ msort1 l = merge (msort1 ll) (msort1 rl) where
 merge :: Ord a => [a] -> [a] -> [a]
 merge xs [] = xs
 merge [] ys = ys
-merge rl@(x:xs) ll@(y:ys)
-  | x < y     = x : merge xs ll
-  | otherwise = y : merge rl ys
+merge ll@(x:xs) rl@(y:ys)
+  | x < y     = x : merge xs rl
+  | otherwise = y : merge ll ys
 
 msort2 :: Ord a => [a] -> [a]
 msort2 []  = []
@@ -44,5 +44,10 @@ main :: IO ()
 main = do
   --Stack Overflow: needs strict
   --print $ msort1 [8,5,9,2,6,3,7,1,10,4] == [1..10]
+  print $ merge ll rl
   print $ msort2 [1,8,7,6,2,5,9,4,0,3] == [0..9]
   print $ msort3 [1,8,7,6,2,5,9,4,0,3] == [0..9]
+  where
+    l = [8,5,9,2,6,3,7,1,10,4]
+    n = length l `div` 2
+    (ll,rl) = splitAt n l
