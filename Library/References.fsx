@@ -861,6 +861,9 @@ module Function =
     [1..3] <<= [4..6] |> should equal true
     [1..3] <<= [2..4] |> should equal false
 
+    let add x y = x+y
+    1 `add` 2
+
     @"forward-pipe operator"
     let getTotal2 items =
         (0, items)
@@ -2744,6 +2747,9 @@ module String =
     @"Split
     文字列を分割する「メソッド」"
     "1 2 3" |> fun s -> s.Split(" ") |> should equal [|"1";"2";"3"|]
+    "行区切り文字列を適切な配列に変換"
+    "8 5
+10 8" |> fun s -> s.Split("\n") |> Array.map (fun s -> s.Split(" ") |> fun x -> int x.[0], int x.[1]) |> should equal [|(8,5);(10,8)|]
 
     @"sprintf, 文字列埋め込み"
     module Sprintf =
