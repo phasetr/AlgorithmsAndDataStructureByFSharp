@@ -774,6 +774,10 @@ module Array2D =
     @"array2D, constructor"
     array2D [[1..2];[2..3]]
 
+    @"Array2D.create
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#create"
+    Array2D.create 2 3 1 |> should equal (array2D [[1;1;1];[1;1;1]])
+
     @"行または列だけ取る, slice"
     module TakeColOrRow =
         let a = array2D [[1..10];[11..20]]
