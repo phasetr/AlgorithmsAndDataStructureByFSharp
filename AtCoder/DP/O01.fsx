@@ -92,14 +92,13 @@ let solve N (Aa:int[][]) =
             let a = all |> List.filter (fun j -> ((bset &&& (1 <<< j)) = 0) && Aa.[i].[j]=1)
             let b = a |> List.map (fun j -> frec (bset ||| (1 <<< j)))
             let c = b |> List.fold (fun x y -> (x+y)%1_000_000_007) 0
-            printfn "(a,b,c): %A" (a,b,c)
+            printfn "(i,a,b,c): %A" (i,a,b,c)
 
             all
             |> List.filter (fun j -> ((bset &&& (1 <<< j)) = 0) && Aa.[i].[j]=1)
             |> List.map (fun j -> frec (bset ||| (1 <<< j)))
             |> List.fold (fun x y -> (x+y)%1_000_000_007) 0
-    let fmemo = memorec f
-    fmemo 0
+    0 |> memorec f
 
 let N = stdin.ReadLine() |> int
 let Aa = [| for i in 1..N do (stdin.ReadLine().Split() |> Array.map int) |]
