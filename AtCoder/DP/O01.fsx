@@ -20,7 +20,7 @@ N 組のペアを作る方法は何通りでしょうか？ 10^9 + 7 で割っ�
 """解説 https://kyopro-friends.hatenablog.com/entry/2019/01/12/231035
 bitDPというテクニックを使う問題ね。
 bitDPというのは、集合を数に変換して状態(=添字)として持つようなDPのことよ。
-例えば{0,2,3}という集合は20+22+23=13という数に変換して、
+例えば{0,2,3}という集合は2^0+2^2+2^3=13という数に変換して、
 「数iが集合に属しているか」と「i bit目が1か」を対応させるわ。
 こうすると、「集合としてS⊂T」⇒「数としてS≤T」になるから
 
@@ -74,32 +74,23 @@ ans=dp[N][(1<<N)-1];"""
 #r "nuget: FsUnit"
 open FsUnit
 
-"TODO"
 let N,Aa = 3,[|[|0;1;1|];[|1;0;1|];[|1;1;1|]|]
+"TODO: 高速化"
 let solve N (Aa:int[][]) =
-    let memorec f =
-        let memo = System.Collections.Generic.Dictionary<_, _>()
-        let rec frec j =
-            match memo.TryGetValue j with
-            | exist, value when exist -> value
-            | _ -> let value = f frec j in memo.Add(j, value); value
-        frec
-    let all = [0..N-1]
-    let f frec bset =
-        if bset=(1 <<< N-1) then 1
-        else
-            let i = System.Numerics.BitOperations.PopCount(uint bset)
-            let a = all |> List.filter (fun j -> ((bset &&& (1 <<< j)) = 0) && Aa.[i].[j]=1)
-            let b = a |> List.map (fun j -> frec (bset ||| (1 <<< j)))
-            let c = b |> List.fold (fun x y -> (x+y)%1_000_000_007) 0
-            printfn "(i,a,b,c): %A" (i,a,b,c)
-
-            all
-            |> List.filter (fun j -> ((bset &&& (1 <<< j)) = 0) && Aa.[i].[j]=1)
-            |> List.map (fun j -> frec (bset ||| (1 <<< j)))
-            |> List.fold (fun x y -> (x+y)%1_000_000_007) 0
-    0 |> memorec f
-
+    let bit n k = (n >>> k) &&& 1
+    let n = 1<<<N
+    Array.zeroCreate n
+    |> (fun dp -> Array.set dp 0 1; dp)
+    |> fun dp ->
+        (dp, [|0..n-1|])
+        ||> Array.fold (fun dp S ->
+            let i = System.Numerics.BitOperations.PopCount(uint32 S)
+            (dp, [|0..(N-1)|])
+            ||> Array.fold (fun dp j ->
+                if (bit S j = 1) && Aa.[j].[i-1]=1
+                then Array.set dp S ((dp.[S] + dp.[S^^^(1<<<j)])%1_000_000_007); dp
+                else dp))
+    |> fun dp -> dp.[n-1]
 let N = stdin.ReadLine() |> int
 let Aa = [| for i in 1..N do (stdin.ReadLine().Split() |> Array.map int) |]
 solve N Aa |> stdout.WriteLine
