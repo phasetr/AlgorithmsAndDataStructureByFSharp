@@ -73,14 +73,14 @@ let solve N Aa =
             Array.set g (x-1) ((y-1)::g.[x-1])
             Array.set g (y-1) ((x-1)::g.[y-1])
             g)
-    let f_norec f v v_color parent =
+    let f frec v vColor parent =
         g.[v]
         |> List.choose (fun nv ->
             if nv=parent then None
-            else if v_color=0 then Some (f nv 0 v .+ f nv 1 v) else Some (f nv 0 v))
+            else if vColor=0 then Some (frec nv 0 v .+ frec nv 1 v) else Some (frec nv 0 v))
         |> List.fold (.*) 1L
-    let f = memoize3 N 2 f_norec
-    f 0 0 0 .+ f 0 1 0
+    let dfs = memoize3 N 2 f
+    dfs 0 0 0 .+ dfs 0 1 0
 let N = stdin.ReadLine() |> int
 let Aa = [| for i in 1..N-1 do (stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1]) |]
 solve N Aa |> stdout.WriteLine

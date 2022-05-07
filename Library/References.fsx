@@ -86,7 +86,7 @@ module Array =
     blit2 |> should equal [|0; 0; 0; 0; 0; 4; 5; 6; 7; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]
 
     @"Array.choose, `if`の結果`Option`を取る関数を与えて`Some(x)`だけを取ってくる
-    filterd map, Haskell mapMaybe
+    filterd map, Haskell mapMaybe, OCaml filtered_map
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose
     https://stackoverflow.com/questions/55674656/how-to-combine-filter-and-mapping-in-haskell"
     module Choose =
@@ -876,8 +876,10 @@ module Function =
     let twiceCubic = cubic >> twice
     twiceCubic 3 |> should equal 54
 
+    @"CPS変換: See CpsTr.fsx"
+
     @"memoized recursion, メモ化再帰"
-    module MemRec =
+    module MemoRec =
         let memorec f =
             let memo = System.Collections.Generic.Dictionary<_, _>()
             let rec frec j =
