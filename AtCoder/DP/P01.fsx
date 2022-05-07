@@ -50,10 +50,42 @@ void f(int i){
 open FsUnit
 
 "TODO"
-let solve N Aa = 1
+let N,Aa = 3,[|(1,2);(2,3)|]
+let solve N Aa =
+    let m = 1_000_000_007
+    let (.+) x y = (x+y)%m
+    let (.*) x y = (x*y)%m
 
+    let memoize3 dimx dimy f =
+        let memo = Array2D.create dimx dimy None
+        let rec g n m o =
+            match memo.[n,m] with
+                | Some x -> x
+                | None ->
+                    let result = f g n m o
+                    Array2D.set memo n m (Some result)
+                    result
+        g
+
+    let g =
+        (Array.create N [], Aa)
+        ||> Array.fold (fun g (x,y) ->
+            Array.set g (x-1) ((y-1)::g.[x-1])
+            Array.set g (y-1) ((x-1)::g.[y-1])
+            g)
+    let f_norec f v v_color parent =
+        g.[v]
+        |> List.choose (fun nv ->
+            if nv=parent then None
+            else
+                match v_color with
+                    | 0 -> Some (f nv 0 v .+ f nv 1 v)
+                    | _ -> Some (f nv 0 v))
+        |> List.fold (.*) 1
+    let f = memoize3 N 2 f_norec
+    f 0 0 0 + f 0 1 0
 let N = stdin.ReadLine() |> int
-let Aa = [| for i in 1..N do (stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1]) |]
+let Aa = [| for i in 1..N-1 do (stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1]) |]
 solve N Aa |> stdout.WriteLine
 
 solve 3 [|(1,2);(2,3)|] |> should equal 5
