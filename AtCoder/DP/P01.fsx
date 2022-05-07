@@ -49,10 +49,10 @@ void f(int i){
 #r "nuget: FsUnit"
 open FsUnit
 
-"TODO"
+"cf.https://atcoder.jp/contests/dp/submissions/20822591"
 let N,Aa = 3,[|(1,2);(2,3)|]
 let solve N Aa =
-    let m = 1_000_000_007
+    let m = 1_000_000_007L
     let (.+) x y = (x+y)%m
     let (.*) x y = (x*y)%m
 
@@ -77,18 +77,15 @@ let solve N Aa =
         g.[v]
         |> List.choose (fun nv ->
             if nv=parent then None
-            else
-                match v_color with
-                    | 0 -> Some (f nv 0 v .+ f nv 1 v)
-                    | _ -> Some (f nv 0 v))
-        |> List.fold (.*) 1
+            else if v_color=0 then Some (f nv 0 v .+ f nv 1 v) else Some (f nv 0 v))
+        |> List.fold (.*) 1L
     let f = memoize3 N 2 f_norec
-    f 0 0 0 + f 0 1 0
+    f 0 0 0 .+ f 0 1 0
 let N = stdin.ReadLine() |> int
 let Aa = [| for i in 1..N-1 do (stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1]) |]
 solve N Aa |> stdout.WriteLine
 
-solve 3 [|(1,2);(2,3)|] |> should equal 5
-solve 4 [|(1,2);(1,3);(1,4)|] |> should equal 9
-solve 1 [||] |> should equal 2
-solve 10 [|(8,5);(10,8);(6,5);(1,5);(4,8);(2,10);(3,6);(9,2);(1,7)|] |> should equal 157
+solve 3 [|(1,2);(2,3)|] |> should equal 5L
+solve 4 [|(1,2);(1,3);(1,4)|] |> should equal 9L
+solve 1 [||] |> should equal 2L
+solve 10 [|(8,5);(10,8);(6,5);(1,5);(4,8);(2,10);(3,6);(9,2);(1,7)|] |> should equal 157L
