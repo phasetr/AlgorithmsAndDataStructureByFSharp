@@ -833,6 +833,10 @@ module Char =
     System.Char.IsLower 'c' |> should equal true
     System.Char.IsLower 'C' |> should equal false
 
+    @"文字列ではなく文字を数値にする"
+    let inline charToInt c = int c - int '0'
+    charToInt '3' |> should equal 3
+
 module ComputationExpression =
     @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions
     expr { let! ... }
