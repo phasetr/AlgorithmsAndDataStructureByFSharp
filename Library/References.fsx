@@ -824,6 +824,7 @@ module Bit =
 
 module Bool =
     @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/symbol-and-operator-reference/boolean-operators"
+    @"See also `module Operator`"
 
     @"boolean not"
     not true |> should equal false
@@ -1937,6 +1938,9 @@ module Operator =
     (true && true) |> should equal true
     (true && false) |> should equal false
     (false && false) |> should equal false
+    // not equal
+    (1 <> 0) |> should equal true
+    (not (1=0)) |> should equal true
 
     @"flip: defition of an operator, using paretheses"
     let flip f x y = f y x
