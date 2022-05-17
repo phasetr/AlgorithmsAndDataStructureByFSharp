@@ -85,11 +85,11 @@ open FsUnit
 let N,Aa = 3,[|[|0L;10L;20L|];[|10L;0L;-100L|];[|20L;-100L;0L|]|]
 let solve N (Aa:int64[][]) =
     let m = 1 <<< N
-//    let rec calc (dp:int64[]) (cost:int64[]) u s =
-//        if u = 0 then dp
-//        else
-//            Array.set dp s (max dp.[s] (dp.[s-u]+cost.[u]))
-//            calc dp cost ((u-1)&&&s) s
+    // let rec calc (dp:int64[]) (cost:int64[]) u s =
+    //     if u = 0 then dp
+    //     else
+    //         Array.set dp s (max dp.[s] (dp.[s-u]+cost.[u]))
+    //         calc dp cost ((u-1)&&&s) s
 
     (Array.zeroCreate m, [|0..(m-1)|])
     ||> Array.fold (fun cost s ->
@@ -108,10 +108,11 @@ let solve N (Aa:int64[][]) =
                 dp.[s] <- max dp.[s] (dp.[s-u]+cost.[u])
                 u <- (u-1) &&& s
         dp |> Array.last
-//    |> fun cost ->
-//        (Array.zeroCreate m, [|0..(m-1)|])
-//        ||> Array.fold (fun dp s -> calc (Array.zeroCreate m) cost s s)
-//    |> Array.last
+        // 再帰で書きたいがTLEしている
+        // |> fun cost ->
+        //     (Array.zeroCreate m, [|0..(m-1)|])
+        //     ||> Array.fold (fun dp s -> calc (Array.zeroCreate m) cost s s)
+        // |> Array.last
 let N = stdin.ReadLine() |> int
 let Aa = [| for i in 1..N do (stdin.ReadLine().Split() |> Array.map int64) |]
 solve N Aa |> stdout.WriteLine

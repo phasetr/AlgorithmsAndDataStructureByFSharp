@@ -3,8 +3,9 @@
 open FsUnit
 
 let solve N (Ha:int[]) =
-    let f (c2,c1,h2,h1) h = (c1,min (c2+abs(h-h2)) (c1+abs(h-h1)),h1,h)
-    Array.fold f (0,abs(Ha.[0]-Ha.[1]),Ha.[0],Ha[1]) Ha.[2..] |> fun (_,c,_,_) -> c
+    ((0,abs(Ha.[0]-Ha.[1]),Ha.[0],Ha[1]), Ha.[2..])
+    ||> Array.fold (fun (c2,c1,h2,h1) h -> (c1,min (c2+abs(h-h2)) (c1+abs(h-h1)),h1,h))
+    |> fun (_,c,_,_) -> c
 let N = stdin.ReadLine() |> int
 let Ha = stdin.ReadLine().Split() |> Array.map int
 solve N Ha |> stdout.WriteLine

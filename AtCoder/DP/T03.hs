@@ -1,6 +1,7 @@
 -- https://atcoder.jp/contests/dp/submissions/22290824
 import qualified Data.ByteString.Char8 as C
 import Data.Vector.Unboxed ( foldl', scanl', scanr', singleton )
+import TysPrim (primTyCons)
 
 main :: IO ()
 main = (C.getLine *> C.getLine) >>= print . solve
