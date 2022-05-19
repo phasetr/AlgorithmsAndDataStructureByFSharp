@@ -3,15 +3,13 @@
 open FsUnit
 
 let solve N W (wva: array<int*int64>) =
-    let init = Array.replicate (W+1) 0L
     let f acc (w,v) =
-        printfn "%A" (w,v,acc)
         let pick =
             Array.append (Array.replicate w (-v)) acc
             |> Array.truncate (Array.length acc)
             |> Array.map ((+) v)
         Array.map2 max acc pick
-    Array.fold f init wva |> Array.last
+    (Array.replicate (W+1) 0L, wva) ||> Array.fold f |> Array.last
 let N, W = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0], x.[1])
 let wva = [| for i in 1..N do (stdin.ReadLine().Split() |> fun x -> int x.[0], int64 x.[1]) |]
 solve N W wva |> stdout.WriteLine

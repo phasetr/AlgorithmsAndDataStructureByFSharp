@@ -270,6 +270,11 @@ module Array =
                 | _ -> acc - 1
         (0, data1, data2) |||> Array.fold2 f |> should equal 1
 
+    @"Array.get
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#get"
+    Array.get [|"a";"b";"c"|] 1 |> should equal "b"
+    (fun () -> Array.get [|"a";"b";"c"|] 4 |> ignore) |> should throw typeof<System.IndexOutOfRangeException>
+
     @"Array.groupBy
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#groupBy
     配列の要素を引数とする関数を順次実行し, その結果ごとに要素をグループ分けする.
@@ -288,7 +293,7 @@ module Array =
     配列の先頭の要素だけをなくした配列を得る Array.tail や,
     配列の末尾の要素を得る Array.last や Array.tryLast もある."
     Array.head [|1..3|] |> should equal 1
-    //Array.head<int> [||]    // 例外発生「 System.ArgumentException: 入力配列が空でした」.
+    (fun () -> Array.head<int> [||] |> ignore) |> should throw typeof<System.ArgumentException>
     Array.tryHead [|1..3|] |> should equal (Some 1)
     Array.tryHead<int> [||] |> should equal None
     Array.tail [|1..3|] |> should equal  [|2;3|]
@@ -309,14 +314,14 @@ module Array =
     Array.init 10 (fun i -> i * i)
     |> should equal [|0;1;4;9;16;25;36;49;64;81|]
 
-    module IsEmpty =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.isempty%5b't%5d-function-%5bfsharp%5d
-        // Array.isEmpty
-        // 配列の空判定
-        Array.empty |> Array.isEmpty // true
-        [|1|] |> Array.isEmpty // false
+    @"Array.isEmpty
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#isEmpty
+    配列の空判定"
+    Array.empty |> Array.isEmpty |> should be True
+    [|1|] |> Array.isEmpty |> should be False
 
     @"Array.item
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#item
     検索用キーワード: get
     配列から指定した位置の要素を得る.
     指定した位置に要素が存在しなければ System.IndexOutOfRangeException.
@@ -326,37 +331,33 @@ module Array =
     Array.tryItem 2 [|'a'..'c'|] |> should equal (Some 'c')
     Array.tryItem<int> 0 [||] |> should equal None
 
-    @"Array.iter
-    https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter%5b't%5d-function-%5bfsharp%5d"
+    @"Array.iter: 単なるfor"
     [|for i in 1..3 -> (i, i * i)|] |> should equal [|(1,1);(2,4);(3,9)|]
 
     @"Array.iter2
-    https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iter2%5b't1,'t2%5d-function-%5bfsharp%5d"
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#iter2"
     Array.iter2 (fun x y -> x * y |> printf "%d ") [|1..3|] [|4..6|] // 4 8 10
 
-    module Iteri =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iteri%5b't%5d-function-%5bfsharp%5d
-        let array1 = [|1;2;3|]
-        Array.iteri (fun i x -> i * x |> printf "%d ") array1 // 0 2 6
+    @"Array.iteri
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#iteri"
+    [|1..3|] |> Array.iteri (fun i x -> i * x |> printf "%d ") // 0 2 6
 
-    module Iteri2 =
-        // https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.iteri2%5b't1,'t2%5d-function-%5bfsharp%5d
-        let array1 = [|1;2;3|]
-        let array2 = [|4;5;6|]
-        Array.iteri2 (fun i x y -> i * x * y |> printf "%d ") array1 array2 // 0 10 36
+    @"Array.iteri2
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#iteri2"
+    ([|1..3|],[|4..6|]) ||> Array.iteri2 (fun i x y -> i * x * y |> printf "%d ") // 0 10 36
 
-    module Last =
-        // Array.last
-        // 配列の末尾の要素を得る.
-        // 配列の要素が空のときは System.ArgumentException.
-        // 結果が option になる Array.tryLast もある.
-        // 配列の先頭の要素を得られる Array.head や Array.tryHead もある.
-        Array.last [|1..3|] // 3
-        //Array.last<int> [||]  // 例外発生「 System.ArgumentException: 入力配列が空でした」.
-        Array.tryLast [|1..3|] // Some 3
-        Array.tryLast<int> [||] // None
-        Array.head [|1..3|] // 1
-        Array.tryHead [|1..3|] // Some 1
+    "@Array.last
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#last
+    配列の末尾の要素を得る.
+    配列の要素が空のときは System.ArgumentException.
+    結果が option になる Array.tryLast もある.
+    配列の先頭の要素を得られる Array.head や Array.tryHead もある."
+    Array.last [|1..3|] |> should equal 3
+    (fun () -> Array.last<int> [||] |> ignore) |> should throw typeof<System.ArgumentException>
+    Array.tryLast [|1..3|] |> should equal (Some 3)
+    Array.tryLast<int> [||] |> should equal None
+    Array.head [|1..3|] |> should equal 1
+    Array.tryHead [|1..3|] |> should equal (Some 1)
 
     @"Array.map
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#map"
