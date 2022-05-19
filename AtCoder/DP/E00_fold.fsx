@@ -3,10 +3,13 @@
 open FsUnit
 
 let N,W,wva = 3,8L,[|(3L,30);(4L,50);(5L,60)|]
+// From E06.hs
 let solve N W wva =
-    let f (dp:int64[]) (wi,vi) = [|0..100_000|] |> Array.map(fun v -> if v<vi then min dp.[v] wi else min dp.[v] (dp.[v-vi]+wi))
-    Array.fold f (Array.replicate 100_001 1_000_000_001L) wva
-    |> Array.takeWhile (fun w -> w<=W) |> Array.length
+    ((Array.replicate 100_001 1_000_000_001L), wva)
+    ||> Array.fold (fun (dp:int64[]) (wi,vi) ->
+        [|0..100_000|]
+        |> Array.map (fun v -> if v<vi then min dp.[v] wi else min dp.[v] (wi+dp.[v-vi])))
+    |> Array.takeWhile ((>=) W) |> Array.length
 let N,W = stdin.ReadLine().Split() |> (fun x -> int x.[0], int64 x.[1])
 let wva = [| for i in 1..N do (stdin.ReadLine().Split() |> fun x -> int64 x.[0], int x.[1]) |]
 solve N W wva |> stdout.WriteLine
