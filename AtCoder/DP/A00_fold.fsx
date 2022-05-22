@@ -1,4 +1,3 @@
-@"https://atcoder.jp/contests/dp/tasks/dp_a"
 #r "nuget: FsUnit"
 open FsUnit
 

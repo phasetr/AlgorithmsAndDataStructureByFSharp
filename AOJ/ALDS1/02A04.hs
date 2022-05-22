@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_2_A/review/3143176/acd1034/Haskell
 gt :: (Int,Int) -> (Int,Int) -> Bool
 gt (x1,x2) (y1,y2) = x2>y2
@@ -23,4 +24,5 @@ main = getLine >> getLine >>=
   putStrLn . (\(xs,ys) -> unwords (map show ys) ++ "\n" ++ show (sum xs))
   . unzip
   . bsort
-  . map ((\y -> (0,y)) . read) . words
+  . map ((0,) . read) . words
+--  . map ((\y -> (0,y)) . read) . words

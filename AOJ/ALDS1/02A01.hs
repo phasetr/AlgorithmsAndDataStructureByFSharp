@@ -35,11 +35,11 @@ main = do
   print m
 
 test = do
-  print $ foldr swap (False,[5,3,2,4,1],0) [0..3] == (True,[1,5,3,2,4],4)
-  print $ foldr swap (True,[1,5,3,2,4],4) [0..3] == (True,[1,2,5,3,4],6)
-  print $ foldr swap (True,[1,2,5,3,4],6) [0..3] == (True,[1,2,3,5,4],7)
-  print $ foldr swap (True,[1,2,3,5,4],7) [0..3] == (True,[1,2,3,4,5],8)
-  print $ foldr swap (True,[1,2,3,4,5],8) [0..3] == (True,[1,2,3,4,5],8)
-  print $ loop ()
+--  print $ foldr swap (False,[5,3,2,4,1],0) [0..3] == (True,[1,5,3,2,4],4)
+--  print $ foldr swap (True,[1,5,3,2,4],4) [0..3] == (True,[1,2,5,3,4],6)
+--  print $ foldr swap (True,[1,2,5,3,4],6) [0..3] == (True,[1,2,3,5,4],7)
+--  print $ foldr swap (True,[1,2,3,5,4],7) [0..3] == (True,[1,2,3,4,5],8)
+--  print $ foldr swap (True,[1,2,3,4,5],8) [0..3] == (True,[1,2,3,4,5],8)
+--  print $ loop ()
   print $ bsort [5,3,2,4,1] == ([1..5],8)
   print $ bsort [5,2,4,6,1,3] == ([1..6],9)
