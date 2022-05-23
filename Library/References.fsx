@@ -12,6 +12,18 @@ F# https://fsharp.github.io/fsharp-core-docs/reference
 FsUnit: https://fsprojects.github.io/FsUnit/
 FTP: Use FluentFTP, https://github.com/robinrodricks/FluentFTP"
 
+module SimpleBenchmark =
+    // https://nenono.hatenablog.com/entry/2014/06/17/223141
+    let benchmark n f =
+        let sw  = new System.Diagnostics.Stopwatch()
+        sw.Start()
+        for i in 1..n do f() |> ignore
+        sw.Stop()
+        sw.Elapsed
+    let n = 15
+    let repeat = 500000
+    let bench f = benchmark repeat (fun ()->f n) |> printfn "%A"
+
 module ActivePattern =
     // 引数で受け取った値を「奇数/偶数」の識別子に分類
     let (|Even|Odd|) input =

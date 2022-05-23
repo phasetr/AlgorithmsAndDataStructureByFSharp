@@ -2,7 +2,7 @@
 open FsUnit
 
 let N,Aa = 3,[|[|0;1;1|];[|1;0;1|];[|1;1;1|]|]
-"TODO: 高速化"
+"TODO: 高速化(TLEは免れている)"
 let solve N (Aa:int[][]) =
     let bit n k = (n >>> k) &&& 1
     let n = 1<<<N

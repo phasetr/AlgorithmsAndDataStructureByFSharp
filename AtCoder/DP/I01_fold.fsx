@@ -2,7 +2,6 @@
 open FsUnit
 let N,Pa = 3,[|0.30;0.60;0.80|]
 let solve N (Pa:float[]) =
-    (Array2D.zeroCreate (N+1) (N+1), [|0..N|])
     Array2D.zeroCreate (N+1) (N+1)
     |> fun dp -> Array2D.set dp 0 0 1.0; (dp, [|1..N|])
     ||> Array.fold (fun dp i ->

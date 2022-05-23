@@ -1,6 +1,7 @@
 @"https://atcoder.jp/contests/dp/tasks/dp_p"
 #r "nuget: FsUnit"
 open FsUnit
+let N,Aa = 3,[|(1,2);(2,3)|]
 let solve N Aa =
     let m = 1_000_000_007L
     let (.+) x y = (x+y)%m
