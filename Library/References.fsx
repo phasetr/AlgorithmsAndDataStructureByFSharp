@@ -1982,6 +1982,14 @@ module Operator =
     1 <> 2 |> should equal true
     'b' <> 'a' |> should equal true
 
+    @"'True' mod
+    http://gettingsharper.de/2012/02/28/how-to-implement-a-mathematically-correct-modulus-operator-in-f/
+    cf. https://github.com/fsharp/fslang-suggestions/issues/417
+    .NETの仕様でmodの返り値に負の値を許している."
+    let inline (%%) n m = let k = n%m in if sign k >= 0 then k else abs m + k
+    -14 % 5 |> should equal -4
+    -14 %% 5 |> should equal 1
+
     @"<-, substiture, 可変型の変数に代入
     TODO: fsharp.github.ioの適切なリンクを張り直す
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#(%20:=%20)

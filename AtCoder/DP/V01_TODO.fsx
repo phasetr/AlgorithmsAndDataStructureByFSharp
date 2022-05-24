@@ -9,38 +9,36 @@ let N,M = 99170,997895651L
 例えば1_13でresにマイナスの値が出てくるのでMODに関わる算数部分で何かおかしい.
 """
 let solve N M Aa =
+    let inline (%%) n m = let k = n%m in if sign k >= 0 then k else abs m + k
     let mutable G = Array.create N List.empty<int>
     for (x,y) in Aa do
         G.[x-1] <- G.[x-1] @ [y-1]
         G.[y-1] <- G.[y-1] @ [x-1]
     for i in 1..(N-1) do G.[i] <- List.rev G.[i]
 
-    let mutable res = Array.create N 1L
-    let mutable L   = Array.create N [1L]
-    let mutable R   = Array.create N [1L]
+    let mutable res = Array.create N 1
+    let mutable L   = Array.create N [1]
+    let mutable R   = Array.create N [1]
 
     let rec dfs i p =
         G.[i] <- [for j in G.[i] do if j<>p then yield j]
         // filterでいいのでは?
         for j in G.[i] do
-            L.[i] <- L.[i] @ [(L.[i].[List.length L.[i] - 1] * (dfs j i + 1L))%M]
+            L.[i] <- L.[i] @ [(L.[i].[List.length L.[i] - 1] * (dfs j i + 1))%%M]
         for j in (List.rev G.[i]) do
-            R.[i] <- R.[i] @ [(R.[i].[List.length R.[i] - 1] * (res.[j] + 1L)%M)]
+            R.[i] <- R.[i] @ [(R.[i].[List.length R.[i] - 1] * (res.[j] + 1)%%M)]
         R.[i] <- List.rev R.[i]
         res.[i] <- List.last L.[i]
         res.[i]
 
     let rec bfs i x =
         for idx in 0..(List.length G.[i]-1) do
-            let y = (x * L.[i].[idx] * R.[i].[idx+1] + 1L)%M
-            //let y0 = if 0L <= y then y else (y+M)%M
-            //let y = (((((x % M) * (L.[i].[idx] % M)) * (R.[i].[idx] % M)) % M) + 1L) % M
+            let y = (x * L.[i].[idx] * R.[i].[idx+1] + 1)%%M
             let j = G.[i].[idx]
-            res.[j] <- (res.[j]*y)%M
-            //res.[j] <- (res.[j]*y0)%M
+            res.[j] <- (res.[j]*y)%%M
             bfs j y
     dfs 0 -1 |> ignore
-    bfs 0 1L
+    bfs 0 1
     res
 let N,M = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0], x.[1])
 let Aa = [| for i in 1..(N-1) do (stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1]) |]
