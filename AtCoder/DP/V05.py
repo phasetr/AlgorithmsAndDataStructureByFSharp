@@ -46,7 +46,6 @@ def main():
     print(*res, sep='\n')
 
 def test():
-    N,M,xy = 3,100,[[1,2],[2,3]]
     print(solve(N,M,xy) == [3,4,3])
     print(solve(4,100,[[1,2],[1,3],[1,4]]) == [8,5,5,5])
     print(solve(1,100,[]) == [1])

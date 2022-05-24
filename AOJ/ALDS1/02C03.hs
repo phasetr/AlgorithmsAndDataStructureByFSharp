@@ -1,5 +1,5 @@
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_2_C/review/2012211/earlgrey/Haskell
-import Data.List
+import Data.List ( delete )
 
 suit :: String -> Char
 suit = head

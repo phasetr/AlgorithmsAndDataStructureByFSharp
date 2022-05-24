@@ -156,7 +156,7 @@ module Array =
     Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
     Array.create 4 0 |> should equal [|0;0;0;0|]
 
-    @"Array.delete, あるk番目の要素だけ取り除く,
+    @"Array.delete, あるk番目の要素だけ取り除く
     See also Array.removeAt."
     module Delete =
         let delete k xa = Array.append (Array.take k xa) (Array.skip (k+1) xa)
@@ -1025,7 +1025,7 @@ module List =
     List.contains 3 [1..9] |> should equal true
     List.contains 0 [1..9] |> should equal false
 
-    @"delete: Haskell の delete と同じ.
+    @"delete: Haskell delete, Python remove()
     https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:delete"
     let rec delete x xs =
         match xs with
@@ -1194,6 +1194,16 @@ module List =
     @"List.reduce, 初項を初期値にするList.fold
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#reduce"
     List.reduce min [1..9] |> should equal 1
+
+    @"List.removeAt
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#removeAt"
+    List.removeAt 1 [0..2] |> should equal [0;2]
+
+    @"List.removeManyAt
+    List.removeManyAt index count source
+    https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#removeManyAt"
+    List.removeManyAt 1 2 [0..3] |> should equal [0;3]
+    List.removeManyAt 1 3 [0..4] |> should equal [0;4]
 
     @"List.replicate
     `repeat`にも転用可能
