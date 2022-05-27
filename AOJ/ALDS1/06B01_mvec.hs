@@ -24,18 +24,12 @@ partition p r av = runST $ do
     t <- VM.read amv j
     when (t<=x) $ do
       i' <- readSTRef i
-      swap (i'+1) j amv
+      VM.swap amv (i'+1) j
       writeSTRef i (i'+1)
   i' <- readSTRef i
-  swap (i'+1) r amv
+  VM.swap amv (i'+1) r
   av <- V.freeze amv
   return (av, i'+1)
-  where
-    swap i j mv = do
-      x <- VM.read mv i
-      y <- VM.read mv j
-      VM.write mv i y
-      VM.write mv j x
 
 toString :: Show a => (V.Vector a, Int) -> String
 toString (xs, i) = before ++ mid ++ after where
