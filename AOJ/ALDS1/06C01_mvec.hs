@@ -1,7 +1,7 @@
 -- cf. https://vaibhavsagar.com/blog/2017/05/29/imperative-haskell/
 import Control.Monad ( when, forM_, replicateM )
 import Data.Maybe (fromJust)
-import Data.IORef
+import Data.IORef ( newIORef, readIORef, writeIORef )
 import qualified Data.ByteString.Char8 as B
 import qualified Data.List as L
 import qualified Data.Vector as V
@@ -31,10 +31,9 @@ partition amv p r = do
   forM_ [p..r-1] $ \j -> do
     (s,y) <- VM.read amv j
     when (y<=x) $ do
-      modifyIORef' i (+1)
-      --i0 <- readIORef i
-      --writeIORef i (i0+1)
-      VM.swap amv i j
+      i0 <- readIORef i
+      writeIORef i (i0+1)
+      VM.swap amv (i0+1) j
   i0 <- readIORef i
   VM.swap amv (i0+1) r
   return (amv, i0+1)
