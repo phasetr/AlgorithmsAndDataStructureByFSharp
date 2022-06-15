@@ -1,0 +1,1 @@
+-- https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_9_D

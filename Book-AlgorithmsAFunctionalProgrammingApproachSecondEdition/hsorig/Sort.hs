@@ -73,7 +73,7 @@ hsort :: (Ord a) => [a] -> [a]
 hsort xs = hsort' (mkPQ xs) where
   hsort' pq
     | pqEmpty pq = []
-    | otherwise    = frontPQ pq : hsort' (dePQ pq)
+    | otherwise  = frontPQ pq : hsort' (dePQ pq)
 
 -- | P.123, 6.4.2 Tree sort
 tsort :: (Ord a, Show a) => [a] -> [a]
