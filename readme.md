@@ -92,6 +92,8 @@ I know their names, but I do not read them thoroughly.
 - [幾何の計算にコンピュータを使う 易しくない 計算幾何学](https://www.nakanihon.co.jp/gijyutsu/Shimada/Computational%20geometry/index.html)
 - [nobsun/ProjectEuler](https://github.com/nobsun/ProjectEuler) by Haskell
 - [TheAlgorithms / Python](https://github.com/TheAlgorithms/Python)
+- [drken1215, book_algorithm_solution](https://github.com/drken1215/book_algorithm_solution)
+- [drken1215, algorithm](https://github.com/drken1215/algorithm)
 
 ## F# official
 
