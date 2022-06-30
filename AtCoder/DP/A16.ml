@@ -1,6 +1,6 @@
-(*https://atcoder.jp/contests/dp/submissions/19481065*)
-open Core
-open Stdio
+(* https://atcoder.jp/contests/dp/submissions/19481065 *)
+open Core;;
+open Stdio;;
 
 let memoize1 (size: int) (f_norec: (int -> 'a) -> int -> 'a): int -> 'a =
   let memo = Array.create ~len:size Int.min_value in
@@ -11,8 +11,7 @@ let memoize1 (size: int) (f_norec: (int -> 'a) -> int -> 'a): int -> 'a =
       let result = f_norec g n in
       memo.(n) <- result;
       result
-  in
-  g
+  in g;;
 
 let () =
   let n = Scanf.sscanf (Caml.read_line ()) "%d" (fun x -> x) in
@@ -28,4 +27,4 @@ let () =
           (f (n - 2) + Int.abs (h.(n) - h.(n - 2))))
   in
   solve (n - 1)
-  |> printf "%d\n"
+  |> printf "%d\n";;
