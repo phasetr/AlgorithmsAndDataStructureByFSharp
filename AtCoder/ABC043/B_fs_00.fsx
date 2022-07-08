@@ -1,7 +1,3 @@
-@"https://atcoder.jp/contests/abc043/tasks/abc043_b
-1 ≦ |s| ≦ 10 (|s| は s の長さを表す)
-s は文字 0, 1, B のみからなる。
-正解は空文字列ではない。"
 #r "nuget: FsUnit"
 open FsUnit
 
