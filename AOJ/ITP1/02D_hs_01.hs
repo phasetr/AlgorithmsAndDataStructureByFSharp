@@ -2,7 +2,7 @@
 main :: IO ()
 main = getLine >>=
   putStrLn
-  . (\xs -> solve (xs!!0) (xs!!1) (xs!!2) (xs!!3) (xs!!4))
+  . (\xs -> solve (head xs) (xs!!1) (xs!!2) (xs!!3) (xs!!4))
   . map read . words
 
 solve w h x y r =
