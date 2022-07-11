@@ -1,5 +1,4 @@
 (* Rabhi-Lapalme, P.100 *)
-
 module BinTree =
     type BinTree<'a when 'a: comparison> =
         | EmptyBT
