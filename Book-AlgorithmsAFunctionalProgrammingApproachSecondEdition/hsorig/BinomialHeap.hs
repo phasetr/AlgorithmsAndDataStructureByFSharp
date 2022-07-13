@@ -53,4 +53,19 @@ insHeap x (BH ts) = BH (insTree (Node 0 x []) ts)
 
 delHeap 1 (BH ts) = BH (mrg (reverse ts1) ts2)
   where (Node _ _ ts1, ts2) = removeMinTree ts
-delHeap _ _            = error "delHeap: not looking for first"
+delHeap _ _       = error "delHeap: not looking for first"
+
+test = do
+  print $ (emptyHeap::Heap Int) == BH []
+  let h1 = insHeap 1 emptyHeap
+  let h2 = insHeap 2 h1
+  let h3 = insHeap 3 h2
+  let h4 = insHeap 4 h3
+  let h5 = insHeap 5 h4
+  let h6 = insHeap 6 h5
+  print $ h1 == BH [Node 0 1 []]
+  print $ h2 == BH [Node 1 1 [Node 0 2 []]]
+  print $ h3 == BH [Node 0 3 [],Node 1 1 [Node 0 2 []]]
+  print $ h4 == BH [Node 2 1 [Node 1 3 [Node 0 4 []],Node 0 2 []]]
+  print $ h5 == BH [Node 0 5 [],Node 2 1 [Node 1 3 [Node 0 4 []],Node 0 2 []]]
+  print $ h6 == BH [Node 1 5 [Node 0 6 []],Node 2 1 [Node 1 3 [Node 0 4 []],Node 0 2 []]]

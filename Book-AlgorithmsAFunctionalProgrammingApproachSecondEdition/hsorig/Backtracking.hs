@@ -28,8 +28,9 @@ pop (_:xs) = xs
 top :: Stack a -> a
 top [] = error "no stack"
 top (x:_) = x
+
 ----------------------------------------------------
---import Heap
+-- import Heap
 -- IMPLEMENTATION
 data Heap a = Empty | Node a (Heap a) (Heap a) deriving Show
 emptyHeap :: Heap a

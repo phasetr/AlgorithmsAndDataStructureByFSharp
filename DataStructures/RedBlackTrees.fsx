@@ -1,4 +1,7 @@
 // https://en.wikibooks.org/wiki/F_Sharp_Programming/Advanced_Data_Structures#Red_Black_Trees
+#r "nuget: FsUnit"
+open FsUnit
+
 type Color = | R | B
 type 'a Tree = | E | T of Color * 'a Tree * 'a * 'a Tree
 

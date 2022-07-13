@@ -47,7 +47,6 @@ let rec addAVL i = function
       then if i>newrtv then rotateRight (NodeAVL(v,lf,newrt)) else dRotateRightLeft (NodeAVL(v,lf,newrt))
       else NodeAVL(v,lf,newrt)
 
-(*
 let t1 = addAVL 1 EmptyAVL
 t1 |> should equal (NodeAVL (1, EmptyAVL, EmptyAVL))
 let t2 = addAVL 0 t1
@@ -57,4 +56,3 @@ t3 |> should equal (NodeAVL (1, EmptyAVL, NodeAVL (2, EmptyAVL, EmptyAVL)))
 let t4 = addAVL 2 t2
 let t5 = addAVL 0 t3
 t4 |> should equal t5
-*)

@@ -2,14 +2,16 @@
    https://en.wikibooks.org/wiki/F_Sharp_Programming/Advanced_Data_Structures#Binary_Search_Trees
    Binary Search Tree
 *)
+#r "nuget: FsUnit"
+open FsUnit
+
 module Tree =
   type 'a Tree =
     | EmptyTree
     | TreeNode of 'a * 'a Tree * 'a Tree
-  let hd =
-    function
-      | EmptyTree -> failwith "empty"
-      | TreeNode (hd, l, r) -> hd
+  let hd = function
+    | EmptyTree -> failwith "empty"
+    | TreeNode (hd, l, r) -> hd
 
   let rec exists item = function
     | EmptyTree -> false
@@ -18,8 +20,7 @@ module Tree =
       elif item < hd then exists item l
       else exists item r
 
-  let rec insert item =
-    function
+  let rec insert item = function
     | EmptyTree -> TreeNode(item, EmptyTree, EmptyTree)
     | TreeNode (hd, l, r) as node ->
       if hd = item then node
