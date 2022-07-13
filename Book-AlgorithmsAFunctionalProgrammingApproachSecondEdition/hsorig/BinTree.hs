@@ -56,8 +56,8 @@ delTree _ _ = undefined
 inorder EmptyBT = []
 inorder (NodeBT v lf rt) = inorder lf ++ [v] ++ inorder rt
 
-test :: IO ()
-test = do
+main :: IO ()
+main = do
   print (EmptyBT :: BinTree Int)
   print (btEmpty EmptyBT)
   print (addTree 1 EmptyBT == NodeBT 1 EmptyBT EmptyBT)

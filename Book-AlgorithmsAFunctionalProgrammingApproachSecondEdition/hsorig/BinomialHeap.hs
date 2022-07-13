@@ -55,7 +55,8 @@ delHeap 1 (BH ts) = BH (mrg (reverse ts1) ts2)
   where (Node _ _ ts1, ts2) = removeMinTree ts
 delHeap _ _       = error "delHeap: not looking for first"
 
-test = do
+main :: IO ()
+main = do
   print $ (emptyHeap::Heap Int) == BH []
   let h1 = insHeap 1 emptyHeap
   let h2 = insHeap 2 h1
