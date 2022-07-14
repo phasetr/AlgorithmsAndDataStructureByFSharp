@@ -477,6 +477,18 @@ module Array =
   [|1..10|] |> Array.partition (fun elem -> elem > 3 && elem < 7)
   |> should equal ([|4;5;6|], [|1;2;3;7;8;9;10|])
 
+  @"Array.reduce, 初項を設定したいならArray.fold
+  第一引数がaccumulater.
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#reduce"
+  [|1;3;4;2|] |> Array.reduce (fun a b -> a * 10 + b) |> should equal 1342
+  // ((1 * 10 + 3) * 10 + 4) * 10 + 2
+
+  @"Array.reduceBack, 初項を設定したいならArray.foldBack
+  第二引数がaccumulater.
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#reduceBack"
+  [|1;3;4;2|] |> Array.reduceBack (fun a b -> a * 10 + b) |> should equal 82
+  // 1 + (3 + (4 + 2 * 10) * 10) * 10
+
   @"Array.replicate, Haskell replicate
   同じ値の要素を複数持つ配列を得る.
   数値が 0 以上の整数でなければ System.ArgumentException.
@@ -994,7 +1006,9 @@ module List =
     people |> List.allPairs numbers
     |> should equal [(1, "Kirk");(1, "Spock");(1, "McCoy");(2, "Kirk");(2, "Spock");(2, "McCoy")]
 
-  @"List.append"
+  @"List.append
+  リストとリストの連結: `@`を使っても書ける.
+  要素とリストの連結は`::`"
   List.append [0..3] [4..7] |> should equal [0..7]
   List.append [0..3] [4..7] = [0..3]@[4..7] |> should be True
 
@@ -1461,7 +1475,12 @@ module Math =
   1.0M/2.0M |> should equal 0.5M
   @"float infinity"
   infinity |> should equal infinity
-  @"MaxValue
+  @"MinValue, 最小値
+  https://midoliy.com/content/fsharp/text/type/1_primitive-type.html
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
+  System.Int32.MinValue |> should equal -2_147_483_648
+  System.Int64.MinValue |> should equal -9_223_372_036_854_775_808L
+  @"MaxValue, 最大値
   https://midoliy.com/content/fsharp/text/type/1_primitive-type.html
   https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
   System.Int32.MaxValue |> should equal 2_147_483_647
@@ -2758,6 +2777,8 @@ module String =
   |> should equal "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   String.init 10 (fun i -> int '0' + i |> sprintf "%d ")
   |> should equal "48 49 50 51 52 53 54 55 56 57 "
+  @"同じ文字のくり返しからなる文字列を作る"
+  String.init 3 (fun _ -> "#") |> should equal "###"
 
   @"iter"
   "Hello" |> String.iter (fun c -> printfn "%c %d" c (int c))
