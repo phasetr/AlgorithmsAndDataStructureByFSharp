@@ -406,7 +406,7 @@ module Array =
         printfn "x = %2d, y = %1d, x * y = %3d" x y (x * y)
         (x, x * y))
       1
-      [|2..5|] //([|1;2;6;24|], 120)
+      [|2..5|] |> should equal ([|1;2;6;24|], 120)
     (* 途中経過 *)
     //x =  1, y = 2, x * y =   2
     //x =  2, y = 3, x * y =   6
@@ -803,11 +803,20 @@ module Array2D =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#create"
   Array2D.create 2 3 1 |> should equal (array2D [[1;1;1];[1;1;1]])
 
-  @"行または列だけ取る, slice"
+  @"行または列だけ取る, slice.
+  Array3D, Array4Dでも同じ.
+  https://stackoverflow.com/questions/2366899/f-array2d-slices"
   module TakeColOrRow =
     let a = array2D [[1..10];[11..20]]
     a.[0..,0] |> should equal [|1;11|]
+    a.[0..,1] |> should equal [|2;12|]
+    a.[*,0] |> should equal [|1;11|]
+    a.[*,1] |> should equal [|2;12|]
+
     a.[0,0..] |> should equal [|1..10|]
+    a.[1,0..] |> should equal [|11..20|]
+    a.[0,*] |> should equal [|1..10|]
+    a.[1,*] |> should equal [|11..20|]
 
   @"Array2D.length"
   module Array2DLength =
@@ -2074,6 +2083,7 @@ module Print =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-printfmodule.html"
   @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/plaintext-formatting"
   @"Abraham Get Programming with F#-A guide for NET developers
+  %c: char
   %d: int
   %f: float, %.4fなどで桁数指定
   %b: boolean
@@ -2082,7 +2092,7 @@ module Print =
   %A: pretty-print"
   @"sprintf: printfの書式で文字列生成, module String参照"
 
-  module Prinffn =
+  module Printfn =
   @"%A: どんな型でもとにかく出力"
   [1;2;3;4] |> printfn "%A"
   2 |> printfn "%A"
@@ -2701,12 +2711,16 @@ module String =
   let text = "TEXT"
   $"text: {text}" |> should equal "text: TEXT"
 
-  @"部分文字列の検索
-  https://www.dotnetperls.com/indexof-fs"
   module Contains =
+    @"部分文字列の検索
+    https://www.dotnetperls.com/indexof-fs"
     let words = "fish frog dog"
     words.IndexOf("frog") |> should equal 5
     words.IndexOf("bird") |> should equal -1
+
+    @"ある文字を含むかどうか: `Seq.contains`を使おう"
+    "`3`を含む数かどうかを判定"
+    [|20..41|] |> Array.filter (string >> Seq.contains '3') |> should equal [|23;30;31;32;33;34;35;36;37;38;39|]
 
   @"String.collect
   mapと違って文字を文字列に変換する関数を使ってmapする
