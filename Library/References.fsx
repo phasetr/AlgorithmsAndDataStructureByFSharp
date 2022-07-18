@@ -1005,6 +1005,16 @@ module List =
 
   @"リスト内包表記: 特にifで条件をつける"
   [for n in [1..10] do if n%2=0 then yield n] |> should equal [2..2..10]
+  @"多重内包表記: seqを使おう
+  https://stackoverflow.com/questions/1888451/list-comprehension-in-f"
+  seq { for x in 1..2 do for y in 1..2 -> x,y } |> should equal [(1,1);(1,2);(2,1);(2,2)]
+  @"多重内包表記でのフィルタリング
+  https://midoliy.com/content/fsharp/text/various/4-1_seq.html"
+  seq {
+    for row in 0..9 do
+    for col in 0..9 do
+    if row+col <= 2 then yield (row, col, row*col) }
+    |> Array.ofSeq |> should equal [|(0,0,0);(0,1,0);(0,2,0);(1,0,0);(1,1,1);(2,0,0)|]
 
   @"List.allPairs
   https://fsharp.git  ihub.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#allPairs"
@@ -1013,7 +1023,7 @@ module List =
     let people = ["Kirk";"Spock";"McCoy"]
     let numbers = [1;2]
     people |> List.allPairs numbers
-    |> should equal [(1, "Kirk");(1, "Spock");(1, "McCoy");(2, "Kirk");(2, "Spock");(2, "McCoy")]
+    |> should equal [(1,"Kirk");(1,"Spock");(1,"McCoy");(2,"Kirk");(2,"Spock");(2,"McCoy")]
 
   @"List.append
   リストとリストの連結: `@`を使っても書ける.
