@@ -818,11 +818,20 @@ module Array2D =
     a.[0,*] |> should equal [|1..10|]
     a.[1,*] |> should equal [|11..20|]
 
-  @"Array2D.length"
+  @"Array2D.length: Array2D.length1, Array2D.length2
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#length1"
   module Array2DLength =
     let a = array2D [[1..10];[11..20]]
     Array2D.length1 a |> should equal 2
     Array2D.length2 a |> should equal 10
+
+  @"Array2D.map
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#map"
+  array2D [[3;4];[13;14]] |> Array2D.map (fun v -> 2 * v) |> should equal (array2D [[6;8;];[26;28]])
+
+  @"Array2D.mapi
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#mapi"
+  array2D [[3;4];[13;14]] |> Array2D.mapi (fun i j v -> i + j + v) |> should equal (array2D [[3;5];[14;16]])
 
   @"Array2D.set
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#set"
@@ -864,13 +873,26 @@ module Bool =
   not true |> should equal false
 
 module Char =
-  @"https://docs.microsoft.com/ja-jp/dotnet/api/system.char.islower?view=net-6.0"
+  @"https://docs.microsoft.com/ja-jp/dotnet/api/system.char?view=net-6.0"
+
+  @"大文字・小文字判定, System.Char.IsLower, System.Char.IsUpper
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.char.islower?view=net-6.0"
   System.Char.IsLower 'c' |> should equal true
+  System.Char.IsUpper 'c' |> should equal false
   System.Char.IsLower 'C' |> should equal false
+  System.Char.IsUpper 'C' |> should equal true
 
   @"文字列ではなく文字を数値にする"
   let inline charToInt c = int c - int '0'
   charToInt '3' |> should equal 3
+
+  @"大文字・小文字変換, System.Char.ToLower, System.Char.ToUpper
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.char.islower?view=net-6.0"
+  System.Char.ToLower 'c' |> should equal 'c'
+  System.Char.ToUpper 'c' |> should equal 'C'
+  System.Char.ToLower 'C' |> should equal 'c'
+  System.Char.ToUpper 'C' |> should equal 'C'
+
 
 module ComputationExpression =
   @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions
@@ -2081,6 +2103,247 @@ module PatternMatch =
   let tryDivide2: decimal -> decimal -> Result<decimal,DivideByZeroException> = fun x y ->
     try Ok (x/y)
     with | :? DivideByZeroException as ex -> Error ex
+
+  @"定数パターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#constant-patterns"
+  module ConstantPattern1 =
+    [<Literal>]
+    let Three = 3
+    let filter123 x =
+      match x with
+        | 1 | 2 | Three -> printfn "Found 1, 2, or 3!"
+        | var1 -> printfn "%d" var1
+    for x in 1..10 do filter123 x
+
+  @"定数パターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#constant-patterns"
+  module ConstantPattern2 =
+    type Color =
+      | Red = 0
+      | Green = 1
+      | Blue = 2
+    let printColorName (color:Color) =
+      match color with
+        | Color.Red -> printfn "Red"
+        | Color.Green -> printfn "Green"
+        | Color.Blue -> printfn "Blue"
+        | _ -> ()
+
+    printColorName Color.Red
+    printColorName Color.Green
+    printColorName Color.Blue
+
+  @"識別子パターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#identifier-patterns"
+  module IdentifierPattern1 =
+    let printOption (data : int option) =
+      match data with
+        | Some var1  -> printfn "%d" var1
+        | None -> ()
+  module IdentifierPattern2 =
+    type PersonName =
+      | FirstOnly of string
+      | LastOnly of string
+      | FirstLast of string * string
+
+    let constructQuery personName =
+      match personName with
+        | FirstOnly(firstName) -> printf "May I call you %s?" firstName
+        | LastOnly(lastName) -> printf "Are you Mr. or Ms. %s?" lastName
+        | FirstLast(firstName, lastName) -> printf "Are you %s %s?" firstName lastName
+  module IdentifierPattern3 =
+    type Shape =
+      | Rectangle of height : float * width : float
+      | Circle of radius : float
+    let matchShape1 shape =
+      match shape with
+        | Rectangle(height = h) -> printfn $"Rectangle with length %f{h}"
+        | Circle(r) -> printfn $"Circle with radius %f{r}"
+    let matchShape2 shape =
+      match shape with
+        | Rectangle(height = h; width = w) -> printfn $"Rectangle with height %f{h} and width %f{w}"
+        | _ -> ()
+
+  @"変数パターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#variable-patterns"
+  module VariablePattern =
+    let function1 x =
+      match x with
+        | (var1, var2) when var1 > var2 -> printfn "%d is greater than %d" var1 var2
+        | (var1, var2) when var1 < var2 -> printfn "%d is less than %d" var1 var2
+        | (var1, var2) -> printfn "%d equals %d" var1 var2
+    function1 (1,2)
+    function1 (2, 1)
+    function1 (0, 0)
+
+  @"asパターン, Haskell @
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#as-patterns"
+  module AsPattern =
+    let (var1, var2) as tuple1 = (1, 2)
+    printfn "%d %d %A" var1 var2 tuple1
+
+  @"ORパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#or-patterns"
+  module OrPattern =
+    let detectZeroOR point =
+      match point with
+        | (0, 0) | (0, _) | (_, 0) -> printfn "Zero found."
+        | _ -> printfn "Both nonzero."
+    detectZeroOR (0, 0)
+    detectZeroOR (1, 0)
+    detectZeroOR (0, 10)
+    detectZeroOR (10, 15)
+
+  @"ANDパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#and-patterns"
+  module AndPattern =
+    let detectZeroAND point =
+      match point with
+        | (0, 0) -> printfn "Both values zero."
+        | (var1, var2) & (0, _) -> printfn "First value is 0 in (%d, %d)" var1 var2
+        | (var1, var2)  & (_, 0) -> printfn "Second value is 0 in (%d, %d)" var1 var2
+        | _ -> printfn "Both nonzero."
+    detectZeroAND (0, 0)
+    detectZeroAND (1, 0)
+    detectZeroAND (0, 10)
+    detectZeroAND (10, 15)
+
+  @"Consパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#cons-patterns"
+  module ConsPattern =
+    let list1 = [1;2;3;4]
+    // This example uses a cons pattern and a list pattern.
+    let rec printList l =
+      match l with
+        | head :: tail -> printf "%d " head; printList tail
+        | [] -> printfn ""
+    printList list1
+
+  @"リストパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#list-patterns"
+  module ListPattern =
+    // This example uses a list pattern.
+    let listLength list =
+      match list with
+        | [] -> 0
+        | [ _ ] -> 1
+        | [ _; _ ] -> 2
+        | [ _; _; _ ] -> 3
+        | _ -> List.length list
+
+    printfn "%d" (listLength [1])
+    printfn "%d" (listLength [1;1])
+    printfn "%d" (listLength [1;1;1;])
+    printfn "%d" (listLength [])
+
+  @"配列パターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#array-patterns"
+  module ArrayPattern =
+    // This example uses array patterns.
+    let vectorLength vec =
+      match vec with
+        | [| var1 |] -> var1
+        | [| var1; var2 |] -> sqrt (var1*var1 + var2*var2)
+        | [| var1; var2; var3 |] -> sqrt (var1*var1 + var2*var2 + var3*var3)
+        | _ -> failwith (sprintf "vectorLength called with an unsupported array size of %d." (vec.Length))
+
+    printfn "%f" (vectorLength [| 1. |])
+    printfn "%f" (vectorLength [| 1.; 1. |])
+    printfn "%f" (vectorLength [| 1.; 1.; 1.; |])
+    printfn "%f" (vectorLength [| |] )
+
+  @"かっこで囲まれたパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#parenthesized-patterns"
+  module ParenthesizedPattern =
+    let countValues list value =
+      let rec checkList list acc =
+        match list with
+          | (elem1 & head) :: tail when elem1 = value -> checkList tail (acc + 1)
+          | head :: tail -> checkList tail acc
+          | [] -> acc
+          checkList list 0
+
+    let result = countValues [ for x in -10..10 -> x*x - 4 ] 0
+    printfn "%d" result
+
+  @"識別子パターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#tuple-patterns"
+  module TuplePattern =
+    let detectZeroTuple point =
+      match point with
+        | (0, 0) -> printfn "Both values zero."
+        | (0, var2) -> printfn "First value is 0 in (0, %d)" var2
+        | (var1, 0) -> printfn "Second value is 0 in (%d, 0)" var1
+        | _ -> printfn "Both nonzero."
+
+    detectZeroTuple (0, 0)
+    detectZeroTuple (1, 0)
+    detectZeroTuple (0, 10)
+    detectZeroTuple (10, 15)
+
+  @"レコードパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#record-patterns"
+  module RecordPattern =
+    type MyRecord = { Name: string; ID: int }
+    let IsMatchByName record1 (name: string) =
+      match record1 with
+        | { MyRecord.Name = nameFound; MyRecord.ID = _; } when nameFound = name -> true
+        | _ -> false
+    let recordX = { Name = "Parker"; ID = 10 }
+    let isMatched1 = IsMatchByName recordX "Parker"
+    let isMatched2 = IsMatchByName recordX "Hartono"
+
+  @"型の注釈が付けられたパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#patterns-that-have-type-annotations"
+  module PatternsThatHaveTypeAnnotations =
+    let detect1 x =
+      match x with
+        | 1 -> printfn "Found a 1!"
+        | (var1 : int) -> printfn "%d" var1
+    detect1 0
+    detect1 1
+
+  @"型テストパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#type-test-pattern"
+  module TypeTestPattern1 =
+    open System.Windows.Forms
+    let RegisterControl(control:Control) =
+      match control with
+        | :? Button as button -> button.Text <- "Registered."
+        | :? CheckBox as checkbox -> checkbox.Text <- "Registered."
+        | _ -> ()
+  module TypeTestPattern2 =
+    type A() = class end
+    type B() = inherit A()
+    type C() = inherit A()
+    let m (a: A) =
+      match a with
+        | :? B -> printfn "It's a B"
+        | :? C -> printfn "It's a C"
+        | _ -> ()
+
+  @"nullパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#null-patterns"
+  module NullPattern =
+    let ReadFromFile (reader : System.IO.StreamReader) =
+      match reader.ReadLine() with
+        | null -> printfn "\n"; false
+        | line -> printfn "%s" line; true
+
+    let fs = System.IO.File.Open("..\..\Program.fs", System.IO.FileMode.Open)
+    let sr = new System.IO.StreamReader(fs)
+    while ReadFromFile(sr) = true do ()
+    sr.Close()
+
+  @"Nameofパターン
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#nameof-patterns"
+  module NameofPattern =
+    let f (str: string) =
+      match str with
+        | nameof str -> "It's 'str'!"
+        | _ -> "It is not 'str'!"
+    f "str" |> should equal"It's 'str'!"
+    f "asdf" |> should equal"It is not 'str'!"
 
 module Prelude =
   @"uncurry, Haskell
