@@ -875,6 +875,19 @@ module Bool =
 module Char =
   @"https://docs.microsoft.com/ja-jp/dotnet/api/system.char?view=net-6.0"
 
+  @"アルファベットかどうか判定
+  https://stackoverflow.com/questions/25146714/how-to-check-if-string-only-contains-alphabets-in-f"
+  let isAlpha c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+  [|'a'..'z'|] |> Array.map isAlpha |> Array.forall id |> should be True
+  [|'A'..'Z'|] |> Array.map isAlpha |> Array.forall id |> should be True
+  [|'!';'"';'#';'$';'%';'&';'\'';'(';')';'-';'=';'^';'~';'|';'\\';'`';'@';'[';']';';';'+';':';'*';'{';'}';',';'.';'<';'>';'/';'?';'_'|] |> Array.map isAlpha |> Array.forall (fun x -> not x) |> should be True
+
+  @"Ascii文字かどうか判定
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.char.isletter?view=net-6.0"
+  System.Char.IsAscii 'a' |> should be True
+  System.Char.IsAscii 'B' |> should be True
+  System.Char.IsAscii '#' |> should be True
+
   @"大文字・小文字判定, System.Char.IsLower, System.Char.IsUpper
   https://docs.microsoft.com/ja-jp/dotnet/api/system.char.islower?view=net-6.0"
   System.Char.IsLower 'c' |> should equal true
@@ -882,7 +895,7 @@ module Char =
   System.Char.IsLower 'C' |> should equal false
   System.Char.IsUpper 'C' |> should equal true
 
-  @"文字列ではなく文字を数値にする"
+  @"文字を文字列ではなく数値にする"
   let inline charToInt c = int c - int '0'
   charToInt '3' |> should equal 3
 
@@ -892,7 +905,6 @@ module Char =
   System.Char.ToUpper 'c' |> should equal 'C'
   System.Char.ToLower 'C' |> should equal 'c'
   System.Char.ToUpper 'C' |> should equal 'C'
-
 
 module ComputationExpression =
   @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions
@@ -909,9 +921,8 @@ module ComputationExpression =
   seq { for i in 1..3 -> i * i } |> should equal [1;4;9]
 
 module Dictionary =
-  @"https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
-
-  @"Dict literal, read only"
+  @"FSharpPlus, https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
+  @"Dict literal, read only, FSharpPlus"
   dict [(1,"a");(2,"b");(3,"c")]
 
 module Function =
@@ -985,6 +996,10 @@ module Function =
   map (fun x -> x+1) [1;2;3] |> should equal [2;3;4]
 
 module IO =
+  @"何行あるかわからない標準入力の全取得, readAll
+  https://codereview.stackexchange.com/questions/96473/reading-input-from-console-in-f-as-a-sequence-of-lines"
+  let readAll () = Console.ReadLine() |> Seq.initInfinite |> Seq.takeWhile ((<>) null)
+
   @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0
   https://www.dotnetperls.com/file-fs?msclkid=d0f677a5af2711ec9c9679c85f806250"
   module File =
