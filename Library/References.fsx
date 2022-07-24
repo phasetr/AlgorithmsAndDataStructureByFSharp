@@ -3017,30 +3017,36 @@ module String =
   |> String.collect (fun c -> sprintf "%c " c)
   |> should equal "H e l l o ,   W o r l d "
 
+  @"単純な文字列と文字列の連結
+  https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/strings#string-operators"
+  "str1" + "str2" |> should equal "str1str2"
+
   @"String.concat
   配列やリストの要素を連結して文字列化"
-  [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
-  [|'a'..'e'|] |> System.String |> should equal "abcde"
+  module Concat =
+    [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
+    [|'a'..'e'|] |> System.String |> should equal "abcde"
 
-  [1..5]
-  |> List.map string
-  |> String.concat " "
-  |> should equal "1 2 3 4 5"
+    [1..5]
+    |> List.map string
+    |> String.concat " "
+    |> should equal "1 2 3 4 5"
 
-  [1;2;1;2;3] |> List.distinct
-  |> should equal [1;2;3]
+    [1;2;1;2;3] |> List.distinct
+    |> should equal [1;2;3]
 
-  ["Stefan";"says:";"Hello";"there!"]
-  |> String.concat " " |> should equal "Stefan says: Hello there!"
+    ["Stefan";"says:";"Hello";"there!"]
+    |> String.concat " " |> should equal "Stefan says: Hello there!"
 
-  [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
-  [0..9] |> List.map string |> String.concat ", " |> should equal "0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
-  ["No comma"] |> String.concat "," |> should equal "No comma"
+    [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
+    [0..9] |> List.map string |> String.concat ", " |> should equal "0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+    ["No comma"] |> String.concat "," |> should equal "No comma"
 
   @"System.String.Concat
   文字(char)のリストを文字列化.
   注意: `['1';'2';'3'] |> String.concat`はエラー."
-  ['1';'2';'3'] |> System.String.Concat |> should equal "123"
+  module StringConcat =
+    ['1';'2';'3'] |> System.String.Concat |> should equal "123"
 
   @"exists
   文字列中に与えられた条件をみたす文字が存在するか"
