@@ -1,6 +1,5 @@
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ITP1_9_C/review/1518989/hamukichi/Haskell
 import Data.List
-import Control.Applicative
 
 solve :: [String] -> [Int]
 solve [t,h]

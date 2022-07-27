@@ -2267,7 +2267,7 @@ module PatternMatch =
     printfn "%f" (vectorLength [| 1.; 1.; 1.; |])
     printfn "%f" (vectorLength [| |] )
 
-  @"かっこで囲まれたパターン
+  @"かっこで囲まれたパターン, head-tail分解
   https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#parenthesized-patterns"
   module ParenthesizedPattern =
     let countValues list value =

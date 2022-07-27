@@ -3,161 +3,89 @@ open FsUnit
 #r "nuget: FParsec"
 open FParsec
 
-@"https://bleis-tift.hatenablog.com/entry/json-parser-using-fparsec"
-module PartsSample =
-  module SymbolsSample =
-    """<|>"""
-    "a" |> parseBy (pchar 'a' <|> pchar 'b') |> should equal 'a'
-    "b" |> parseBy (pchar 'a' <|> pchar 'b') |> should equal 'b'
+module JsonSample03 =
+  """定義の入れ替えでどうか?"""
+  let jnumber2 s = s |> (jfloat <|> jinteger)
+  "2.0" |> parseBy jnumber2 |> should equal (JFloat 2.0)
+  """
+  エラー
+  "1"   |> parseBy jnumber2 |> should equal (JInteger 1)
 
-  module AnyofSample =
-    """
-    noneOf の逆.
-    引数で指定された seq<char> のうちの1文字をパースするパーサーを返す.
-    """
-    "a" |> parseBy (anyOf "abc") |> should equal 'a'
-    "c" |> parseBy (anyOf "abc") |> should equal 'c'
-    """
-    エラー
-    "z" |> parseBy (anyOf "abc")
-    """
+  <|> 演算子が左項のパーサーが失敗してもそのパーサーが消費した入力を戻さないことが原因
+  """
 
-  module DotSample =
-    let hi s =
-      s |> (pchar 'h' .>>. pchar 'i'
-            |>> (fun (h, i) -> string h + string i)) // 結果はタプルとして渡される
-    let hi2 s =
-      s |> (pchar 'h' .>> pchar 'i'  // pchar 'i' の結果は捨てる
-            |>> (fun h -> string h)) // 捨てたので結果に含まれない
-    let hi3 s =
-      s |> (pchar 'h' >>. pchar 'i'  // pchar 'h' の結果は捨てる
-            |>> (fun i -> string i)) // 捨てたので結果に含まれない
+  """
+  attempt版
+  <|> 演算子は効率を重視してデフォルトの挙動が入力を巻き戻さないようになっている.
+  attempt をやみくもに使うのはよくない.
+  """
+  let jnumber3 s = s |> (attempt jfloat <|> jinteger)
+  "1"   |> parseBy jnumber3 |> should equal (JInteger 1)
+  "2.0" |> parseBy jnumber3 |> should equal (JFloat 2.0)
 
-    "hi" |> parseBy hi  |> should equal "hi"
-    "hi" |> parseBy hi2 |> should equal "h"
-    "hi" |> parseBy hi3 |> should equal "i"
+  """
+  attemptを使わないバージョン
+  """
+  let jnumber4 s =
+    s |> (tuple3 minusSign integer (opt (pchar '.' >>. integer))
+          |>> (function
+               | (hasMinus, i, None) -> JInteger (if hasMinus then -i else i)
+               | (hasMinus, i, Some flac) ->
+               let f = float i + float ("0." + string flac)
+               JFloat (if hasMinus then -f else f)))
+  "1"   |> parseBy jnumber4 |> should equal (JInteger 1)
+  "2.0" |> parseBy jnumber4 |> should equal (JFloat 2.0)
 
-    """
-    捨てるとは言ってもパースしないわけではないので,
-    後続のパーサーが失敗すると全体として失敗する.
-    "ho" |> parseBy hi2 // => エラー
-    """
-
-  module ManyCharsSample =
-    "abc" |> parseBy (manyChars (noneOf "xyz")) |> should equal "abc"
-    """
-    エラー
-    "axc" |> parseBy (manyChars (noneOf "xyz"))
-    """
-
-  module NoneofSample =
-    """string は seq<char> でもあるので、 ['x'; 'y'; 'z'] の代わりに "xyz" と書いてもOK"""
-    "a" |> parseBy (noneOf "xyz") |> should equal 'a'
-
-    """
-    エラー
-    "y" |> parseBy (noneOf "xyz")
-    """
-
-
-@"https://bleis-tift.hatenablog.com/entry/json-parser-using-fparsec"
-module JsonSample01 =
+module JsonSample04 =
+  """
+  同じプレフィックス(今回の場合整数部)を持つ選択肢が3つ以上だと opt では解決できない.
+  """
   type Json =
-    | JNumber of float    // F#のfloatは64bit
-    | JArray of Json list // F#では配列よりもlistの方が扱いやすい
-
-  module Parser01 =
-    let parseBy p str =
-      // run関数はFParsecが用意している、パーサーを実行するための関数
-      match run p str with
-        | Success (res, _, _) -> res
-        | Failure (msg, _, _) -> failwithf "parse error: %s" msg
-
-    "1.5" |> parseBy pfloat |> should equal 1.5
-
-    // これがパーサー
-    let jnumber n = n |> (pfloat |>> (fun x -> JNumber x))
-
-    "1.5" |> parseBy jnumber |> should equal (JNumber 1.5)
-    "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JNumber 1.0; JNumber 2.0; JNumber 3.0]
-
-    // これがパーサー
-    let jarray s =
-      s |> (sepBy jnumber (pchar ',')
-            |> between (pchar '[') (pchar ']')
-            |>> (fun xs -> JArray xs))
-
-    "[1,2,3]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-    """
-    以下はエラー
-    "[ 1, 2, 3 ]" |> parseBy jarray
-    """
-
-  module Parser02 =
-    """FParseCはトークン列が扱えないため, レキサーの仕事もパーサーで捌く.
-    空白のスキップを下手に書くと繰り返しや再帰と組み合わさった際に簡単に無限ループに陥いる.
-    空白スキップの戦略を決めるとよく,
-    例えば各パーサーの「後ろの空白」を読み飛ばし,
-    最後に全体のパーサーの「前の空白」を読み飛ばせば空白がスキップできる.
-    """
-    let ws = spaces
-    let jnumber s = s |> (pfloat .>> ws |>> JNumber)
-    let jarray s =
-      s |> (sepBy jnumber (pchar ',' >>. ws)
-            |> between (pchar '[' >>. ws) (pchar ']' >>. ws)
-            |>> JArray)
-
-    let parseBy p str =
-      match run (ws >>. p) str with
-        | Success (res, _, _) -> res
-        | Failure (msg, _, _) -> failwithf "parse error: %s" msg
-
-    "[ 1, 2, 3 ]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-    // 嫌な例: 前方一致のため
-    "[1, 2, 3]]]]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-
-    let parseBy2 p str =
-      match run (ws >>. p .>> eof) str with
-        | Success (res, _, _) -> res
-        | Failure (msg, _, _) -> failwithf "parse error: %s" msg
-
-    "[ 1, 2, 3 ]" |> parseBy2 jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-    """
-    エラー
-    "[1, 2, 3]]]]" |> parseBy2 jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-    """
-
-module JsonSample01 =
-  type Json =
-    | JNumber of float
+    | JInteger of int
+    | JFloat of float
+    | JRational of int * int // 有理数を追加
     | JString of string
     | JArray of Json list
 
   let ws = spaces
-  let jnumber s = s |> (pfloat .>> ws |>> JNumber)
+
+  let parseBy p str =
+    match run (between ws eof p) str with
+      | Success (res, _, _) -> res
+      | Failure (msg, _, _) -> failwithf "parse error: %s" msg
+
+  let minusSign s = s |> (opt (pchar '-') |>> Option.isSome)
+  let digit1to9 s = s |> (anyOf ['1'..'9'])
+  let integer s = s |> ((many1Chars2 digit1to9 digit <|> pstring "0") |>> int)
+  let jinteger s =
+    s |> (minusSign .>>. integer
+          |>> (fun (hasMinus, x) -> JInteger (if hasMinus then -x else x)))
+  // choice [p1; p2; ...; pn] は、 p1 <|> p2 <|> ... <|> pn と同じ意味で、高速
+  let jnum s =
+    s |> (choice [ pchar '.' >>. integer |>> (fun frac i -> JFloat (float i + float ("0." + string frac)));
+                   pchar '/' >>. integer |>> (fun d n -> JRational (n, d));
+                   preturn JInteger ]) // preturnは、常に成功し、引数に指定した結果を返すパーサーを返す関数
+  let jnumber s =
+    s |> (tuple3 minusSign integer jnum
+          |>> (fun (hasMinus, i, f) -> f (if hasMinus then -i else i)))
+
+  "1"   |> parseBy jnumber |> should equal (JInteger 1)
+  "2.0" |> parseBy jnumber |> should equal (JFloat 2.0)
+  "3/4" |> parseBy jnumber |> should equal (JRational (3,4))
+
+module JsonSample05 =
+  """
+  再帰文法: 配列はネストできるのでネストさせたい.
+  createParserForwardedToRefをうまく使う.
+
+  旧jarray
   let jarray s =
     s |> (sepBy jnumber (pchar ',' >>. ws)
           |> between (pchar '[' >>. ws) (pchar ']' >>. ws)
           |>> JArray)
-
-  """エスケープ非対応"""
-  let jstring1 s =
-    s |> (manyChars (noneOf ['"'])
-          |> between (pchar '"') (pchar '"')
-          .>> ws
-          |>> JString)
+  """
 
   let nonEscapedChar s = s |> noneOf ['\\'; '"']
-
-  """
-  エスケープされた文字を考える: ただし`\uxxxx`形式は除く.
-  エスケープされた文字は「開始文字()から始まりエスケープシーケンスの種類を表す文字が続く」.
-  """
-  let escapedChar1 s = s |> (pchar '\\' >>. anyOf @"\""/bfnrt")
-  @"\\"  |> parseBy escapedChar1 |> should equal '\\'
-  @"\""" |> parseBy escapedChar1 |> should equal '"'
-  @"\n"  |> parseBy escapedChar1 |> should equal 'n' // 改行文字にしたい
-
   let convEsc = function
     | 'b' -> '\b'
     | 'f' -> '\f'
@@ -165,19 +93,27 @@ module JsonSample01 =
     | 'r' -> '\r'
     | 't' -> '\t'
     | c -> c      // '\\', '"', '/' はそのまま使う
-
-  let escapedChar2 s = s |> (pchar '\\' >>. anyOf @"\""/bfnrt" |>> convEsc)
-
-  """エスケープ文字対応"""
-  let jstring2 s =
-    s |> (manyChars (nonEscapedChar <|> escapedChar2) // どちらかの繰り返し
+  let escapedChar s = s |> (pchar '\\' >>. anyOf @"\""/bfnrt" |>> convEsc)
+  let jstring s =
+    s |> (manyChars (nonEscapedChar <|> escapedChar) // どちらかの繰り返し
           |> between (pchar '"') (pchar '"')
           .>> ws
           |>> JString)
+  """
+  // jarrayの定義の中ではjarrayにアクセスできないのでコンパイルエラー
+  let jarray s =
+    s |> (sepBy (choice [jnumber; jstring; jarray]) (pchar ',' >>. ws)
+          |> between (pchar '[' >>. ws) (pchar ']' >>. ws)
+          |>> JArray)
+  """
 
-  "\"abc\""       |> parseBy jstring2 |> should equal (JString "abc")
-  "\"abc\\ndef\"" |> parseBy jstring2 |> should equal (JString "abc\ndef")
-
-  "TODO 「選択されない選択肢」から"
+  // jarray は、 jarrayRef を見るようになっている
+  let jarray, jarrayRef = createParserForwardedToRef ()
+  // jarrayRef は ref 型なので、再代入できる
+  jarrayRef :=
+    // 再帰したい場合は、 !jarrayRef ではなく、 jarray を使う
+    sepBy (choice [jnumber; jstring; jarray]) (pchar ',' >>. ws)
+    |> between (pchar '[' >>. ws) (pchar ']' >>. ws)
+    |>> JArray
 
 """TODO: https://tyrrrz.me/blog/parsing-with-fparsec"""

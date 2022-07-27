@@ -1,4 +1,5 @@
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ITP1_9_C/review/2212463/aimy/Haskell
+main :: IO ()
 main = getContents
   >>= putStrLn . unwords . solve
   . map words . tail . lines
