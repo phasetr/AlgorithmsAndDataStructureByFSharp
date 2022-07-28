@@ -21,15 +21,13 @@ let parseBy p str =
     | Success (res, _, _) -> res
     | Failure (msg, _, _) -> failwithf "parse error: %s" msg
 
-"[ 1, 2, 3 ]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-"""
-エラー
-"[1, 2, 3]]]]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-"""
+let () =
+  "[ 1, 2, 3 ]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
+  (fun () -> "[1, 2, 3]]]]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
 
-
-/// 既存のテスト
-"1.5" |> parseBy pfloat |> should equal 1.5
-"1.5" |> parseBy jnumber |> should equal (JNumber 1.5)
-"1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JNumber 1.0; JNumber 2.0; JNumber 3.0]
-"[1,2,3]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
+let () =
+  /// 既存のテスト
+  "1.5" |> parseBy pfloat |> should equal 1.5
+  "1.5" |> parseBy jnumber |> should equal (JNumber 1.5)
+  "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JNumber 1.0; JNumber 2.0; JNumber 3.0]
+  "[1,2,3]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])

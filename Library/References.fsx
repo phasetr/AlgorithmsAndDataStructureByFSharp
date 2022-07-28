@@ -1554,16 +1554,16 @@ module Math =
     let myabsfloat x = if x > 0.0 then x else -x
     myabsfloat -1.0 |> should equal 1.0
 
-  @"** or power for int
+  @"** or power for int, 整数のべき乗・累乗
   a^b = pown a b"
   pown 2 3 |> should equal 8
   pown 3 2 |> should equal 9
 
-  @"2のべき乗 for int64, pow2L n = 2^n"
+  @"2のべき乗 for int64, pow2L n = 2^n, 整数のべき乗・累乗"
   let pow2L n = 1L <<< n
   pow2L 50 |> should equal 1125899906842624L
 
-  @"** or power for floating numbers"
+  @"** or power for floating numbers, 実数のべき乗・累乗"
   2.0 ** 3.0 |> should equal 8.0
 
   @"power for bigint"

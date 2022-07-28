@@ -34,7 +34,8 @@ let convEsc = function
 
 let escapedChar s = s |> (pchar '\\' >>. anyOf @"\""/bfnrt" |>> convEsc)
 
-@"\n"  |> parseBy escapedChar |> should equal '\010' // 改行文字化
+let () =
+  @"\n"  |> parseBy escapedChar |> should equal '\010' // 改行文字化
 
 /// エスケープ文字対応
 let jstring s =
@@ -43,21 +44,17 @@ let jstring s =
         .>> ws
         |>> JString)
 
-"\"abc\""       |> parseBy jstring |> should equal (JString "abc")
-"\"abc\\ndef\"" |> parseBy jstring |> should equal (JString "abc\ndef")
+let () =
+  "\"abc\""       |> parseBy jstring |> should equal (JString "abc")
+  "\"abc\\ndef\"" |> parseBy jstring |> should equal (JString "abc\ndef")
 
-
-/// 既存のテスト
-"1.5" |> parseBy pfloat |> should equal 1.5
-"1.5" |> parseBy jnumber |> should equal (JNumber 1.5)
-"1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JNumber 1.0; JNumber 2.0; JNumber 3.0]
-"[1,2,3]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-"[ 1, 2, 3 ]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-
-/// エラーになってほしい
-"""
-"[1, 2, 3]]]]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-"""
-
-@"\\"  |> parseBy escapedChar |> should equal '\\'
-@"\""" |> parseBy escapedChar |> should equal '"'
+let () =
+  /// 既存のテスト
+  "1.5" |> parseBy pfloat |> should equal 1.5
+  "1.5" |> parseBy jnumber |> should equal (JNumber 1.5)
+  "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JNumber 1.0; JNumber 2.0; JNumber 3.0]
+  "[1,2,3]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
+  "[ 1, 2, 3 ]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
+  (fun () -> "[1, 2, 3]]]]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
+  @"\\"  |> parseBy escapedChar |> should equal '\\'
+  @"\""" |> parseBy escapedChar |> should equal '"'

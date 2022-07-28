@@ -4,16 +4,6 @@ open FsUnit
 open FParsec
 
 module JsonSample03 =
-  """定義の入れ替えでどうか?"""
-  let jnumber2 s = s |> (jfloat <|> jinteger)
-  "2.0" |> parseBy jnumber2 |> should equal (JFloat 2.0)
-  """
-  エラー
-  "1"   |> parseBy jnumber2 |> should equal (JInteger 1)
-
-  <|> 演算子が左項のパーサーが失敗してもそのパーサーが消費した入力を戻さないことが原因
-  """
-
   """
   attempt版
   <|> 演算子は効率を重視してデフォルトの挙動が入力を巻き戻さないようになっている.
@@ -108,7 +98,7 @@ module JsonSample05 =
   """
 
   // jarray は、 jarrayRef を見るようになっている
-  let jarray, jarrayRef = createParserForwardedToRef ()
+  let jarray, jarrayRef: Parser<Json,unit> * Parser<Json,unit> ref = createParserForwardedToRef ()
   // jarrayRef は ref 型なので、再代入できる
   jarrayRef :=
     // 再帰したい場合は、 !jarrayRef ではなく、 jarray を使う

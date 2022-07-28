@@ -15,13 +15,15 @@ let parseBy p str =
     | Success (res, _, _) -> res
     | Failure (msg, _, _) -> failwithf "parse error: %s" msg
 
-"1.5" |> parseBy pfloat |> should equal 1.5
+let () =
+  "1.5" |> parseBy pfloat |> should equal 1.5
 
 // これがパーサー
 let jnumber n = n |> (pfloat |>> (fun x -> JNumber x))
 
-"1.5" |> parseBy jnumber |> should equal (JNumber 1.5)
-"1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JNumber 1.0; JNumber 2.0; JNumber 3.0]
+let () =
+  "1.5" |> parseBy jnumber |> should equal (JNumber 1.5)
+  "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JNumber 1.0; JNumber 2.0; JNumber 3.0]
 
 // これがパーサー
 let jarray s =
@@ -29,8 +31,6 @@ let jarray s =
         |> between (pchar '[') (pchar ']')
         |>> (fun xs -> JArray xs))
 
-"[1,2,3]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
-"""
-以下はエラー
-"[ 1, 2, 3 ]" |> parseBy jarray
-"""
+let () =
+  "[1,2,3]" |> parseBy jarray |> should equal (JArray [JNumber 1.0; JNumber 2.0; JNumber 3.0])
+  (fun () -> "[ 1, 2, 3 ]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
