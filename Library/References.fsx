@@ -1509,7 +1509,11 @@ module Map =
   m |> Map.forall (fun n s -> n = s.Length) |> should equal false
 
 module Math =
-  @"Literal Types: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals"
+  """
+  Literal Types: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals
+  Math functions: https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html
+  """
+
   @"1, 0x1, 0o1, 0b1,
   1l (int),
   1u (uint32),
@@ -1997,6 +2001,11 @@ module Math =
   sign 0  |> should equal 0
   sign 1  |> should equal 1
   sign 10  |> should equal 1
+
+  @"Math sine, 正弦関数
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#sin"
+  let near0 x y = (abs (x-y)) < 0.0000001
+  near0 (sin System.Math.PI) 0 |> should be True
 
   @"順列, permutations
   標準ライブラリある?"

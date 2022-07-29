@@ -5,11 +5,14 @@ open FsUnit
 #r "nuget: FParsec"
 open FParsec
 
-"「選択されない選択肢」から"
+"""
+有理数を追加しよう:
+同じプレフィックス(今回の場合整数部)を持つ選択肢が3つ以上だと opt では解決できない.
+"""
 type Json =
-  //| JNumber of float
   | JInteger of int
   | JFloat of float
+  | JRational of int * int // 有理数を追加
   | JString of string
   | JArray of Json list
 
@@ -23,22 +26,19 @@ let parseBy p str =
 let minusSign s = s |> (opt (pchar '-') |>> Option.isSome)
 let digit1to9 s = s |> (anyOf ['1'..'9'])
 let integer s = s |> ((many1Chars2 digit1to9 digit <|> pstring "0") |>> int)
-let jinteger s =
-  s |> (minusSign .>>. integer
-        |>> (fun (hasMinus, x) -> JInteger (if hasMinus then -x else x)))
-let jfloat s =
-  s |> (tuple3 minusSign integer (pchar '.' >>. integer)
-        |>> (fun (hasMinus, i, flac) ->
-             let f = float i + float ("0." + string flac)
-             JFloat (if hasMinus then -f else f)))
-
-"""定義の入れ替えでどうか?"""
-let jnumber s = s |> (jfloat <|> jinteger)
+// choice [p1; p2; ...; pn] は、 p1 <|> p2 <|> ... <|> pn と同じ意味で、高速
+let jnum s =
+  s |> (choice [ pchar '.' >>. integer |>> (fun frac i -> JFloat (float i + float ("0." + string frac)));
+                 pchar '/' >>. integer |>> (fun d n -> JRational (n, d));
+                 preturn JInteger ]) // preturnは、常に成功し、引数に指定した結果を返すパーサーを返す関数
+let jnumber s =
+  s |> (tuple3 minusSign integer jnum
+        |>> (fun (hasMinus, i, f) -> f (if hasMinus then -i else i)))
 
 let () =
+  "1"   |> parseBy jnumber |> should equal (JInteger 1)
   "2.0" |> parseBy jnumber |> should equal (JFloat 2.0)
-  // エラー: <|> 演算子が左項のパーサーが失敗してもそのパーサーが消費した入力を戻さないことが原因
-  (fun () -> "1" |> parseBy jnumber |> should equal (JInteger 1) |> ignore) |> should throw typeof<System.Exception>
+  "3/4" |> parseBy jnumber |> should equal (JRational (3,4))
 
 let jarray s =
   s |> (sepBy jnumber (pchar ',' >>. ws)
@@ -67,13 +67,9 @@ let jstring s =
 let () =
   /// 既存のテスト
   "1.5" |> parseBy pfloat |> should equal 1.5
-  // (fun () -> "1.5" |> parseBy jnumber |> ignore) |> should throw typeof<System.Exception>
-  // 通るようになった
   "1.5" |> parseBy jnumber |> should equal (JFloat 1.5)
-  /// 定義変更
-  (fun () -> "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> ignore) |> should throw typeof<System.Exception>
-  (fun () -> "[1,2,3]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
-  (fun () -> "[1,2,3]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
+  "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JInteger 1; JInteger 2; JInteger 3]
+  "[1,2,3]" |> parseBy jarray |> should equal (JArray [JInteger 1; JInteger 2; JInteger 3])
   (fun () -> "[ 1, 2, 3 ]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
 
   @"\\"  |> parseBy escapedChar |> should equal '\\'
@@ -89,5 +85,8 @@ let () =
   (fun () -> "0123" |> parseBy (many1Chars2 (anyOf ['1'..'9']) digit) |> ignore) |> should throw typeof<System.Exception>
   "1.2" |> parseBy (digit .>>. pchar '.' .>>. digit) |> should equal (('1', '.'), '2')
   "1.2" |> parseBy (tuple3 digit (pchar '.') digit)  |> should equal ('1', '.', '2')
-  (fun () -> "1" |> parseBy jnumber |> should equal (JInteger 1) |> ignore) |> should throw typeof<System.Exception>
+  "1" |> parseBy jnumber |> should equal (JInteger 1)
+  "2.0" |> parseBy jnumber |> should equal (JFloat 2.0)
+  "1" |> parseBy jnumber |> should equal (JInteger 1)
+  "1"   |> parseBy jnumber |> should equal (JInteger 1)
   "2.0" |> parseBy jnumber |> should equal (JFloat 2.0)

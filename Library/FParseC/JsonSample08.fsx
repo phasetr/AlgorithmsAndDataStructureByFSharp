@@ -32,13 +32,15 @@ let jfloat s =
              let f = float i + float ("0." + string flac)
              JFloat (if hasMinus then -f else f)))
 
-"""定義の入れ替えでどうか?"""
-let jnumber s = s |> (jfloat <|> jinteger)
-
+"""
+attempt版
+<|> 演算子は効率を重視してデフォルトの挙動が入力を巻き戻さないようになっている.
+attempt をやみくもに使うのはよくない.
+"""
+let jnumber s = s |> (attempt jfloat <|> jinteger)
 let () =
+  "1"   |> parseBy jnumber |> should equal (JInteger 1)
   "2.0" |> parseBy jnumber |> should equal (JFloat 2.0)
-  // エラー: <|> 演算子が左項のパーサーが失敗してもそのパーサーが消費した入力を戻さないことが原因
-  (fun () -> "1" |> parseBy jnumber |> should equal (JInteger 1) |> ignore) |> should throw typeof<System.Exception>
 
 let jarray s =
   s |> (sepBy jnumber (pchar ',' >>. ws)
@@ -67,13 +69,9 @@ let jstring s =
 let () =
   /// 既存のテスト
   "1.5" |> parseBy pfloat |> should equal 1.5
-  // (fun () -> "1.5" |> parseBy jnumber |> ignore) |> should throw typeof<System.Exception>
-  // 通るようになった
   "1.5" |> parseBy jnumber |> should equal (JFloat 1.5)
-  /// 定義変更
-  (fun () -> "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> ignore) |> should throw typeof<System.Exception>
-  (fun () -> "[1,2,3]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
-  (fun () -> "[1,2,3]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
+  "1,2,3" |> parseBy (sepBy jnumber (pchar ',')) |> should equal [JInteger 1; JInteger 2; JInteger 3]
+  "[1,2,3]" |> parseBy jarray |> should equal (JArray [JInteger 1; JInteger 2; JInteger 3])
   (fun () -> "[ 1, 2, 3 ]" |> parseBy jarray |> ignore) |> should throw typeof<System.Exception>
 
   @"\\"  |> parseBy escapedChar |> should equal '\\'
@@ -89,5 +87,6 @@ let () =
   (fun () -> "0123" |> parseBy (many1Chars2 (anyOf ['1'..'9']) digit) |> ignore) |> should throw typeof<System.Exception>
   "1.2" |> parseBy (digit .>>. pchar '.' .>>. digit) |> should equal (('1', '.'), '2')
   "1.2" |> parseBy (tuple3 digit (pchar '.') digit)  |> should equal ('1', '.', '2')
-  (fun () -> "1" |> parseBy jnumber |> should equal (JInteger 1) |> ignore) |> should throw typeof<System.Exception>
+  "1" |> parseBy jnumber |> should equal (JInteger 1)
   "2.0" |> parseBy jnumber |> should equal (JFloat 2.0)
+  "1" |> parseBy jnumber |> should equal (JInteger 1)
