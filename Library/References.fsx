@@ -1005,12 +1005,15 @@ module IO =
   module File =
     @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.writealllines?view=net-6.0"
     let xa = seq [1..10] |> Seq.map string
+    @"ファイル書き込み"
     System.IO.File.WriteAllLines ("1.tmp.txt", xa)
     System.IO.File.WriteAllText("1.tmp.txt", "test")
     System.IO.File.WriteAllText("1.tmp.txt", "あいうえお")
-    @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readalltext?view=net-6.0"
+    @"ファイル読み込み
+    https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readalltext?view=net-6.0"
     System.IO.File.ReadAllText("1.tmp.txt") |> fun s -> s.Split("\r\n")
-    @"https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0"
+    @"ファイル読み込み
+    https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readlines?view=net-6.0"
     System.IO.File.ReadLines("1.tmp.txt") |> should equal (Array.map string [|1..10|])
 
   @"外部コマンド実行
@@ -2993,7 +2996,9 @@ module Set =
   Set.union (set [1;2;3]) (set [3;4;5]) |> should equal (set [1..5])
 
 module String =
-  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
+  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html
+  @つき文字列: 逐語的文字列, verbatim string
+  https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/strings#verbatim-strings"
 
   @"文字列結合"
   "abc" + "def" |> should equal "abcdef"
