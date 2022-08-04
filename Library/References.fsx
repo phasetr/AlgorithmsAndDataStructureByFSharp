@@ -68,6 +68,10 @@ module Array =
       |> Array.ofList
     accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1,60);(2,80);(3,0)|]
 
+  @"Addメソッド
+  可変配列に対して破壊的に値を追加する."
+  let xa = ResizeArray<int>() in xa.Add(1); xa.Add(2); xa |> should equal (seq {1;2})
+
   @"Array.allPairs
   配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
   結果となる配列の長さが膨大になる可能性があるため引数の配列の長さに注意すること.
@@ -89,7 +93,7 @@ module Array =
   Array.average [|1.0..10.0|] |> should equal 5.5
   Array.averageBy float [|1..10|] |> should equal 5.5
 
-  @"Array.blit, CopyTo, 1 つ目の配列の一部を 2 つ目の配列こコピーする
+  @"Array.blit, CopyTo, 一つ目の配列の一部を二つ目の配列こコピーする
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#blit"
   // Copy 4 elements from index 3 of array1 to index 5 of array2.
   let blit1 = [|1..10|]
@@ -2089,27 +2093,36 @@ module Operator =
 module Option =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
 
+  @"Option.defaultWith, Noneだったら指定した値で埋める
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#defaultWith"
+  None |> Option.defaultWith (fun () -> 99) |> should equal 99
+  Some 42 |> Option.defaultWith (fun () -> 99) |> should equal 42
+
   @"Option.flatten, `Option (Option <'a>)`を`Option<'a>'にする.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#flatten"
   (None: int option option) |> Option.flatten |> should equal None
   (Some ((None: int option))) |> Option.flatten |> should equal None
   (Some (Some 42)) |> Option.flatten |> should equal (Some 42)
 
-  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isNone"
+  @"Option.isNone
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isNone"
   None |> Option.isNone |> should equal true
   Some 42 |> Option.isNone |> should equal  false
 
-  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isSome"
+  @"Option.isSome
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isSome"
   None |> Option.isSome |> should equal false
   Some 42 |> Option.isSome |> should equal true
 
-  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#orElse"
+  @"Option.orElse
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#orElse"
   ((None: int Option), None) ||> Option.orElse |> should equal None
   (Some 99, None) ||> Option.orElse |> should equal (Some 99)
   (None, Some 42) ||> Option.orElse |> should equal (Some 42)
   (Some 99, Some 42) ||> Option.orElse |> should equal (Some 42)
 
-  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#orElseWith"
+  @"Option.orElseWith
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#orElseWith"
   (None: int Option) |> Option.orElseWith (fun () -> None) |> should equal None
   None |> Option.orElseWith (fun () -> (Some 99)) |> should equal (Some 99)
   Some 42 |> Option.orElseWith (fun () -> None) |> should equal (Some 42)
@@ -2411,11 +2424,46 @@ module Random =
   let random = System.Random()
   [|0..4|] |> Array.map (fun _ -> chars.[random.Next(chars.Length)]) |> System.String.Concat
 
+module Record =
+  """レコード: いわゆる辞書・構造体. 細かい事情は調べよう.
+  cf. https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/records
+  cf. https://midoliy.com/content/fsharp/text/type-detail/0_record.html"""
+
+  """ワーニング対応
+  warning FS0667: フィールド ラベルとこのレコード式またはパターンの型だけでは、対応するレコード型を一意に決定できません"""
+  type Point = { X: float; Y: float; Z: float; }
+  let p = { X = 1.0; Y = 2.0; Z = 3.5; } // warning(になる場合あり)
+  let p = { Point.X = 1.0; Y = 2.0; Z = 3.5; } // 対応する型(レコード)を明示
+
+  """withによる一部更新, レコード更新式.
+  cf. https://midoliy.com/content/fsharp/text/type-detail/0_record.html"""
+  type Point = { X: float; Y: float; Z: float; }
+  let p = { Point.X = 1.0; Y = 2.0; Z = 3.5; }
+  let p2 = { p with Z = 10.0; }
+  p  |> should equal {X=1.0; Y=2.0; Z=3.5}
+  p2 |> should equal {X=1.0; Y=2.0; Z=10.0}
+
 module RegularExpression =
   let input = @"\\contentsline a{bcd}{efg}{hij}{lmn}"
   let pattern = @"{(.*)}{(.*)}{(.*)}{(.*)}"
   let capture = System.Text.RegularExpressions.Regex.Match(input, pattern)
   capture.Groups.Values |> Seq.iter (printfn "%A")
+
+  module Matcher =
+    let regMatch str patt = System.Text.RegularExpressions.Regex.Match(str, patt)
+    let matcher str patt = regMatch str patt |> fun x -> if x.Success then x.Value else ""
+
+    let patternBegin = @"^\\begin{(thm|prop|pos|req|axm|defn|assump|notation)}.*"
+    matcher @"\begin{thm}\label{test}" patternBegin |> should equal @"\begin{thm}\label{test}"
+    matcher @"\begin{thm}" patternBegin |> should equal @"\begin{thm}"
+    matcher @"\begin{prop}" patternBegin |> should equal @"\begin{prop}"
+
+    let patternTitle = @"^\*+ .*"
+    matcher @"* abc"     patternTitle |> should equal "* abc"
+    matcher @"** abc"    patternTitle |> should equal "** abc"
+    matcher @"*** abc"   patternTitle |> should equal "*** abc"
+    matcher @"**** abc"  patternTitle |> should equal "**** abc"
+    matcher @"***** abc" patternTitle |> should equal "***** abc"
 
 module Sequence =
   @"docs
