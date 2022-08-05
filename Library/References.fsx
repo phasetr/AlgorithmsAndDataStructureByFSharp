@@ -2449,6 +2449,12 @@ module RegularExpression =
   let capture = System.Text.RegularExpressions.Regex.Match(input, pattern)
   capture.Groups.Values |> Seq.iter (printfn "%A")
 
+  module ExtranctAndReplace =
+    let reg = Regex(@"\pcoloredtextbf{(.*)}")
+    let m = reg.Match(@"abc\\pcoloredtextbf{text}edf")
+    m.Groups |> Seq.iter (printfn "%A")
+    Regex.Replace(@"abc\pcoloredtextbf{text}edf", (Seq.item 0 m.Groups).Value, (Seq.item 1 m.Groups).Value) |> should equal "abctextedf"
+
   module Matcher =
     let regMatch str patt = System.Text.RegularExpressions.Regex.Match(str, patt)
     let matcher str patt = regMatch str patt |> fun x -> if x.Success then x.Value else ""
