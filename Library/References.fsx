@@ -1912,12 +1912,12 @@ module Math =
       @"素数判定
       https://atcoder.jp/contests/arc017/tasks/arc017_1
       https://qiita.com/drken/items/a14e9af0ca2d857dad23#問題-1-素数判定"
-      let rec isprime n =
-        if n < 0L then isprime (-n)
+      let rec isPrime n =
+        if n < 0L then isPrime (-n)
         elif n = 0L then false
         elif n = 1L then false
         else primeFactors n = [ { Number = n;Count = 1 } ]
-      [1L..8L] |> List.filter isprime |> should equal [2L;3L;5L;7L]
+      [1L..8L] |> List.filter isPrime |> should equal [2L;3L;5L;7L]
 
     @"https://jeremybytes.blogspot.com/2016/07/getting-prime-factors-in-f-with-good.html"
     module PF2 =
@@ -1942,7 +1942,7 @@ module Math =
 
     @"http://www.fssnip.net/3X"
     module FsSnip =
-      let isprime n =
+      let isPrime n =
         let sqrtn = (float >> sqrt >> int) n // square root of integer
         [|2..sqrtn|] // all numbers from 2 to sqrt'
         |> Array.forall (fun x -> n % x <> 0) // no divisors
@@ -1950,7 +1950,7 @@ module Math =
       let allPrimes =
         // sequences are lazy, so we can make them infinite
         let rec f n = seq {
-            if isprime n then
+            if isPrime n then
               yield n
             yield! f (n+1) // recursing
           }
@@ -1983,14 +1983,27 @@ module Math =
             l <- i
         }
 
-      let rec isprime x =
-        if x < 0L then isprime (-x)
+      let rec isPrime x =
+        if x < 0L then isPrime (-x)
         elif x = 0L then false
         elif x = 1L then false
         else infSeq x
           |> Seq.takeWhile (fun i -> i * i <= x)
           |> Seq.forall (fun i -> x % i <> 0L)
-      [0L..10L] |> List.filter isprime |> should equal [2L;3L;5L;7L]
+      [0L..10L] |> List.filter isPrime |> should equal [2L;3L;5L;7L]
+
+    module AojOcaml01 =
+      let isPrime = function
+        | 1 -> false
+        | 2 -> true
+        | n when n%2=0 -> false
+        | n ->
+          let rec frec x =
+            if n<x*x then true
+            else if n%x=0 then false
+            else frec (x+2)
+          frec 3
+      [0..10] |> List.filter isPrime |> should equal [2;3;5;7]
 
   @"round, 四捨五入
   どちらにも丸められる場合は偶数にする"
