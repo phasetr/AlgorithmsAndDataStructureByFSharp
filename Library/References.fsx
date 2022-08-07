@@ -364,7 +364,7 @@ module Array =
 
   "@Array.last
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#last
-  配列の末尾の要素を得る.
+  配列の末尾の要素を得る: 先頭を除いた配列がほしいならArray.tailを使えばよい.
   配列の要素が空のときは System.ArgumentException.
   結果が option になる Array.tryLast もある.
   配列の先頭の要素を得られる Array.head や Array.tryHead もある."
