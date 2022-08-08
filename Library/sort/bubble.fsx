@@ -66,3 +66,19 @@ module Bubble3 =
     else xss
   let bsort xs = bubble (true,[xs]) |> List.distinct
   bsort [5;3;2;4;1] |> List.rev |> List.iter (printfn "%A")
+
+module Bubble4 =
+  // cf. AOJ/ALDS1/02A_fs_00.fsx
+  let bsort n (a:int[]) =
+    let rec f flag = if flag then (bubble (n-1) false) else a
+    and bubble i flag =
+      if i = 0 then f flag
+      else if a.[i-1] <= a.[i] then bubble (i-1) flag
+      else
+        let tmp = a.[i]
+        a.[i] <- a.[i-1]
+        a.[i-1] <- tmp
+        bubble (i-1) true
+    f true
+  bsort 5 [|5;3;2;4;1|] |> should equal [|1..5|]
+  bsort 6 [|5;2;4;6;1;3|] |> should equal [|1..6|]
