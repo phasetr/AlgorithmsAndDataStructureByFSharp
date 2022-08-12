@@ -68,6 +68,10 @@ I know their names, but I do not read them thoroughly.
   - [コンピュテーション式, docs.microsoft.com (in Japanese)](https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/computation-expressions)
   - [詳説コンピュテーション式 (in Japanese)](https://bleis-tift.hatenablog.com/entry/computation-expression)
 - [F# for Math series by @7shi (in Japanese)](https://qiita.com/7shi/items/2036e7a739c2a9e04025)
+- Write yourself a scheme in 48 hours
+    - [Using F#](https://write-yourself-a-scheme.pangwa.com)
+    - [Other series](https://lucabolognese.wordpress.com/2011/08/05/write-yourself-a-scheme-in-48-hours-in-f-part-vi/)
+    - [Haskell Original](https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/First_Steps)
 
 ### Algorithms and data structures
 
