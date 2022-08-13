@@ -3206,7 +3206,11 @@ module String =
   "8 5
   10 8" |> fun s -> s.Split("\n") |> Array.map (fun s -> s.Split(" ") |> fun x -> int x.[0], int x.[1]) |> should equal [|(8,5);(10,8)|]
 
-  @"sprintf, 文字列埋め込み, format, printfの書式で文字列生成"
+  """sprintf, 文字列埋め込み, format, printfの書式で文字列生成
+  次の埋め込み文字列を使う方がF# way?
+  let text = "TEXT"
+  $"text: {text}" |> should equal "text: TEXT"
+  """
   module Sprintf =
     sprintf "%s%02d" "TEST" 1 |> should equal "TEST01"
     // %のエスケープは%%を重ねる
