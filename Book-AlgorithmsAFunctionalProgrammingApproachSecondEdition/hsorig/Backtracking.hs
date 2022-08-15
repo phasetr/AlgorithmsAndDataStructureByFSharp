@@ -1,5 +1,6 @@
 module Backtracking where
 
+-- | List difference
 (\\) :: (Foldable t1, Eq t2) => [t2] -> t1 t2 -> [t2]
 (\\) = foldl del where
   []     `del`  _ = []

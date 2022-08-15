@@ -1,14 +1,8 @@
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_3_C/review/2890701/lvs7k/Haskell
 {-# LANGUAGE BangPatterns      #-}
 {-# LANGUAGE OverloadedStrings #-}
-
-import           Control.Applicative
-import           Control.Monad
 import qualified Data.ByteString.Char8 as B
-import           Debug.Trace
-
-import           Data.Sequence         (Seq (..), ViewL (..), ViewR (..), (<|),
-                                        (><), (|>))
+import           Data.Sequence         (Seq (..), ViewL (..), ViewR (..), (<|), (><), (|>))
 import qualified Data.Sequence         as S
 
 readInt' :: B.ByteString -> Int
