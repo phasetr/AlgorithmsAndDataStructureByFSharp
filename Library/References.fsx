@@ -930,15 +930,22 @@ module Dictionary =
   dict [(1,"a");(2,"b");(3,"c")]
 
 module Function =
-  @"Define an operator
-  Bird, Gibbons, P.130"
-  let (<<=): list<'a> -> list<'a> -> bool = fun xs ys ->
-    List.forall id [for x in xs do for y in ys do x <= y]
-  [1..3] <<= [4..6] |> should equal true
-  [1..3] <<= [2..4] |> should equal false
+  module DefineOperator =
+    @"Define an operator
+    Bird, Gibbons, P.130"
+    let (<<=): list<'a> -> list<'a> -> bool = fun xs ys ->
+      List.forall id [for x in xs do for y in ys do x <= y]
+    [1..3] <<= [4..6] |> should equal true
+    [1..3] <<= [2..4] |> should equal false
 
-  let add x y = x+y
-  1 `add` 2
+    let add x y = x+y
+    1 `add` 2
+
+  @"引数をasで分解する"
+  let argDecompWithAs ((a1,b1) as t1) ((a2,b2) as t2) =
+    printfn "%A" (t1,t2)
+    (a1+b1, a2+b2)
+  argDecompWithAs (1,2) (3,4)
 
   @"forward-pipe operator"
   let getTotal2 items =
