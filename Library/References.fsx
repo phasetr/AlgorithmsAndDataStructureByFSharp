@@ -3300,6 +3300,15 @@ module Type =
     spend * tax
   calcTotal 3.0M 1.08M |> should equal 3.24M
 
+  @"型パラメーターが複数ある場合"
+  type Table<'a,'b> = Table of ('b * 'a) list
+  @"型制約の例: when"
+  let rec findTable: Table<'a,'b> -> 'b -> 'a when 'b: comparison = fun table i ->
+    match table with
+      | Table [] -> failwith "item not found in table"
+      | Table ((j,v) :: r) ->
+        if i=j then v else findTable (Table r) i
+
   @"Type Sample"
   module Sample1 =
     type elem (id, name) =

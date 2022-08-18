@@ -32,4 +32,3 @@ qsort xs = divideAndConquer ind id divide combine xs where
   divide _              = undefined
   combine (x:_) [l1,l2] = l1 ++ [x] ++ l2
   combine _ _           = undefined
-
