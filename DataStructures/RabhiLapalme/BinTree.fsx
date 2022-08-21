@@ -6,9 +6,9 @@ type BinTree<'a when 'a: comparison> =
   | EmptyBT
   | NodeBT of 'a * 'a BinTree * 'a BinTree
 
-let emptyTree = EmptyBT
+let emptyTree: 'a BinTree = EmptyBT
 
-let btEmpty = function
+let btEmpty: BinTree<'a> -> bool = function
   | EmptyBT -> true
   | _ -> false
 
