@@ -1,14 +1,16 @@
 module PhysicistsQueue (PhysicistsQueue) where
   import Prelude hiding (head,tail)
   import qualified Prelude (tail)
-  import Queue
+  import Queue ( Queue(..) )
 
   data PhysicistsQueue a = PQ [a] Int [a] Int [a]
 
+  check :: [a] -> Int -> [a] -> Int -> [a] -> PhysicistsQueue a
   check w lenf f lenr r =
     if lenr <= lenf then checkw w lenf f lenr r
     else checkw f (lenf+lenr) (f ++ reverse r) 0 [ ]
 
+  checkw :: [a] -> Int -> [a] -> Int -> [a] -> PhysicistsQueue a
   checkw [ ] lenf f lenr r = PQ f lenf f lenr r
   checkw w lenf f lenr r = PQ w lenf f lenr r
 

@@ -6,45 +6,41 @@ cf. https://stackoverflow.com/questions/3326512/f-priority-queue
 The below list implementation is from Rabni-Lapalme, P.92.
 Items are held in a sorted list.
 *)
+#r "nuget: FsUnit"
+open FsUnit
 
-module PQueue =
-    [<RequireQualifiedAccess>]
-    type 'a PQueue = PQ of 'a list
+type 'a PQueue = PQ of 'a list
 
-    let emptyPQ = PQueue.PQ []
+let emptyPQ = PQ []
 
-    let pqEmpty x =
-        match x with
-        | PQueue.PQ [] -> true
-        | _ -> false
+let pqEmpty x =
+  match x with
+    | PQ [] -> true
+    | _ -> false
 
-    let rec insert x q =
-        match x, q with
-        | x, [] -> [ x ]
-        | x, (e :: r' as r) -> if x <= e then x :: r else e :: insert x r'
+let rec insert x q =
+  match x, q with
+    | x, [] -> [ x ]
+    | x, (e :: r' as r) -> if x <= e then x :: r else e :: insert x r'
 
-    let enPQ x (PQueue.PQ q) = PQueue.PQ(insert x q)
+let enPQ x (PQ q) = PQ (insert x q)
 
-    let dePQ (PQueue.PQ q) =
-        match q with
-        | [] -> failwith "dePQ: empty priority queue"
-        | x :: xs -> PQueue.PQ xs
+let dePQ (PQ q) =
+  match q with
+    | [] -> failwith "dePQ: empty priority queue"
+    | x :: xs -> PQ xs
 
-    let frontPQ (PQueue.PQ q) =
-        match q with
-        | [] -> failwith "frontPQ: empty priority queue"
-        | x :: xs -> x
-
+let frontPQ (PQ q) =
+  match q with
+    | [] -> failwith "frontPQ: empty priority queue"
+    | x :: xs -> x
 
 // test
-open PQueue
-
-emptyPQ |> printfn "%A"
-emptyPQ |> pqEmpty |> printfn "%A"
-emptyPQ |> enPQ 3 |> pqEmpty |> printfn "%A"
-emptyPQ |> enPQ 3 |> enPQ 1 |> printfn "%A"
-
-let pq = emptyPQ |> enPQ 3 |> enPQ 1 |> enPQ 2
-pq |> dePQ |> printfn "%A"
-pq |> frontPQ |> printfn "%A"
-pq |> frontPQ |> printfn "%A"
+let () =
+  emptyPQ |> should equal (PQ [])
+  emptyPQ |> pqEmpty |> should be True
+  emptyPQ |> enPQ 3 |> pqEmpty |> should be False
+  emptyPQ |> enPQ 3 |> enPQ 1 |> should equal (PQ [1;3])
+  let pq = emptyPQ |> enPQ 3 |> enPQ 1 |> enPQ 2
+  pq |> dePQ |> should equal (PQ [2;3])
+  pq |> frontPQ |> should equal 1

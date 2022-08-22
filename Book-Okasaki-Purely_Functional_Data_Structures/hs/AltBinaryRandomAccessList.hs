@@ -1,6 +1,6 @@
 module AltBinaryRandomAccessList (BinaryList) where
   import Prelude hiding (head,tail,lookup)
-  import RandomAccessList
+  import RandomAccessList ( RandomAccessList(..) )
 
   data BinaryList a =
     Nil | Zero (BinaryList (a,a)) | One a (BinaryList (a,a))

@@ -33,14 +33,11 @@ let insHeap: 'a -> Heap<'a> -> Heap<'a> = fun v (n,t) -> (n+1, insTree v (n+1) t
 
 let rec delTreeLast: int -> BinTree<'a> -> 'a * BinTree<'a> = fun i t ->
   match t with
-    | Node(v,lf,rt) ->
+    | NodeBT(v,lf,rt) ->
       if i=1 then (v, EmptyBT)
-      else i%2=0 then let (v',lf') = delTreeLast(i/2) lf in (v', NodeBT(v,lf',rt'))
+      else if i%2=0 then let (v',lf') = delTreeLast (i/2) lf in (v', NodeBT(v,lf',rt))
       else let(v',rt') = delTreeLast (i/2) rt in (v', NodeBT(v,lf,rt'))
     | _ -> failwith "undefined"
-
-let node = NodeBT(1,EmptyBT,EmptyBT)
-let (NodeBT(v0,lf0,rt0)) = node
 
 let rec pdown: 'a -> BinTree<'a> -> BinTree<'a> when 'a: comparison = fun v' -> function
   | EmptyBT -> EmptyBT
@@ -63,7 +60,17 @@ let rec delTree: int -> 'a -> BinTree<'a> -> 'a * BinTree<'a> = fun i v' t ->
       else let (v'',rt'') = delTree (i/2) big rt in (v'', NodeBT(big,lf,rt''))
     | _ -> failwith "undefined"
 
-"""TODO: delHeap"""
+let delTree: int -> 'a -> BinTree<'a> -> 'a * BinTree<'a> = fun i v' t ->
+  match t with
+    | NodeBT(v,lf,rt) ->
+      if i=1 then (v, pdown v' t)
+      else if i%2=0 then
+        let (small,big) = if v<=v' then (v,v') else (v',v)
+        let (v'',lf'') = delTree (i/2) big lf in (v'', NodeBT(small,lf'',rt))
+      else
+        let (small,big) = if v<=v' then (v,v') else (v',v)
+        let (v'',rt'') = delTree (i/2) big rt in (v'',NodeBT(big,lf,rt''))
+    | _ -> failwith "undefined"
 
 let () =
   heapEmpty emptyHeap |> should be True

@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 module UnbalancedSet (UnbalancedSet) where
-  import Set
+  import Set ( Set(..) )
 
   data UnbalancedSet a = E | T (UnbalancedSet a) a (UnbalancedSet a)
 
