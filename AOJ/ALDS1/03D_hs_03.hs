@@ -1,7 +1,4 @@
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_3_D/review/2871023/lvs7k/Haskell
-import Control.Applicative
-import Control.Monad
-
 solve :: [(Int, Char)] -> [(Int, Int)] -> [(Int, Char)] -> [Int]
 solve _ ps [] = fmap snd (reverse ps)
 solve ds ps (x@(n, '\\'):xs) = solve (x : ds) ps xs

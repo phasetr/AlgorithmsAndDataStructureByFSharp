@@ -1054,6 +1054,10 @@ module List =
   [1..3] |> should equal [1;2;3]
   [3..-1..0] |> should equal [3;2;1;0]
 
+  @"リストへの型づけ, 特に空リスト"
+  List.empty<int>
+  List.empty<int*char>
+
   @"リスト内包表記: 特にifで条件をつける"
   [for n in [1..10] do if n%2=0 then yield n] |> should equal [2..2..10]
   @"多重内包表記: seqを使おう
@@ -1164,16 +1168,11 @@ module List =
     [1;2;3;4;5;7;6;5;4;3] |> List.groupBy (fun x -> x)
     |> should equal [1,[1];2,[2];3,[3;3];4,[4;4];5,[5;5];7,[7];6,[6]]
 
-    @"Haskell List.span
+    @"Haskell List.span -> cf. List.partition
     cf. Haskell span https://hackage.haskell.org/package/base-4.16.1.0/docs/src/GHC-List.html#span"
-    let rec span (p: 'a -> bool) lst =
-      match lst with
-      | [] -> ([], [])
-      | x :: xs ->
-        if p x then
-          let (ys, zs) = span p xs
-          (x :: ys, zs)
-        else ([], lst)
+    let rec span: ('a -> bool) -> 'a list -> (('a list) * ('a list)) = fun p -> function
+      | [] -> ([],[])
+      | x::xs as lst -> if p x then let (ys, zs) = span p xs in  (x :: ys, zs) else ([], lst)
 
     @"Haskell List.group
     https://hackage.haskell.org/package/base-4.16.1.0/docs/src/Data-OldList.html#group"
@@ -1349,21 +1348,21 @@ module List =
     dropWhile ((>) 1) [1;2;3] |> should equal [1;2;3]
     dropWhile ((>) 2) [1;2;3] |> should equal [2;3]
 
-  @"span: Haskell の span と同じ
+  @"span: Haskell の span と同じ, cf List.partition
   `span p xs = (takeWhile p xs, dropWhile p xs)` であることに注意。
   https://hackage.haskell.org/package/base-4.14.0.0/docs/src/GHC.List.html#span"
-  let rec span (p: 'a -> bool) lst =
-    match lst with
-    | [] -> ([], [])
-    | x :: xs ->
-      if p x then
-        let (ys, zs) = span p xs
-        (x :: ys, zs)
-      else
-        ([], lst)
+  let rec span: ('a -> bool) -> 'a list -> (('a list) * ('a list)) = fun p -> function
+    | [] -> ([],[])
+    | x::xs as lst -> if p x then let (ys, zs) = span p xs in  (x :: ys, zs) else ([], lst)
+  let span' p lst = (List.takeWhile p lst, List.skipWhile p lst) 
   span ((>) 3) [1;2;3;4;1;2;3;4] |> should equal ([1;2], [3;4;1;2;3;4])
-  span ((>) 9) [1;2;3] |> should equal ([1;2;3], List.empty<int>)
-  span ((>) 0) [1;2;3] |> should equal (List.empty<int>, [1;2;3])
+  span' ((>) 3) [1;2;3;4;1;2;3;4] |> should equal ([1;2], [3;4;1;2;3;4])
+  List.partition ((>) 3) [1;2;3;4;1;2;3;4] |> should equal ([1;2;1;2], [3;4;3;4])
+
+  span  ((>) 9) [1;2;3] |> should equal ([1;2;3], List.empty<int>)
+  span' ((>) 9) [1;2;3] |> should equal ([1;2;3], List.empty<int>)
+  span  ((>) 0) [1;2;3] |> should equal (List.empty<int>, [1;2;3])
+  span' ((>) 0) [1;2;3] |> should equal (List.empty<int>, [1;2;3])
 
   @"List.splitAt, Haskellと同じ.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#splitAt
