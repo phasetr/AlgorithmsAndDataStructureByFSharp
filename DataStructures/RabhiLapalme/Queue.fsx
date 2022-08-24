@@ -1,39 +1,32 @@
 // From Rabhi-Lapalme
-module Queue =
-    type 'a Queue = { Front: 'a List; Rear: 'a List }
+#r "nuget: FsUnit"
+open FsUnit
 
-    let queueEmpty =
-        function
-        | { Front = []; Rear = [] } -> true
-        | _ -> false
+type 'a Queue = Q of 'a list * 'a list
 
-    let emptyQueue = { Front = []; Rear = [] }
+let queueEmpty: 'a Queue -> bool = function
+  | Q([],[]) -> true
+  | _ -> false
 
-    let enqueue x q =
-        match q with
-        | { Front = []; Rear = [] } -> { Front = [ x ]; Rear = [] }
-        | { Front = f; Rear = r } -> { Front = f; Rear = x :: r }
+let emptyQueue: 'a Queue = Q ([],[])
 
-    let dequeue =
-        function
-        | { Front = []; Rear = [] } -> failwith "dequeue: empty queue."
-        | { Front = []; Rear = r } ->
-            { Front = r |> List.rev |> List.tail
-              Rear = [] }
-        | { Front = f :: fs; Rear = r } -> { Front = fs; Rear = r }
+let enqueue: 'a -> 'a Queue -> 'a Queue  = fun x -> function
+  | Q([],[]) -> Q ([x],[])
+  | Q(xs,ys) -> Q (xs, x::ys)
 
-    let front =
-        function
-        | { Front = []; Rear = [] } -> failwith "front: empty queue."
-        | { Front = []; Rear = r } -> List.last r
-        | { Front = f :: _; Rear = _ } -> f
+let dequeue: 'a Queue -> 'a Queue = function
+  | Q([],[]) -> failwith "dequeue: empty queue."
+  | Q([],ys) -> Q(ys |> List.rev |> List.tail, [])
+  | Q(x::xs,ys) -> Q(xs,ys)
 
-// test
-open Queue
+let front: 'a Queue -> 'a = function
+  | Q([],[]) -> failwith "front: empty queue."
+  | Q([], ys) -> List.last ys
+  | Q(x::xs,ys) -> x
 
-emptyQueue |> queueEmpty |> printfn "%A" // true
-emptyQueue |> enqueue 1 |> queueEmpty |> printfn "%A" // false
-emptyQueue |> enqueue 1 |> printfn "%A" // { Front = [1]; Rear = []}
-emptyQueue |> enqueue 1 |> enqueue 2 |> printfn "%A" // { Front = [1]; Rear = [2] }
-emptyQueue |> enqueue 1 |> enqueue 2 |> dequeue |> printfn "%A" // { Front = []; Rear = [2] }
-emptyQueue |> enqueue 1 |> enqueue 2 |> front |> printfn "%A" // 1
+emptyQueue |> queueEmpty |> should be True
+emptyQueue |> enqueue 1 |> queueEmpty |> should be False
+emptyQueue |> enqueue 1 |> should equal (Q([1],[]))
+emptyQueue |> enqueue 1 |> enqueue 2 |> should equal (Q([1],[2]))
+emptyQueue |> enqueue 1 |> enqueue 2 |> dequeue |> should equal (Q([],[2]))
+emptyQueue |> enqueue 1 |> enqueue 2 |> front |> should equal 1

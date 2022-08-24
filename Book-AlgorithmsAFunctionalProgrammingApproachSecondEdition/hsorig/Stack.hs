@@ -5,7 +5,7 @@ emptyStack :: Stack a
 -- | P.87
 stackEmpty :: Stack a -> Bool
 -- | P.87
-push :: a-> Stack a -> Stack a
+push :: a -> Stack a -> Stack a
 -- | P.87
 pop :: Stack a -> Stack a
 -- | P.87

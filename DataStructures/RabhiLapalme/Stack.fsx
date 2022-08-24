@@ -1,43 +1,28 @@
 // From Rabhi-Lapalme
-module Stack =
-    type 'a Stack =
-        | EmptyStk
-        | Stk of 'a * 'a Stack
+#r "nuget: FsUnit"
+open FsUnit
 
-    let push x s = Stk(x, s)
+type 'a Stack = | EmptyStk | Stk of 'a * ('a Stack)
 
-    let pop =
-        function
-        | EmptyStk -> failwith "pop from an empty stack."
-        | Stk (_, s) -> s
+let emptyStack: 'a Stack = EmptyStk
 
-    let top =
-        function
-        | EmptyStk -> failwith "top from an empty stack."
-        | Stk (x, _) -> x
+let stackEmpty: 'a Stack -> bool = function
+  | EmptyStk -> true
+  | _ -> false
 
-    let emptyStack = EmptyStk
+let push: 'a -> 'a Stack -> 'a Stack = fun x s -> Stk(x, s)
 
-    let stackEmpty =
-        function
-        | EmptyStk -> true
-        | _ -> false
+let pop: 'a Stack -> 'a Stack = function
+  | EmptyStk -> failwith "pop from an empty stack."
+  | Stk (_, s) -> s
 
-// test
-open Stack
+let top: 'a Stack -> 'a = function
+  | EmptyStk -> failwith "top from an empty stack."
+  | Stk (x, _) -> x
 
-emptyStack |> printfn "%A" // EmptyStk
-emptyStack |> stackEmpty |> printfn "%b" // true
-push 1 emptyStack |> stackEmpty |> printfn "%b" // false
-push 1 emptyStack |> top |> printfn "%A" // 1
-
-push 1 emptyStack
-|> push 2
-|> push 3
-|> printfn "%A" // Stk (3,Stk (2,Stk (1,EmptyStk)))
-
-push 1 emptyStack
-|> push 2
-|> push 3
-|> pop
-|> printfn "%A" //
+let () =
+  emptyStack |> stackEmpty |> should be True
+  push 1 emptyStack |> stackEmpty |> should be False
+  push 1 emptyStack |> top |> should equal 1
+  push 1 emptyStack |> push 2 |> push 3 |> should equal (Stk(3, Stk(2, Stk(1, EmptyStk))))
+  push 1 emptyStack |> push 2 |> push 3 |> pop |> should equal (Stk(2, Stk(1, EmptyStk)))

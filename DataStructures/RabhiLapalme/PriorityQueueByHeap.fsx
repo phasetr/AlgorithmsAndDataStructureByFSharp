@@ -8,5 +8,3 @@ let pqEmpty (PQ h) = Heap.heapEmpty h
 let enPQ v (PQ h) = PQ(Heap.insHeap v h)
 let frontPQ (PQ h) = Heap.findHeap h
 let dePQ (PQ h) = PQ(Heap.delHeap h)
-
-PriorityQueueByHeap.emptyPQ |> printfn "%A"
