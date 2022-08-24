@@ -20,6 +20,6 @@ solve acc dict (c:cs) = if command == "insert" then solve acc (insert key True d
 
 test :: IO ()
 test = do
-  print $ myhash "test"
+  print $ hash "test"
   print $ solve [] empty [("insert","AAA"),("insert","AAC"),("find","AAA"),("find","CCC"),("insert","CCC"),("find","CCC")] == ["yes","no","yes"]
   print $ solve [] empty [("insert","AAA"),("insert","AAC"),("insert","AGA"),("insert","AGG"),("insert","TTT"),("find","AAA"),("find","CCC"),("find","CCC"),("insert","CCC"),("find","CCC"),("insert","T"),("find","TTT"),("find","T")] == ["yes","no","no","yes","yes","yes"]

@@ -925,8 +925,9 @@ module ComputationExpression =
   seq { for i in 1..3 -> i * i } |> should equal [1;4;9]
 
 module Dictionary =
-  @"FSharpPlus, https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
-  @"Dict literal, read only, FSharpPlus"
+  @"FSharpPlus, https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html
+  Dict literal, read only, FSharpPlus
+  C#のDictionaryとHashtable比較: 後者はキー・値ともにObject型で変換処理があって低パフォーマンス"
   dict [(1,"a");(2,"b");(3,"c")]
 
 module Function =
