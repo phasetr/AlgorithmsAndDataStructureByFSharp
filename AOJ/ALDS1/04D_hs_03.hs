@@ -25,5 +25,3 @@ solve n k ws = mlc where
     | otherwise  =
         if (loaded + x) > p then lc (x:xs) p (track + 1) 0 total
         else lc xs p track (loaded + x) (total + 1)
-
-
