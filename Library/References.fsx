@@ -155,7 +155,7 @@ module Array =
   [|1..2|] |> Array.contains 2 |> should equal true
   [|1..2|] |> Array.contains 5 |> should equal false
 
-  @"Array.create
+  @"Array.create, OCaml Array.make
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#create"
   Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
   Array.create 4 0 |> should equal [|0;0;0;0|]
@@ -1554,7 +1554,7 @@ module Math =
   https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
   System.Int32.MinValue |> should equal -2_147_483_648
   System.Int64.MinValue |> should equal -9_223_372_036_854_775_808L
-  @"MaxValue, 最大値
+  @"MaxValue, 最大値, OCaml max_int
   https://midoliy.com/content/fsharp/text/type/1_primitive-type.html
   https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
   System.Int32.MaxValue |> should equal 2_147_483_647
