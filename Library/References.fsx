@@ -1447,6 +1447,14 @@ module Literal =
   open System
   let undefined<'T> : 'T = raise (NotImplementedException())"
 
+module Loop =
+  @"module For"
+  @"for in, https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/loops-for-in-expression"
+  for i in [1;5;100;450;788] do printfn "%d" i done
+  @"for to, for downto, https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/loops-for-to-expression"
+  for i = 1 to 10 do printf "%d " i done
+  for i = 10 downto 1 do printf "%d " i done
+
 module Map =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html"
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-fsharpmap-2.html"
