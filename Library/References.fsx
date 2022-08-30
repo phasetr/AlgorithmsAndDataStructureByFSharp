@@ -143,6 +143,11 @@ module Array =
     Array.compareWith compare [|1..3|] [|1;2;4|] |> should equal -1
     Array.compareWith compare [|1..3|] [|1;2;3|] |> should equal  0
 
+  @"Array.contains
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#contains"
+  [|1..2|] |> Array.contains 2 |> should equal true
+  [|1..2|] |> Array.contains 5 |> should equal false
+
   @"Array.countBy
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#countBy"
   module CountBy =
@@ -150,15 +155,14 @@ module Array =
     let inputs = [|{Bar = "a"}; {Bar = "b"}; {Bar = "a"}|]
     inputs |> Array.countBy (fun foo -> foo.Bar) |> should equal [|("a",2);("b",1)|]
 
-  @"Array.contains
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#contains"
-  [|1..2|] |> Array.contains 2 |> should equal true
-  [|1..2|] |> Array.contains 5 |> should equal false
-
   @"Array.create, OCaml Array.make
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#create"
   Array.create 4 "a" |> should equal [|"a"; "a"; "a"; "a"|]
   Array.create 4 0 |> should equal [|0;0;0;0|]
+
+  @"Array.copy
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#copy"
+  let aa = [|12; 13; 14|] in Array.copy aa |> should equal aa
 
   @"Array.delete, あるk番目の要素だけ取り除く
   See also Array.removeAt."
@@ -557,7 +561,7 @@ module Array =
   [|'a'..'e'|].[2..] |> should equal [|'c';'d';'e'|]
   [|'a'..'e'|].[..3] |> should equal [|'a';'b';'c';'d'|]
 
-  @"Array.sortBy
+  @"Array.sortBy, stable sort, 安定ソート
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sortBy
   関数指定でソートする"
   Array.sortBy abs [|1;4;8;-2;5|] |> should equal [|1;-2;4;5;8|]
@@ -2971,6 +2975,7 @@ module Sequence =
 
   @"Seq.sortBy
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortBy"
+  ["a";"bbb";"cccc";"dd"] |> Seq.sortBy (fun s -> s.Length) |> should equal (seq ["a";"dd";"bbb";"cccc"])
 
   @"Seq.sortByDescending
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#sortByDescending"
