@@ -1,17 +1,6 @@
 #r "nuget: FsUnit"
 open FsUnit
 
-"""
-let () =
-  let n = scanf "%d\n" id in
-  let ar = Array.init n (fun _ -> scanf "%s %d\n" (fun x y -> {suit = x; value = y})) in
-  let ar2 = Array.copy ar in
-  qsort (fun x y -> compare x.value y.value) ar 0 (n-1);
-  Array.stable_sort (fun x y -> compare x.value y.value) ar2;
-  printf "%s\n" (if ar = ar2 then "Stable" else "Not stable");
-  Array.iter (fun x -> printf "%s %d\n" x.suit x.value) ar
-"""
-
 let solve N (Aa: (string*int)[]) =
   let swap i j = let t = Aa.[i] in Aa.[i] <- Aa.[j]; Aa.[j] <- t
   let partition cmp (a: (string*int)[]) p r =
