@@ -242,7 +242,7 @@ module Array =
   Array.tryFindBack (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 3)
   Array.find (fun n -> n % 2 = 1) [|1..3|] |> should equal 1
 
-  @"Array.findIndex
+  @"Array.findIndex, Haskell Vector.elemIndex
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#findIndex"
   [|1..5|] |> Array.findIndex ((=) 2) |> should equal 1
 
