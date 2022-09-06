@@ -1359,7 +1359,7 @@ module List =
   let rec span: ('a -> bool) -> 'a list -> (('a list) * ('a list)) = fun p -> function
     | [] -> ([],[])
     | x::xs as lst -> if p x then let (ys, zs) = span p xs in  (x :: ys, zs) else ([], lst)
-  let span' p lst = (List.takeWhile p lst, List.skipWhile p lst) 
+  let span' p lst = (List.takeWhile p lst, List.skipWhile p lst)
   span ((>) 3) [1;2;3;4;1;2;3;4] |> should equal ([1;2], [3;4;1;2;3;4])
   span' ((>) 3) [1;2;3;4;1;2;3;4] |> should equal ([1;2], [3;4;1;2;3;4])
   List.partition ((>) 3) [1;2;3;4;1;2;3;4] |> should equal ([1;2;1;2], [3;4;3;4])
@@ -2125,10 +2125,46 @@ module Operator =
 module Option =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
 
+  @"Option.bind, Haskell >>=
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#bind"
+  let tryParse (input: string) =
+    match System.Int32.TryParse input with | true, v -> Some v | false, _ -> None
+  None |> Option.bind tryParse |> should equal None
+  Some "42" |> Option.bind tryParse |> should equal (Some 42)
+  Some "Forty-two" |> Option.bind tryParse |> should equal None
+
+  @"Option.contains
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#contains"
+  (99, None) ||> Option.contains |> should be False
+  (99, Some 99) ||> Option.contains |> should be True
+  (99, Some 100) ||> Option.contains |> should be False
+
+  @"Option.count
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#count"
+  None |> Option.count |> should equal 0
+  Some 99 |> Option.count |> should equal 1
+
+  @"Option defaultValue
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#defaultValue"
+  (99, None) ||> Option.defaultValue |> should equal 99
+  (99, Some 42) ||> Option.defaultValue |> should equal 42
+
   @"Option.defaultWith, Noneだったら指定した値で埋める
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#defaultWith"
   None |> Option.defaultWith (fun () -> 99) |> should equal 99
   Some 42 |> Option.defaultWith (fun () -> 99) |> should equal 42
+
+  @"Option.exists
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#exists"
+  None |> Option.exists (fun x -> x >= 5) |> should be False
+  Some 42 |> Option.exists (fun x -> x >= 5) |> should be True
+  Some 4 |> Option.exists (fun x -> x >= 5) |> should be False
+
+  @"Option.filter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#filter"
+  None |> Option.filter (fun x -> x >= 5) |> should equal None
+  Some 42 |> Option.filter (fun x -> x >= 5) |> should equal (Some 42)
+  Some 4 |> Option.filter (fun x -> x >= 5) |> should equal None
 
   @"Option.flatten, `Option (Option <'a>)`を`Option<'a>'にする.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#flatten"
@@ -2136,15 +2172,60 @@ module Option =
   (Some ((None: int option))) |> Option.flatten |> should equal None
   (Some (Some 42)) |> Option.flatten |> should equal (Some 42)
 
-  @"Option.isNone
+  @"Option.fold
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#fold"
+  (0, None) ||> Option.fold (fun accum x -> accum + x * 2) |> should equal 0
+  (0, Some 1) ||> Option.fold (fun accum x -> accum + x * 2) |> should equal 2
+  (10, Some 1) ||> Option.fold (fun accum x -> accum + x * 2) |> should equal 12
+
+  @"Option.foldBack
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#foldBack"
+  (None, 0) ||> Option.foldBack (fun x accum -> accum + x * 2) |> should equal 0
+  (Some 1, 0) ||> Option.foldBack (fun x accum -> accum + x * 2) |> should equal 2
+  (Some 1, 10) ||> Option.foldBack (fun x accum -> accum + x * 2) |> should equal 12
+
+  @"Option.forall
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#forall"
+  None |> Option.forall (fun x -> x >= 5) |> should be True
+  Some 42 |> Option.forall (fun x -> x >= 5) |> should be True
+  Some 4 |> Option.forall (fun x -> x >= 5) |> should be False
+
+  @"Option.get, Haskell fromJust
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#get"
+  Some 42 |> Option.get |> should equal 42
+  (fun () -> (None: int option) |> Option.get |> ignore) |> should throw typeof<System.ArgumentException>
+
+  @"Option.isNone, Haskell isNothing
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isNone"
   None |> Option.isNone |> should equal true
   Some 42 |> Option.isNone |> should equal  false
 
-  @"Option.isSome
+  @"Option.isSome, Haskell isJust
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#isSome"
   None |> Option.isSome |> should equal false
   Some 42 |> Option.isSome |> should equal true
+
+  @"Option.iter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#iter"
+
+  @"Option.map
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#map"
+
+  @"Option.map2
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#map2"
+
+  @"Option.map3
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#map3"
+
+  @"Option.ofNullable
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#ofNullable"
+  System.Nullable<int>() |> Option.ofNullable |> should equal None
+  System.Nullable(42) |> Option.ofNullable |> should equal (Some 42)
+
+  @"Option.ofObj
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#ofObj"
+  (null: string) |> Option.ofObj |> should equal None
+  "not a null string" |> Option.ofObj |> should equal (Some "not a null string")
 
   @"Option.orElse
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#orElse"
@@ -2159,6 +2240,22 @@ module Option =
   None |> Option.orElseWith (fun () -> (Some 99)) |> should equal (Some 99)
   Some 42 |> Option.orElseWith (fun () -> None) |> should equal (Some 42)
   Some 42 |> Option.orElseWith (fun () -> (Some 99)) |> should equal (Some 42)
+
+  @"Option.toArray
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#toArray"
+
+  @"Option.toList
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#toList"
+
+  @"Option.toNullable
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#toNullable"
+  (None: int option) |> Option.toNullable |> should equal (System.Nullable<int>())
+  Some 42 |> Option.toNullable |> should equal (System.Nullable(42))
+
+  @"Option.toObj
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#toObj"
+  (None: string option) |> Option.toObj |> should equal null
+  Some "not a null string" |> Option.toObj |> should equal "not a null string"
 
   @"tryParse"
   let tryParse (input: string) =
