@@ -3354,7 +3354,7 @@ module String =
   seq {0..4} |> Seq.truncate 2 |> should equal (seq {0;1})
   seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
 
-module SystemIODirectory
+module SystemIoDirectory =
   @".NET
   https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory?view=net-6.0"
 
@@ -3369,6 +3369,15 @@ module SystemIODirectory
   @"SetCurrentDirectory
   https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory.setcurrentdirectory?view=net-6.0"
   System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__
+
+module SystemIoStdout =
+  @".NET
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.io.textwriter?view=net-6.0"
+
+  @"Write string, 改行なしの出力
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.io.textwriter.write?view=net-6.0#system-io-textwriter-write(system-string)"
+  stdout.Write "a"
+  stdout.Write "a\n"
 
 module SystemMath =
   let near0 x y = (abs (x-y)) < 0.0000001
