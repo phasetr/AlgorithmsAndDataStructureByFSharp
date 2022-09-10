@@ -1,13 +1,14 @@
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_12_B/review/2918210/lvs7k/Haskell
-import           Control.Applicative
-import           Control.Monad
+import Control.Monad ( when, forM_, filterM, replicateM, unless )
 import qualified Data.ByteString.Char8 as B
-
-import           Data.Array.IArray
-import           Data.Array.IO
-import           Data.Array.MArray
-import           Data.Function         (on)
-import           Data.List
+import Data.Array.IArray ( Array, (!), array )
+import Data.Array.IO
+    ( getAssocs, readArray, writeArray, MArray(newArray), IOUArray )
+import Data.Array.MArray
+    ( getAssocs, readArray, writeArray, MArray(newArray) )
+import Data.Maybe ( fromJust )
+import Data.Function ( on )
+import Data.List ( minimumBy, unfoldr )
 
 readi :: B.ByteString -> Int
 readi = fst . fromJust . B.readInt
@@ -48,4 +49,3 @@ main = do
     v <- readArray d i
     putStr (show i ++ " ")
     print v
-

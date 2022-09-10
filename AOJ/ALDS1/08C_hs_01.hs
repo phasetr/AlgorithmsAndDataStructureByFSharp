@@ -1,8 +1,8 @@
--- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_8_B/review/2906868/lvs7k/Haskell
+-- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_8_C/review/2906969/lvs7k/Haskell
 {-# LANGUAGE BangPatterns #-}
 import qualified Data.ByteString.Char8 as B
 import qualified Data.IntMap.Strict    as M
-import Data.Maybe (fromJust)
+import Data.Maybe ( fromJust )
 import qualified Data.Sequence         as S
 
 readi :: B.ByteString -> Int
@@ -36,6 +36,25 @@ find x (Node y l r)
   | x < y     = find x l
   | otherwise = find x r
 
+delete :: Int -> Tree Int -> Tree Int
+delete _ Empty = error "delete from empty tree"
+delete x (Node y l r)
+  | x < y     = Node y (delete x l) r
+  | x > y     = Node y l (delete x r)
+  | isEmpty l && isEmpty r = Empty
+  | isEmpty l = r
+  | isEmpty r = l
+  | otherwise = let m = getMin r in Node m l (delete m r)
+
+isEmpty :: Tree Int -> Bool
+isEmpty Empty = True
+isEmpty _     = False
+
+getMin :: Tree Int -> Int
+getMin Empty = error "getMin from empty tree"
+getMin (Node x Empty _) = x
+getMin (Node _ l     _) = getMin l
+
 solve :: Tree Int -> [[B.ByteString]] -> IO ()
 solve _ [] = return ()
 solve !t (bs:bss)
@@ -44,10 +63,11 @@ solve !t (bs:bss)
       solve t bss
   | c == 'f' = do
       let n = readi $ bs !! 1
-      if find n t
-        then putStrLn "yes"
-        else putStrLn "no"
+      if find n t then putStrLn "yes" else putStrLn "no"
       solve t bss
+  | c == 'd' = do
+      let n = readi $ bs !! 1
+      solve (delete n t) bss
   | otherwise = do
       let n = readi $ bs !! 1
       solve (insert n t) bss
@@ -58,3 +78,5 @@ main = do
   B.getLine
   xss <- fmap B.words . B.lines <$> B.getContents
   solve Empty xss
+
+
