@@ -68,7 +68,7 @@ module Array =
       |> Array.ofList
     accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1,60);(2,80);(3,0)|]
 
-  @"Addメソッド
+  @"Addメソッド, ResizeArray
   可変配列に対して破壊的に値を追加する."
   let xa = ResizeArray<int>() in xa.Add(1); xa.Add(2); xa |> should equal (seq {1;2})
 
@@ -142,6 +142,10 @@ module Array =
       else 0
     Array.compareWith compare [|1..3|] [|1;2;4|] |> should equal -1
     Array.compareWith compare [|1..3|] [|1;2;3|] |> should equal  0
+
+  @"Array.concat
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#concat"
+  [[|1;2|];[|3|];[|4;5|]] |> Array.concat |> should equal [|1..5|]
 
   @"Array.contains
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#contains"
