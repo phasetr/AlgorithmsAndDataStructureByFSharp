@@ -1,4 +1,3 @@
-# https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_10_D
 def solve(n,p,q):
     dp = [[0]*(n+1) for _ in range(n+1)]
     prs = [0,q[0]]

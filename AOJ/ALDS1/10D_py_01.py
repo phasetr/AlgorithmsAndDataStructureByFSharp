@@ -1,6 +1,5 @@
 # https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_10_D/review/5068391/pred/Python3
 def main():
-
     n = int(input())
     p = list(map(float, input().split()))
     q = list(map(float, input().split()))
