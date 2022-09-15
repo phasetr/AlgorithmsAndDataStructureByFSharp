@@ -14,7 +14,7 @@ func main() {
 	}
 
 	for i := 0; i < n; i++ {
-		var u,k int
+		var u, k int
 		fmt.Scan(&u)
 		fmt.Scan(&k)
 		for j := 0; j < k; j++ {

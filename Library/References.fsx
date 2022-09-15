@@ -1982,13 +1982,13 @@ module Math =
       allPrimes |> Seq.take 5 |> should equal (seq  [|2;3;5;7;11|])
 
     @"https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-1097596"
-    module StackOverflowSieve =
+    module SoSieve =
       let rec sieve = function
         | (p::xs) -> p :: sieve [ for x in xs do if x % p > 0 then yield x ]
         | []    -> []
       sieve [2..50] |> List.take 5 |> should equal [2;3;5;7;11]
 
-    module StackOverflowPrime1 =
+    module SoPrime1 =
       let twoAndOdds n =
         Array.unfold (fun x -> if x > n then None else if x = 2 then Some(x, x + 1) else Some(x, x + 2)) 2
       twoAndOdds 15 |> should equal [|2;3;5;7;9;11;13;15|]
@@ -2551,6 +2551,14 @@ module Print =
 
   "str" |> printfn "%A" // クオートつきで出力
   "str" |> printfn "%s" // クオートなしで出力
+
+module Queue =
+  @".NET Queue
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1?view=net-6.0"
+  open System.Collections.Generic
+
+  @"Queue.new"
+  let queue = Queue<int>()
 
 module Random =
   let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -3183,6 +3191,14 @@ module Set =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#union"
   Set.union (set [1;2;3]) (set [3;4;5]) |> should equal (set [1..5])
 
+module Stack =
+  @".NET Stack module
+  https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.stack-1?view=net-6.0"
+  open System.Collections.Generic
+
+  @"Stack new"
+  let stk = Stack<int>()
+
 module String =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html
   @つき文字列: 逐語的文字列, verbatim string
@@ -3358,6 +3374,12 @@ module String =
   seq {0..4} |> Seq.truncate 2 |> should equal (seq {0;1})
   seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
 
+module Struct =
+  [<Struct>]
+  type Coupon = { B: int;Discount: int }
+  let coupon1 = {B=1;Discount=2}
+  let coupon2 = {B=2;Discount=3}
+
 module SystemIoDirectory =
   @".NET
   https://docs.microsoft.com/ja-jp/dotnet/api/system.io.directory?view=net-6.0"
@@ -3413,12 +3435,6 @@ module SystemNumerics =
   let c2 = Complex(3,4)
   c1*c2 |> should equal (Complex(-5,10))
   Complex(4,0) / Complex(2,0) |> should equal (Complex(2,0))
-
-module Struct =
-  [<Struct>]
-  type Coupon = { B: int;Discount: int }
-  let coupon1 = {B=1;Discount=2}
-  let coupon2 = {B=2;Discount=3}
 
 module Tuple =
   // 値の取得
