@@ -2552,6 +2552,10 @@ module Print =
   "str" |> printfn "%A" // クオートつきで出力
   "str" |> printfn "%s" // クオートなしで出力
 
+module PriorityQueue =
+  @".NET Priority Queue
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.priorityqueue-2?view=net-6.0"
+
 module Queue =
   @".NET Queue
   https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1?view=net-6.0"

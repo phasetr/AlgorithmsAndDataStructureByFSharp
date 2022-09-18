@@ -25,4 +25,5 @@ let rec read ls x = if x = 0 then ls else let p = scanf "%d %d " (fun i j -> (i,
 let qs = read [] n;;
 solve qs |> Array.iter (fun s -> printf "%s\n" s);;
 
+let qs = [(2,2);(5,3)];;
 solve [(2,2);(5,3)] |> Array.iter (fun s -> printf "%s\n" s)

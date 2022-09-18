@@ -75,4 +75,3 @@ main = do
     v <- readArray dist i
     putStr (show i ++ " ")
     print v
-
