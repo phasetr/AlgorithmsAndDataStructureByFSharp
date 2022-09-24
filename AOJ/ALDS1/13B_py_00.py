@@ -1,4 +1,3 @@
-# https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_13_B/review/5106135/salmon0852/Python3
 from collections import deque
 
 def swap(s,i,j):
