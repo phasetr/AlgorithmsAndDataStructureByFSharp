@@ -907,6 +907,10 @@ module Char =
   System.Char.IsLower 'C' |> should equal false
   System.Char.IsUpper 'C' |> should equal true
 
+  @"int: char -> int
+  文字コードを取得, Ocaml Char.code"
+  int '0' |> should equal 48
+
   @"文字を文字列ではなく数値にする"
   let inline charToInt c = int c - int '0'
   charToInt '3' |> should equal 3
@@ -1462,6 +1466,14 @@ module Loop =
   @"for to, for downto, https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/loops-for-to-expression"
   for i = 1 to 10 do printf "%d " i done
   for i = 10 downto 1 do printf "%d " i done
+
+  @"二重ループとforによる内包表記
+  https://stackoverflow.com/questions/1888451/list-comprehension-in-f"
+  let evens n = seq { for x in 1 .. n do if x%2=0 then yield x }
+  evens 10 |> should equal [|2;4;6;8;10|]
+  let squarePoints n = seq { for x in 1..n do for y in 1..n  -> x,y }
+  squarePoints 3 |> should equal [|(1,1);(1,2);(1,3);(2,1);(2,2);(2,3);(3,1);(3,2);(3,3)|]
+  [for x in [1;2;3] do for y in [4;5;6] -> x*y] |> should equal [4;5;6;8;10;12;12;15;18]
 
 module Map =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html"
@@ -3364,10 +3376,18 @@ module String =
     $"{a}" |> should equal "TEST"
 
   @"Substring
-  部分文字列をとる「メソッド」"
+  部分文字列をとる「メソッド」.
+  s.Substring(i,j)は「文字列を配列としてみて, 添字iからj文字取る」で,
+  「添字iから添字jまで」ではない."
   let s = "0123456789"
   s.Substring(s.Length - 5) |> should equal "56789"
   s.Substring(1, 5) |> should equal "12345"
+  s.Substring(1, 1) |> should equal "1"
+  s.Substring(1, 2) |> should equal "12"
+  s.Substring(2, 2) |> should equal "23"
+  s.Substring(2, 3) |> should equal "234"
+  s.Substring(2, 4) |> should equal "2345"
+  s.Substring(3, 4) |> should equal "3456"
 
   @"Seq.take"
   seq {0..4} |> Seq.take 2 |> should equal (seq {0;1})
