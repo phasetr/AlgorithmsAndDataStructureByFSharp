@@ -1398,10 +1398,17 @@ module List =
     let subsequences xs =  [] :: nonEmptySubsequences xs
     subsequences [1..3] |> should equal [[];[1];[2];[1;2];[3];[1;3];[2;3];[1;2;3]]
 
-  @"sum"
+  @"sum
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#sum"
   [1..9] |> List.sum |> should equal 45
 
-  @"tail"
+  @"sumBy
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#sumBy"
+  ["aa";"bbb";"cc"] |> List.sumBy (fun s -> s.Length) |> should equal 7
+  ["aa";"bbb";"cc"] |> List.sumBy Seq.length |> should equal 7
+
+  @"tail
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#tail"
   List.tail [1;2;3] |> should equal [2;3]
 
   @"List.take
@@ -1644,6 +1651,28 @@ module Math =
   compare [1;2;3] [1;2;3] |> should equal 0
   compare 2 1 |> should equal 1
   compare [1;2;4] [1;2;3] |> should equal 1
+
+  @"Euler's phi, totient, https://ja.wikipedia.org/wiki/オイラーのφ関数
+  cf. ../AOJ/NTL1/01D_fs_00.fsx"
+  module EulerPhi =
+    let phi n =
+      let primeFactors n =
+        let rec frec i x acc =
+          if i*i > n then if x=1 then acc else x :: acc
+          else if x%i = 0 then frec i (x/i) (i :: acc)
+          else frec (i+1) x acc
+        frec 2 n []
+      primeFactors n
+      |> List.countBy id
+      |> List.fold (fun acc (p,e) -> acc * (pown p e - pown p (e-1))) 1
+    phi 6 |> should equal 2
+    phi 1000000 |> should equal 400000
+
+
+  primeFactors N
+  |> List.countBy id
+  |> List.fold (fun acc (p,e) -> acc * (pown p e - pown p (e-1))) 1
+
 
   @"factorial, 階乗"
   let fact n = Array.reduce (*) [|1..n|]
