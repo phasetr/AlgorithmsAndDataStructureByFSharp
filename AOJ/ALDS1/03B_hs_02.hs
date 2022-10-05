@@ -1,5 +1,5 @@
 -- https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_3_B/review/2290715/a143753/Haskell
-import Text.Printf
+import Text.Printf ( printf )
 
 ans :: Int -> Int -> [(String,Int)] -> [(String,Int)] -> IO()
 ans q t [] [] = return ()
@@ -13,6 +13,7 @@ ans q t iq@(i:is) tq =
       printf"%s %d\n" n (t+t')
       ans q (t+t') is tq
 
+main :: IO ()
 main = do
   l <- getLine
   c <- getContents

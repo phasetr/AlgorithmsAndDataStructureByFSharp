@@ -5,5 +5,5 @@ main = do
   let s  = s1 `mod` 60
   let m  = s1 `div` 60 `mod` 60
   let h = s1 `div` 3600
-  putStrLn $ (show h) ++ ":" ++ (show m) ++ ":" ++ (show s)
+  putStrLn $ show h ++ ":" ++ show m ++ ":" ++ show s
   -- printf "%d:%d:%d\n" h m s

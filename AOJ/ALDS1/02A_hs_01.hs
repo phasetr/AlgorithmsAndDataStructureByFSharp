@@ -2,18 +2,6 @@
 https://onlinejudge.u-aizu.ac.jp/courses/lesson/1/ALDS1/all/ALDS1_2_A
 See also ../../Library/sort/bubble.hs,
 ../../Library/sort/bubble.fsx
-バブルソートはその名前が表すように、
-泡（Bubble）が水面に上がっていくように配列の要素が動いていきます。
-バブルソートは次のようなアルゴリズムで数列を昇順に並び変えます。
-
-1 bubbleSort(A, N) // N 個の要素を含む 0-オリジンの配列 A
-2   flag = 1 // 逆の隣接要素が存在する
-3   while flag
-4     flag = 0
-5     for j が N-1 から 1 まで
-6       if A[j] < A[j-1]
-7         A[j] と A[j-1] を交換
-8         flag = 1
 -}
 bsort :: [Int] -> ([Int],Int)
 bsort xs = loop (True,xs,0) where

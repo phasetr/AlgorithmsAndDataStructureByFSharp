@@ -10,4 +10,4 @@ solve1 :: [a] -> [a]
 solve1 = concat . replicate 3
 solve2 s = foldl (\acc _ -> acc++s) "" [1..3]
 test =  solve1 "abc" == "abcabcabc"
-  && solv2 "abc" == "abcabcabc"
+  && solve2 "abc" == "abcabcabc"

@@ -3,5 +3,5 @@ main :: IO ()
 main = do
   line <- getLine
   let a:b:_ = map read $ words line :: [Int]
-  print $ (show $ a*b) ++ " " ++ (show $ 2*(a+b))
+  print $ show (a*b) ++ " " ++ show (2*(a+b))
   -- printf "%d %d\n" (a * b) (2 * (a + b))
