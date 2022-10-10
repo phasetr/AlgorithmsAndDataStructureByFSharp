@@ -1176,33 +1176,38 @@ module List =
   注意: F#版groupByとHaskell版groupByは挙動が違う."
   module GroupBy =
     @"F#のList.groupBy: !!注意!! Haskellとは違う
-    HaskellのgroupByは下記参照.
+    Haskellのgroupは下記参照.
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#groupBy"
     [1;2;3;4;5;7;6;5;4;3] |> List.groupBy (fun x -> x)
     |> should equal [1,[1];2,[2];3,[3;3];4,[4;4];5,[5;5];7,[7];6,[6]]
 
-    @"Haskell List.span -> cf. List.partition
+    @"Haskell Data.List.span -> cf. List.partition
     cf. Haskell span https://hackage.haskell.org/package/base-4.16.1.0/docs/src/GHC-List.html#span"
     let rec span: ('a -> bool) -> 'a list -> (('a list) * ('a list)) = fun p -> function
       | [] -> ([],[])
       | x::xs as lst -> if p x then let (ys, zs) = span p xs in  (x :: ys, zs) else ([], lst)
 
-    @"Haskell List.group
+    @"Haskell Data.List.group
+    http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
     https://hackage.haskell.org/package/base-4.16.1.0/docs/src/Data-OldList.html#group"
-    let rec groupBy (p: 'a -> 'a -> bool) lst: list<list<'a>> =
+    let rec group (p: 'a -> 'a -> bool) lst: list<list<'a>> =
       match lst with
       | [] -> []
       | x :: xs ->
         let (ys, zs) = span (p x) xs
-        (x :: ys) :: groupBy p zs
-    groupBy (=) ("Mississippi" |> List.ofSeq)
+        (x :: ys) :: group p zs
+    group (=) ("Mississippi" |> List.ofSeq)
     |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
 
-    @"group: Haskell の group と同じ
+    @"spanなしの実装
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
-    let group xs = groupBy (=) xs
-    group ("Mississippi" |> List.ofSeq)
-    |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
+    let rec group = function
+      | [] -> []
+      | x::xs ->
+        let ys = List.takeWhile ((=) x) xs
+        let zs = List.skipWhile ((=) x) xs
+        (x::ys)::group zs
+    group (List.ofSeq "Mississippi") |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
 
   @"List.head
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#head"
@@ -2877,6 +2882,10 @@ module Sequence =
         let zs: 'a seq = Seq.skipWhile ((=) x) xs
         Seq.append (seq { Seq.append (seq { x }) ys }) (group zs)
     group "Mississippi" |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
+
+    Seq.groupBy id "Mississippi"
+    |> should equal (seq [('M', seq ['M']); ('i', seq ['i'; 'i'; 'i'; 'i']);
+                          ('s', seq ['s'; 's'; 's'; 's']); ('p', seq ['p'; 'p'])])
 
   @"Seq.groupBy
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#groupBy"

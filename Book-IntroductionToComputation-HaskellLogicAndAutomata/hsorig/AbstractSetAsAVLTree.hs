@@ -74,6 +74,7 @@ module AbstractSetAsAVLTree
     | m == n      = True
     | m < n       = m `element` l
     | m > n       = m `element` r
+  element _ _ = error "not come here"
 
   equal :: Set -> Set -> Bool
   s `equal` t = list s == list t
