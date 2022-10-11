@@ -477,7 +477,7 @@ module Array =
 
   @"Array.pairwise
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#pairwise
-  隣り合う要素どうしをタプル収めた要素を持つ配列を得る.
+  隣り合う要素どうしをタプルに収めた要素を持つ配列を得る.
   配列の要素が 1 つ以下のときの戻り値は空の配列."
   Array.pairwise [|'a'..'d'|] |> should equal  [|('a','b');('b','c');('c','d')|]
   Array.pairwise [|'a'|] |> should equal ([||] : (char * char) [])
@@ -3219,17 +3219,45 @@ module Set =
   Set.add 1 (set [2..4]) |> should equal (set [1..4])
   Set.add 1 (set [1..4]) |> should equal (set [1..4])
 
-  @"count, length for sets"
+  @"Set.containts
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#contains"
+  set [2;3] |> Set.contains 2 |> should be True
+
+  @"Set.count, length for sets"
   set [1;2] |> Set.count |> should equal 2
 
-  @"difference
+  @"Set.difference
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#difference "
   Set.difference (set "abcdef") (set "abc")
   |> should equal (set ['d';'e';'f'])
 
-  @"intersect
+  @"Set.empty
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#empty"
+  Set.empty<int> |> should equal (set [])
+
+  @"Set.exists
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#exists"
+  set [1..3] |> Set.exists ((=) 1) |> should be True
+
+  @"Set.filter"
+  @"Set.fold"
+  @"Set.foldBack"
+  @"Set.forall"
+
+  @"Set.intersect
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#intersect "
   Set.intersect (set [1;2;3]) (set [2;3;4]) |> should equal (set [2;3])
+
+  @"Set.intersectMany"
+  @"Set.isEmpty"
+  @"Set.isProperSubset"
+  @"Set.isProperSuperset"
+  @"Set.isSubset"
+  @"Set.isSuperset"
+  @"Set.iter"
+  @"Set.map"
+  @"Set.maxElement"
+  @"Set.minElement"
 
   @"Set.ofArray"
   Set.ofArray [|1;2|] |> should equal (set [1;2])
@@ -3237,13 +3265,27 @@ module Set =
   @"Set.ofSeq, 文字列から変換するときはこれを使う."
   Set.ofSeq "abc" |> should equal (set ['a';'b';'c'])
 
+  @"Set.partition
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#partition"
+  set [1..4] |> Set.partition (fun x -> x%2 = 0) |> should equal (set [2;4],set [1;3])
+
+  @"Set.remove
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#remove"
+  set [1..3] |> Set.remove 1 |> should equal (set [2;3])
+
   @"Set.singleton
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#singleton"
   Set.singleton 7 |> should equal (set [7])
 
+  @"Set.toArray"
+  @"Set.toList"
+  @"Set.toSeq"
+
   @"Set.union, 和集合
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#union"
   Set.union (set [1;2;3]) (set [3;4;5]) |> should equal (set [1..5])
+
+  @"Set.unionMany"
 
 module Stack =
   @".NET Stack module
