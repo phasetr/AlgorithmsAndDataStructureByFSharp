@@ -796,11 +796,17 @@ module Array =
   Array.windowed 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'b';'c';'d'|];[|'c';'d';'e'|]|]
   Array.chunkBySize 3 [|'a'..'e'|] |> should equal [|[|'a';'b';'c'|];[|'d';'e'|]|]
 
-  @"
-  Array.zeroCreate
+  @"Array.zeroCreate
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#zeroCreate"
   (Array.zeroCreate 4 : int[]) |> should equal [|0;0;0;0|]
   (Array.zeroCreate 4 : int64[]) |> should equal [|0L;0L;0L;0L|]
+
+  @"Array.zip
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#zip"
+  Array.zip [|1;2|] [|"one";"two"|] |> should equal [|(1,"one");(2,"two")|]
+
+  @"Array.zip3
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#zip3"
 
 module Array2D =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html"
@@ -1280,8 +1286,8 @@ module List =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#last"
   [ "pear";"banana" ] |> List.last |> should equal "banana"
 
-  @"map2
-  zipWith: FSharpPlus では ZipList?"
+  @"List.map2
+  zipWith: FSharpPlusではZipList?"
   List.map2 (+) [1;2;3] [2;4;6] |> should equal [3;6;9]
   let zipWith f xs ys =
     List.zip xs ys |> List.map (fun (x, y) -> f x y)
@@ -2399,7 +2405,9 @@ module PatternMatch =
   https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#as-patterns"
   module AsPattern =
     let (var1, var2) as tuple1 = (1, 2)
-    printfn "%d %d %A" var1 var2 tuple1
+    (var1, var2, tuple1) |> should equal (1,2,(1,2))
+    let y::ys as xs = [1..3]
+    (y, ys, xs) |> should equal (1,[2;3],[1..3])
 
   @"ORパターン
   https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/pattern-matching#or-patterns"
@@ -2599,8 +2607,14 @@ module Print =
   "str" |> printfn "%s" // クオートなしで出力
 
 module PriorityQueue =
-  @".NET Priority Queue
+  @".NET Priority Queue, .NET6から標準ライブラリ搭載
   https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.priorityqueue-2?view=net-6.0"
+  open System.Collections.Generic
+  let pq = PriorityQueue<int, int>()
+  pq.Enqueue(0,1)
+  pq.Enqueue(1,0)
+  pq.Dequeue() |> should equal 1
+  pq.Dequeue() |> should equal 0
 
 module Queue =
   @".NET Queue
@@ -2987,13 +3001,15 @@ module Sequence =
   @"Seq.map
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map"
 
-  @"Seq.map2
+  @"Seq.map2, zipWith
+  Haskellと同じでリストの長さが同じでなくても短い方に合わせて切ってくれる
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map2"
   module Map2 =
     let inputs1 = ["a";"bad";"good"]
     let inputs2 = [0;2;1]
     (inputs1, inputs2) ||> Seq.map2 (fun x y -> x.[y]) |> should equal (seq ['a';'d';'o'])
     ([1..4], [11..13]) ||> Seq.map2 (fun x y -> x+y) |> should equal (seq [12;14;16])
+    ([1..4], [11..20]) ||> Seq.map2 (fun x y -> x+y) |> should equal (seq [12;14;16;18])
 
   @"Seq.map3
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#map3"
@@ -3071,12 +3087,14 @@ module Sequence =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#rev"
 
   @"repeat, Haskell
+  initInfiniteで代替できる
   https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html"
   let rec repeat x = seq {
     yield x
     yield! repeat x
   }
   Seq.take 3 (repeat 1) |> should equal (seq [1;1;1])
+  Seq.take 3 (Seq.initInfinite (fun _ -> 1)) |> should equal (seq [1;1;1])
 
   @"Seq.scan
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#scan"
@@ -3167,6 +3185,7 @@ module Sequence =
   @"Seq.take
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#take"
   Seq.take 2 [1..4] |> should equal (seq [1;2])
+  seq {0..4} |> Seq.take 2 |> should equal (seq {0;1})
 
   @"Seq.takeWhile
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#takeWhile"
@@ -3182,8 +3201,12 @@ module Sequence =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#transpose"
   Seq.transpose [[10;20;30];[11;21;31]] |> should equal [[10;11];[20;21];[30;31]]
 
-  @"Seq.truncate, 高々n個の要素を取る
+  @"Seq.truncate,
+  高々n個の要素を取る.
+  Seq.takeとの違いは指定の要素数以上取れないときにエラーにならず取れるだけ取ってくれる点.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#truncate"
+  seq {0..4} |> Seq.truncate 2 |> should equal (seq {0;1})
+  seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
 
   @"Seq.tryExactlyOne
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#tryExactlyOne"
@@ -3300,8 +3323,10 @@ module String =
   @つき文字列: 逐語的文字列, verbatim string
   https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/strings#verbatim-strings"
 
-  @"文字列結合"
+  @"文字列結合
+  https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/strings#string-operators"
   "abc" + "def" |> should equal "abcdef"
+  "str1" + "str2" |> should equal "str1str2"
 
   @"文字列の反転, reverse"
   "abcde" |> Seq.toArray |> Array.rev |> System.String |> should equal"edcba"
@@ -3312,6 +3337,31 @@ module String =
   @"埋め込み文字列"
   let text = "TEXT"
   $"text: {text}" |> should equal "text: TEXT"
+
+  @"String.collect
+  mapと違って文字を文字列に変換する関数を使ってmapする
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html"
+  "Stefan says: Hi!" |> String.collect (sprintf "%c ") |> should equal "S t e f a n   s a y s :   H i ! "
+  "Secret" |> String.collect (fun chr -> int chr |> sprintf "%d ") |> should equal "83 101 99 114 101 116 "
+
+  @"String.concat
+  配列やリストの要素を連結して文字列化
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#concat"
+  [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
+  [|'a'..'e'|] |> System.String |> should equal "abcde"
+  [1..5] |> List.map string |> String.concat " " |> should equal "1 2 3 4 5"
+  [1;2;1;2;3] |> List.distinct |> should equal [1;2;3]
+
+  ["Stefan"; "says:"; "Hello"; "there!"] |> String.concat " "  |> should equal "Stefan says: Hello there!"
+  [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
+  [0..9] |> List.map string |> String.concat ", "  |> should equal "0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+  ["No comma"] |> String.concat "," |> should equal "No comma"
+
+  @"System.String.Concat
+  文字(char)のリストを文字列化.
+  注意: `['1';'2';'3'] |> String.concat`はエラー."
+  module StringConcat =
+    ['1';'2';'3'] |> System.String.Concat |> should equal "123"
 
   module Contains =
     @"部分文字列の検索
@@ -3324,120 +3374,83 @@ module String =
     "`3`を含む数かどうかを判定"
     [|20..41|] |> Array.filter (string >> Seq.contains '3') |> should equal [|23;30;31;32;33;34;35;36;37;38;39|]
 
-  @"String.collect
-  mapと違って文字を文字列に変換する関数を使ってmapする
-  https://msdn.microsoft.com/visualfsharpdocs/conceptual/string.collect-function-%5bfsharp%5d"
-  "Hello, World"
-  |> String.collect (fun c -> sprintf "%c " c)
-  |> should equal "H e l l o ,   W o r l d "
-
-  @"単純な文字列と文字列の連結
-  https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/strings#string-operators"
-  "str1" + "str2" |> should equal "str1str2"
-
-  @"String.concat
-  配列やリストの要素を連結して文字列化"
-  module Concat =
-    [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
-    [|'a'..'e'|] |> System.String |> should equal "abcde"
-
-    [1..5]
-    |> List.map string
-    |> String.concat " "
-    |> should equal "1 2 3 4 5"
-
-    [1;2;1;2;3] |> List.distinct
-    |> should equal [1;2;3]
-
-    ["Stefan";"says:";"Hello";"there!"]
-    |> String.concat " " |> should equal "Stefan says: Hello there!"
-
-    [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
-    [0..9] |> List.map string |> String.concat ", " |> should equal "0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
-    ["No comma"] |> String.concat "," |> should equal "No comma"
-
-  @"System.String.Concat
-  文字(char)のリストを文字列化.
-  注意: `['1';'2';'3'] |> String.concat`はエラー."
-  module StringConcat =
-    ['1';'2';'3'] |> System.String.Concat |> should equal "123"
-
-  @"exists
-  文字列中に与えられた条件をみたす文字が存在するか"
-  open System
+  @"String.exists
+  文字列中に与えられた条件をみたす文字が存在するか.
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#exists"
   "Hello World!" |> String.exists System.Char.IsUpper |> should equal true
-  "Yoda" |> String.exists Char.IsUpper |> should equal true
-  "nope" |> String.exists Char.IsUpper |> should equal false
+  "Yoda" |> String.exists System.Char.IsUpper |> should equal true
+  "nope" |> String.exists System.Char.IsUpper |> should equal false
 
-  @"filter"
+  @"String.filter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#filter"
   // Filtering out just alphanumeric characters
-  "0 1 2 3 4 5 6 7 8 9 a A m M"
-  |> String.filter Uri.IsHexDigit |> should equal "0123456789aA"
-
+  "0 1 2 3 4 5 6 7 8 9 a A m M" |> String.filter Uri.IsHexDigit |> should equal "0123456789aA"
   //Filtering out just digits
   "hello" |> String.filter Char.IsDigit |> should equal ""
 
-  @"forall"
-  "all are lower" |> System.String.forall System.Char.IsLower |> should equal false
-  "allarelower" |> System.String.forall System.Char.IsLower |> should equal true
+  @"String.forall
+  文字列中のすべての文字が条件を満たすか.
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#forall"
+  // spaceの有無
+  "all are lower" |> String.forall System.Char.IsLower |> should equal false
+  "allarelower" |> String.forall System.Char.IsLower |> should equal true
+  // spaceの有無
+  "helloworld" |> String.forall System.Char.IsLower |> should equal true
+  "hello world" |> String.forall System.Char.IsLower |> should equal false
 
-  @"forall
-  文字列中のすべての文字が条件を満たすか"
-  "helloworld"
-  |> String.forall System.Char.IsLower
-  |> should equal true
-  // space がある
-  "hello world"
-  |> String.forall System.Char.IsLower
-  |> should equal false
-
-  @"init
-  インデックスに対して関数を作用させた結果の文字列を連結する"
-  String.init 10 (fun i -> i.ToString())
-  |> should equal "0123456789"
-  String.init 26 (fun i -> sprintf "%c" (char (i + int 'A')))
-  |> should equal "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  String.init 10 (fun i -> int '0' + i |> sprintf "%d ")
-  |> should equal "48 49 50 51 52 53 54 55 56 57 "
-  @"同じ文字のくり返しからなる文字列を作る"
+  @"String.init
+  インデックスに対して関数を作用させた結果の文字列を連結する
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#init"
+  String.init 10 (fun i -> i.ToString()) |> should equal "0123456789"
+  String.init 26 (fun i -> sprintf "%c" (char (i + int 'A'))) |> should equal "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  String.init 10 (fun i -> int '0' + i |> sprintf "%d ") |> should equal "48 49 50 51 52 53 54 55 56 57 "
+  // 同じ文字のくり返しからなる文字列を作る
   String.init 3 (fun _ -> "#") |> should equal "###"
 
-  @"iter"
+  @"String.iter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#iter"
   "Hello" |> String.iter (fun c -> printfn "%c %d" c (int c))
 
-  @"iteri"
+  @"String.iteri
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#iteri"
   "Hello" |> String.iteri (fun i c -> printfn "%d. %c %d" (i + 1) c (int c))
 
-  @"length
-  文字列の長さ"
+  @"String.length
+  文字列の長さ
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#length"
   "aiueo" |> String.length |> should equal 5
-  String.length null  |> should equal 0
+  String.length null |> should equal 0
   String.length ""  |> should equal 0
   String.length "123" |> should equal 3
 
-  @"map
-  各文字に作用"
-  "hello, world" |> String.map System.Char.ToUpper
-  |> should equal "HELLO, WORLD"
+  @"String.map
+  各文字に作用
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#map"
+  "hello, world" |> String.map System.Char.ToUpper |> should equal "HELLO, WORLD"
+  "Hello there!" |> String.map Char.ToUpper |> should equal "HELLO THERE!"
 
-  "Hello there!" |> String.map Char.ToUpper
-  |> should equal "HELLO THERE!"
+  @"String.mapi
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#mapi"
+  "OK!" |> String.mapi (fun i c -> char c) |> should equal "OK!"
 
-  @"mapi"
-  "OK!" |> String.mapi (fun i c -> char c)
-  |> should equal "OK!"
+  @"String.replace
+  競プロのOCamlコードを見て発見"
+  "abcde" |> String.map (function | 'a' -> 'z' | c -> c) |> should equal "zbcde"
+
+  @"System.String.Replace"
+  "abcde" |> fun s -> s.Replace("a", "z") |> should equal "zbcde"
 
   @"String.replicate
-  文字列のくり返し."
-  "Do it!" |> String.replicate 3
-  |> should equal "Do it!Do it!Do it!"
+  文字列のくり返し.
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#replicate"
+  "Do it!" |> String.replicate 3 |> should equal "Do it!Do it!Do it!"
 
-  @"Split
+  @"System.String.Split
   文字列を分割する「メソッド」"
   "1 2 3" |> fun s -> s.Split(" ") |> should equal [|"1";"2";"3"|]
   "行区切り文字列を適切な配列に変換"
-  "8 5
-  10 8" |> fun s -> s.Split("\n") |> Array.map (fun s -> s.Split(" ") |> fun x -> int x.[0], int x.[1]) |> should equal [|(8,5);(10,8)|]
+  @"8 5
+10 8" |> fun s -> s.Split("\n") |> Array.map (fun s -> s.Split(" ") |> fun x -> int x.[0], int x.[1]) |> should equal [|(8,5);(10,8)|]
 
   """sprintf, 文字列埋め込み, format, printfの書式で文字列生成
   次の埋め込み文字列を使う方がF# way?
@@ -3455,7 +3468,7 @@ module String =
     let a = "TEST"
     $"{a}" |> should equal "TEST"
 
-  @"Substring
+  @"System.String.Substring
   部分文字列をとる「メソッド」.
   s.Substring(i,j)は「文字列を配列としてみて, 添字iからj文字取る」で,
   「添字iから添字jまで」ではない."
@@ -3468,15 +3481,6 @@ module String =
   s.Substring(2, 3) |> should equal "234"
   s.Substring(2, 4) |> should equal "2345"
   s.Substring(3, 4) |> should equal "3456"
-
-  @"Seq.take"
-  seq {0..4} |> Seq.take 2 |> should equal (seq {0;1})
-
-  @"Seq.truncate
-  Seq.takeとの違いは指定の要素数以上取れないときにエラーにならず,
-  取れるだけ取ってくれる点."
-  seq {0..4} |> Seq.truncate 2 |> should equal (seq {0;1})
-  seq {0..4} |> Seq.truncate 7 |> should equal (seq {0..4})
 
 module Struct =
   [<Struct>]
