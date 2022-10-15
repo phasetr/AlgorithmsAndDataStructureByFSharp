@@ -9,7 +9,7 @@
 
 module AbstractSetAsAVLTree_MyModule where
   import AbstractSetAsAVLTree
-  
+
   select :: Set -> Int
   select (Node _ n _ _) = n
 
@@ -19,4 +19,4 @@ module AbstractSetAsAVLTree_MyModule where
 
   i0' = select (set [1,0,2] `union` set [0,3])
 
-  b1 = 1 `element` (Node Nil 2 (Node Nil 1 Nil 1) 2)
+  b1 = 1 `element` Node Nil 2 (Node Nil 1 Nil 1) 2
