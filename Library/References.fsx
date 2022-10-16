@@ -2687,7 +2687,7 @@ module Sequence =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#allPairs"
   ([1;2], [3;4]) ||> Seq.allPairs |> should equal (seq {(1, 3);(1, 4);(2, 3);(2, 4)})
 
-  @"Seq.append
+  @"Seq.append, seqとseqの連結, Seq.consもこれで代用
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#append"
   Seq.append [1;2] [3;4] |> should equal {1..4}
 
@@ -2883,7 +2883,7 @@ module Sequence =
   @"Seq.forall2
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#forall"
 
-  @"group: Haskellのgroup, !!注意!! F#のSeq.groupByとは挙動が違う.
+  @"Seq.group: Haskellのgroup, !!注意!! F#のSeq.groupByとは挙動が違う.
   http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
   module Group =
     let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
@@ -3025,6 +3025,14 @@ module Sequence =
 
   @"Seq.mapi2
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#mapi2"
+
+  @"Seq match,
+  Active Pattern利用でのempty, head::tailのパターンマッチ"
+  let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
+    if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.tail xs)
+  let f = function
+    | SeqEmpty -> 0
+    | SeqCons(x, xs) -> x
 
   @"Seq.max
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#max"
