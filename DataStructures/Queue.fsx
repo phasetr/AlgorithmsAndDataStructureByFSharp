@@ -26,12 +26,13 @@ let enqueue x = function
 
 let toString q = sprintf "%A" q
 
-let q1 = enqueue 1 emptyQueue
-q1 |> should equal (Queue (StackNode (1, EmptyStack), EmptyStack))
-let q2 = enqueue 2 q1
-q2 |> should equal (Queue (StackNode (1, EmptyStack), StackNode (2, EmptyStack)))
-let q3 = enqueue 3 q2
-q3 |> should equal (Queue (StackNode (1, EmptyStack), StackNode (2, EmptyStack))Queue (StackNode (1, EmptyStack), StackNode (3, StackNode (2, EmptyStack))))
+let test =
+  let q1 = enqueue 1 emptyQueue
+  q1 |> should equal (Queue (StackNode (1, EmptyStack), EmptyStack))
+  let q2 = enqueue 2 q1
+  q2 |> should equal (Queue (StackNode (1, EmptyStack), StackNode (2, EmptyStack)))
+  let q3 = enqueue 3 q2
+  q3 |> should equal (Queue (StackNode (1, EmptyStack), StackNode (3, StackNode (2, EmptyStack))))
 
-hd q3 |> should equal 1
-tl q3 |> should equal (Queue (StackNode (2, StackNode (3, EmptyStack)), EmptyStack))
+  hd q3 |> should equal 1
+  tl q3 |> should equal (Queue (StackNode (2, StackNode (3, EmptyStack)), EmptyStack))

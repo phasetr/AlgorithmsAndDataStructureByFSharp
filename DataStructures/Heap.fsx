@@ -34,10 +34,11 @@ let delHeap = function
   | EmptyHP -> failwith "delHeap: empty heap"
   | HP (x, _, a, b) -> merge a b
 
-EmptyHP |> printfn "%A"
-EmptyHP |> heapEmpty |> should be True
+let test =
+  EmptyHP |> printfn "%A"
+  EmptyHP |> heapEmpty |> should be True
 
-insHeap 1 EmptyHP |> should equal (HP(1,1,EmptyHP,EmptyHP))
-insHeap 1 EmptyHP |> insHeap 2 |> should equal (HP(1,1,HP (2,1,EmptyHP,EmptyHP),EmptyHP))
-insHeap 1 EmptyHP |> insHeap 2 |> insHeap 3 |> should equal (HP(1,2,HP (2,1,EmptyHP,EmptyHP),HP (3,1,EmptyHP,EmptyHP)))
-insHeap 1 EmptyHP |> insHeap 2 |> insHeap 3 |> insHeap 4 |> should equal (HP(1,2,HP (2,1,EmptyHP,EmptyHP),HP (3,1,HP (4,1,EmptyHP,EmptyHP),EmptyHP)))
+  insHeap 1 EmptyHP |> should equal (HP(1,1,EmptyHP,EmptyHP))
+  insHeap 1 EmptyHP |> insHeap 2 |> should equal (HP(1,1,HP (2,1,EmptyHP,EmptyHP),EmptyHP))
+  insHeap 1 EmptyHP |> insHeap 2 |> insHeap 3 |> should equal (HP(1,2,HP (2,1,EmptyHP,EmptyHP),HP (3,1,EmptyHP,EmptyHP)))
+  insHeap 1 EmptyHP |> insHeap 2 |> insHeap 3 |> insHeap 4 |> should equal (HP(1,2,HP (2,1,EmptyHP,EmptyHP),HP (3,1,HP (4,1,EmptyHP,EmptyHP),EmptyHP)))
