@@ -1,4 +1,4 @@
-// http://lepensemoi.free.fr/index.php/tag/purely-functional-data-structures/page/2
+// http://lepensemoi.free.fr/index.php/2009/12/17/splay-heap
 module SplayHeap =
   type t<'a> = E | T of t<'a> * 'a * t<'a>
 
