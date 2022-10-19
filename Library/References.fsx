@@ -3354,11 +3354,15 @@ module String =
 
   @"String.concat
   配列やリストの要素を連結して文字列化
+  cf. System.Stringを使うと文字の配列を文字化できる.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#concat"
   [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
   [|'a'..'e'|] |> System.String |> should equal "abcde"
   [1..5] |> List.map string |> String.concat " " |> should equal "1 2 3 4 5"
   [1;2;1;2;3] |> List.distinct |> should equal [1;2;3]
+  [|'a'..'e'|] |> System.String |> should equal "abcde"
+  // 下記コードは型の不一致で怒られる
+  // [|'a'..'e'|] |> String.concat |> should equal "abcde"
 
   ["Stefan"; "says:"; "Hello"; "there!"] |> String.concat " "  |> should equal "Stefan says: Hello there!"
   [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
