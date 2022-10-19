@@ -3358,11 +3358,10 @@ module String =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#concat"
   [|1..5|] |> Array.map string |> String.concat " " |> should equal "1 2 3 4 5"
   [|'a'..'e'|] |> System.String |> should equal "abcde"
-  [1..5] |> List.map string |> String.concat " " |> should equal "1 2 3 4 5"
-  [1;2;1;2;3] |> List.distinct |> should equal [1;2;3]
-  [|'a'..'e'|] |> System.String |> should equal "abcde"
   // 下記コードは型の不一致で怒られる
   // [|'a'..'e'|] |> String.concat |> should equal "abcde"
+  [1..5] |> List.map string |> String.concat " " |> should equal "1 2 3 4 5"
+  [1;2;1;2;3] |> List.distinct |> should equal [1;2;3]
 
   ["Stefan"; "says:"; "Hello"; "there!"] |> String.concat " "  |> should equal "Stefan says: Hello there!"
   [0..9] |> List.map string |> String.concat "" |> should equal "0123456789"
