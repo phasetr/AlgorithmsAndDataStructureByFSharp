@@ -1618,6 +1618,14 @@ module Math =
     let myabsfloat x = if x > 0.0 then x else -x
     myabsfloat -1.0 |> should equal 1.0
 
+  @"競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
+  https://kazu-yamamoto.hatenablog.jp/entry/20090223/1235372875"
+  module PowMod =
+    let MOD = 998_244_353L
+    let rec powmod x n = if n=0L then 1L else if n%2L=0L then powmod (x*x % MOD) (n/2L) else (x * (powmod x (n-1L)) % MOD)
+    powmod 2L 3L |> should equal 8L
+    powmod 2L 4L |> should equal 16L
+
   @"** or power for int, 整数のべき乗・累乗
   a^b = pown a b"
   pown 2 3 |> should equal 8
@@ -1959,7 +1967,7 @@ module Math =
   module PrimeFactorization =
     @"https://atcoder.jp/contests/ABC169/submissions/13872716"
     module PF1 =
-      type Factor = { Number: int64;Count: int }
+      type Factor = { Number: int64; Count: int }
       /// m: origN を割っていった値でどんどん小さくなる
       /// a: 2L からインクリメントしていく値
       /// origN: 入力値
@@ -1984,7 +1992,7 @@ module Math =
           { Number = a;Count = c }
           :: (primes m1 aPlus origN)
       let primeFactors n = primes n 2L n
-      @"素数判定
+      @"素数判定: 遅い
       https://atcoder.jp/contests/arc017/tasks/arc017_1
       https://qiita.com/drken/items/a14e9af0ca2d857dad23#問題-1-素数判定"
       let rec isPrime n =
@@ -1994,16 +2002,37 @@ module Math =
         else primeFactors n = [ { Number = n;Count = 1 } ]
       [1L..8L] |> List.filter isPrime |> should equal [2L;3L;5L;7L]
 
-    @"https://jeremybytes.blogspot.com/2016/07/getting-prime-factors-in-f-with-good.html"
+    @"https://jeremybytes.blogspot.com/2016/07/getting-prime-factors-in-f-with-good.html
+    遅い.
+    1の素因数分解を[1]とする(してしまう)"
     module PF2 =
-      let rec getFactors n proposed (acc:list<int64>) =
+      let rec getFactors n proposed acc =
         if n<=0L then failwith "be positive"
         elif n=1L then [1L]
-        elif proposed = n then proposed::acc
-        elif n % proposed = 0L then getFactors (n/proposed) proposed (proposed::acc)
+        elif proposed=n then proposed::acc
+        elif n%proposed=0L then getFactors (n/proposed) proposed (proposed::acc)
         else getFactors n (proposed+1L) acc
       let primeFactor n = getFactors n 2 []
-      primeFactor 36 |> should equal [3;3;2;2]
+      primeFactor 36L |> should equal [3L;3L;2L;2L]
+      primeFactor 1L |> should equal [1L]
+      primeFactor 2L |> should equal [2L]
+      primeFactor 3L |> should equal [3L]
+      primeFactor 4L |> should equal [2L;2L]
+
+    @"遅い: 1の素因数分解を[]にする"
+    module PF2_1 =
+      let rec getFactors n proposed acc =
+        if n<=0L then failwith "be positive"
+        elif n=1L then []
+        elif proposed=n then proposed::acc
+        elif n%proposed=0L then getFactors (n/proposed) proposed (proposed::acc)
+        else getFactors n (proposed+1L) acc
+      let primeFactor n = getFactors n 2 []
+      primeFactor 36L |> should equal [3L;3L;2L;2L]
+      primeFactor 1L |> should equal ([]:list<int64>)
+      primeFactor 2L |> should equal [2L]
+      primeFactor 3L |> should equal [3L]
+      primeFactor 4L |> should equal [2L;2L]
 
     @"https://atcoder.jp/contests/caddi2018/submissions/9944877"
     module PF3 =
@@ -2013,7 +2042,39 @@ module Math =
         elif p < i*i then [(p,1L)]
         else (i,c) :: f 0L (i+1L) p
       let pf p = f 0L 2L p
+      // 2の倍数を含むと素因数に1が含まれてしまう
       pf 36 |> should equal [(2L,2L);(3L,2L);(1L,1L)]
+
+    @"https://atcoder.jp/contests/abc142/submissions/7794564"
+    module PF4 =
+      let rec pfrec acc i n =
+        if n<=1L then acc
+        else if n<(i*i) then n::acc
+        else if n%i=0L then pfrec (i::acc) i (n/i)
+        else pfrec acc (i+1L) n
+      let pf n = pfrec [] 2L n
+      pf 1L |> should equal ([]:list<int64>)
+      pf 2L |> should equal [2L]
+      pf 3L |> should equal [3L]
+      pf 4L |> should equal [2L;2L]
+      pf 5L |> should equal [5L]
+      pf 6L |> should equal [3L;2L]
+
+    @"https://atcoder.jp/contests/abc142/submissions/34082293"
+    module PF5 =
+      let rec pfrec acc i n =
+        match i,n with
+        | _,n when n <= 1L -> acc
+        | i,n when n < i * i -> n::acc
+        | i,n when n % i = 0L -> pfrec (i::acc) i (n/i)
+        | _ -> pfrec acc (i+1L) n
+      let pf n = pfrec [] 2L n
+      pf 1L |> should equal ([]:list<int64>)
+      pf 2L |> should equal [2L]
+      pf 3L |> should equal [3L]
+      pf 4L |> should equal [2L;2L]
+      pf 5L |> should equal [5L]
+      pf 6L |> should equal [3L;2L]
 
     @"http://www.fssnip.net/3X"
     module FsSnip =
@@ -3250,7 +3311,7 @@ module Set =
   Set.add 1 (set [2..4]) |> should equal (set [1..4])
   Set.add 1 (set [1..4]) |> should equal (set [1..4])
 
-  @"Set.containts
+  @"Set.contains
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#contains"
   set [2;3] |> Set.contains 2 |> should be True
 
