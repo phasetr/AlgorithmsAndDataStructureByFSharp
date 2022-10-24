@@ -683,7 +683,7 @@ module Array =
   @"Array.tryFind
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFind"
   Array.tryFind (fun x -> x%2=0) [|1;2;3|] |> should equal (Some 2)
-  Array.tryFind (fun x -> x%2=0) [|1;5;3|] |> should equal  None
+  Array.tryFind (fun x -> x%2=0) [|1;5;3|] |> should equal  None  
 
   @"Array.tryFindBack
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFindBack
@@ -699,6 +699,11 @@ module Array =
   (fun () -> Array.findBack (fun n -> n > 3) [|1;2;3|] |> ignore) |> should throw typeof<System.Collections.Generic.KeyNotFoundException>
   Array.tryFind (fun n -> n % 2 = 1) [|1..3|] |> should equal (Some 1)
   Array.find (fun n -> n % 2 = 1) [|1..3|] |> should equal 1
+
+  @"Array.tryFindIndex
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFindIndex"
+  [|1..5|] |> Array.tryFindIndex (fun x -> x%2=0) |> should equal (Some 1)
+  [|1;3;5;7|] |> Array.tryFindIndex (fun x -> x%2=0) |> should equal None
 
   @"Array.tryFindIndexBack
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFindIndexBack
@@ -1622,9 +1627,9 @@ module Math =
   https://kazu-yamamoto.hatenablog.jp/entry/20090223/1235372875"
   module PowMod =
     let MOD = 998_244_353L
-    let rec powmod x n = if n=0L then 1L else if n%2L=0L then powmod (x*x % MOD) (n/2L) else (x * (powmod x (n-1L)) % MOD)
-    powmod 2L 3L |> should equal 8L
-    powmod 2L 4L |> should equal 16L
+    let rec powmod m x n = if n=0L then 1L else if n%2L=0L then powmod m (x*x % m) (n/2L) else (x * (powmod m x (n-1L)) % m)
+    powmod MOD 2L 3L |> should equal 8L
+    powmod MOD 2L 4L |> should equal 16L
 
   @"** or power for int, 整数のべき乗・累乗
   a^b = pown a b"
@@ -3526,6 +3531,7 @@ module String =
 
   """sprintf, 文字列埋め込み, format, printfの書式で文字列生成
   次の埋め込み文字列を使う方がF# way?
+  桁埋め, ゼロ埋め, zero paddingにも使える.
   let text = "TEXT"
   $"text: {text}" |> should equal "text: TEXT"
   """
@@ -3539,6 +3545,9 @@ module String =
 
     let a = "TEST"
     $"{a}" |> should equal "TEST"
+
+    @"ゼロパディング"
+    sprintf "%04i" 42 |> should equal "0042"
 
   @"System.String.Substring
   部分文字列をとる「メソッド」.
