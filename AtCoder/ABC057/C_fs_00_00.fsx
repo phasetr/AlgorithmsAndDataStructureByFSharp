@@ -1,5 +1,4 @@
 (*
-https://atcoder.jp/contests/abc057/tasks/abc057_c
 https://qiita.com/drken/items/a14e9af0ca2d857dad23#問題-3-abc-057-c---digits-in-multiplication-300-点
 cf. https://atcoder.jp/contests/abc057/submissions/11154569
 *)
