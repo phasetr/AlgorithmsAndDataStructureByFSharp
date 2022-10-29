@@ -948,10 +948,12 @@ module ComputationExpression =
   seq { for i in 1..3 -> i * i } |> should equal [1;4;9]
 
 module Dictionary =
-  @"FSharpPlus, https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html
+  @"C#のDictionaryとHashtable比較: 後者はキー・値ともにObject型で変換処理があって低パフォーマンス
   Dict literal, read only, FSharpPlus
-  C#のDictionaryとHashtable比較: 後者はキー・値ともにObject型で変換処理があって低パフォーマンス"
-  dict [(1,"a");(2,"b");(3,"c")]
+  .NET, https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0
+  FSharpPlus, https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
+  let d = dict [(1,"a");(2,"b");(3,"c")]
+  d.TryGetValue(3) |> function | true,n -> Some n | false,_ -> None
 
 module Function =
   module DefineOperator =
@@ -2696,7 +2698,7 @@ module Random =
   [|0..4|] |> Array.map (fun _ -> chars.[random.Next(chars.Length)]) |> System.String.Concat
 
 module Record =
-  """レコード: いわゆる辞書・構造体. 細かい事情は調べよう.
+  """レコード: いわゆる構造体. 細かい事情は調べよう.
   cf. https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/records
   cf. https://midoliy.com/content/fsharp/text/type-detail/0_record.html"""
 
@@ -3441,7 +3443,12 @@ module String =
     ['1';'2';'3'] |> System.String.Concat |> should equal "123"
 
   module Contains =
-    @"部分文字列の検索
+    @"部分文字列の検索: ブールで返してくれる
+    https://atmarkit.itmedia.co.jp/ait/articles/0602/17/news119.html"
+    "fish frog dog".Contains("frog") |> should be True
+    "fish frog dog".Contains("bird") |> should be False
+
+    @"部分文字列の検索: 古いメソッド?
     https://www.dotnetperls.com/indexof-fs"
     let words = "fish frog dog"
     words.IndexOf("frog") |> should equal 5
@@ -3522,6 +3529,16 @@ module String =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#replicate"
   "Do it!" |> String.replicate 3 |> should equal "Do it!Do it!Do it!"
 
+  @"System.String.EndsWith
+  ある文字列で終わるかどうかの判定.
+  はじまりは`System.String.StartsWith`.
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.string.endswith?view=net-6.0"
+  "Test".EndsWith("a") |> should be False
+  "Test".EndsWith("T") |> should be False
+  "Test".EndsWith("t") |> should be True
+  "Test".EndsWith("at") |> should be False
+  "Test".EndsWith("st") |> should be True
+
   @"System.String.Split
   文字列を分割する「メソッド」"
   "1 2 3" |> fun s -> s.Split(" ") |> should equal [|"1";"2";"3"|]
@@ -3548,6 +3565,15 @@ module String =
 
     @"ゼロパディング"
     sprintf "%04i" 42 |> should equal "0042"
+
+  @"System.String.StartsWith
+  文字列の先頭文字列を判定するメソッド.
+  https://www.ipentec.com/document/csharp-string-compare-using-startswith"
+  "Test".StartsWith("a") |> should be False
+  "Test".StartsWith("t") |> should be False
+  "Test".StartsWith("T") |> should be True
+  "Test".StartsWith("Te") |> should be True
+  "Test".StartsWith("TE") |> should be False
 
   @"System.String.Substring
   部分文字列をとる「メソッド」.
