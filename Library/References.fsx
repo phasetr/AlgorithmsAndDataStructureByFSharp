@@ -3458,6 +3458,22 @@ module String =
     "`3`を含む数かどうかを判定"
     [|20..41|] |> Array.filter (string >> Seq.contains '3') |> should equal [|23;30;31;32;33;34;35;36;37;38;39|]
 
+    @"ある文字列が特定の部分文字列をいくつ含むか?
+    cf. https://atcoder.jp/contests/diverta2019/tasks/diverta2019_c"
+    let rec countFreq: int -> string -> string -> int = fun acc sub s ->
+      let sLen = s.Length
+      let subLen = sub.Length
+      if sLen < subLen then acc
+      else if s.[0..subLen-1] = sub then countFreq (acc+1) sub s.[subLen..]
+      else countFreq acc sub s.[1..]
+    countFreq 0 "ab" "a" |> should equal 0
+    countFreq 0 "ab" "ab" |> should equal 1
+    countFreq 0 "ab" "aba" |> should equal 1
+    countFreq 0 "ab" "abab" |> should equal 2
+    countFreq 0 "ab" "ababab" |> should equal 3
+    countFreq 0 "abc" "abcd" |> should equal 1
+    countFreq 0 "abc" "abdc" |> should equal 0
+
   @"String.exists
   文字列中に与えられた条件をみたす文字が存在するか.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html#exists"
