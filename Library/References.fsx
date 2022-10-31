@@ -406,13 +406,13 @@ module Array =
   Array.map3 (fun x y z -> (x, y, z)) [|0..2|] [|'a'..'c'|] [|'$'..'&'|] |> should equal [|(0,'a','$');(1,'b','%');(2,'c','&')|]
   //Array.map3 (fun x y z -> (x, y, z)) [|0..2|] [|'a'..'d'|] [|'$'..'&'|] // 例外発生「 System.ArgumentException: 配列の長さが異なります」.
 
+  @"Array.mapFold
+  初期値に対して配列の要素を関数で累積的に処理していった途中経過と最終的な結果をタプルで得る.
+  関数の引数を初期値もしくは前回の処理結果と配列の先頭から順次取り出される要素の 2 つとし,
+  戻り値は (最終結果のタプルの左側の要素, 次回関数実行時の第 1 引数) とする.
+  配列の要素を末尾から取り出す Array.mapFoldBack もあるが,
+  引数の位置などに違いがある."
   module MapFold =
-    // Array.mapFold
-    // 初期値に対して配列の要素を関数で累積的に処理していった途中経過と最終的な結果をタプルで得る.
-    // 関数の引数を初期値もしくは前回の処理結果と配列の先頭から順次取り出される要素の 2 つとし,
-    // 戻り値は (最終結果のタプルの左側の要素, 次回関数実行時の第 1 引数) とする.
-    // 配列の要素を末尾から取り出す Array.mapFoldBack もあるが,
-    // 引数の位置などに違いがある.
     Array.mapFold
       (fun x y ->
         printfn "x = %2d, y = %1d, x * y = %3d" x y (x * y)
@@ -424,19 +424,18 @@ module Array =
     //x =  2, y = 3, x * y =   6
     //x =  6, y = 4, x * y =  24
     //x = 24, y = 5, x * y = 120
-
     // 比較用
     Array.mapFoldBack (fun x y -> (x, x * y)) [|2..5|] 1 // ([|2;3;4;5|], 120)
 
+  @"Array.mapFoldBack
+  初期値に対して配列の要素を関数で累積的に処理していった途中経過と最終結果をタプルで得る.
+  関数の引数は配列の末尾から順次取り出される要素と,
+  初期値もしくは前回の処理結果の 2 つとし,
+  戻り値は (最終結果左側の配列の要素, 次回関数実行時の第 2 引数) とする.
+  最終結果の配列の要素は先に関数から得られたものほど後に配置される.
+  配列の要素を先頭から順次取り出す Array.mapFold もある:
+  引数の位置などに違いがある."
   module MapFoldBack =
-    // Array.mapFoldBack
-    // 初期値に対して配列の要素を関数で累積的に処理していった途中経過と最終結果をタプルで得る.
-    // 関数の引数は配列の末尾から順次取り出される要素と,
-    // 初期値もしくは前回の処理結果の 2 つとし,
-    // 戻り値は (最終結果左側の配列の要素, 次回関数実行時の第 2 引数) とする.
-    // 最終結果の配列の要素は先に関数から得られたものほど後に配置される.
-    // 配列の要素を先頭から順次取り出す Array.mapFold もある:
-    // 引数の位置などに違いがあるので注意してください.
     Array.mapFoldBack
       (fun x y ->
         printfn "x = %1d, y = %2d, x * y = %3d" x y (x * y)
@@ -683,7 +682,7 @@ module Array =
   @"Array.tryFind
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFind"
   Array.tryFind (fun x -> x%2=0) [|1;2;3|] |> should equal (Some 2)
-  Array.tryFind (fun x -> x%2=0) [|1;5;3|] |> should equal  None  
+  Array.tryFind (fun x -> x%2=0) [|1;5;3|] |> should equal  None
 
   @"Array.tryFindBack
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#tryFindBack
