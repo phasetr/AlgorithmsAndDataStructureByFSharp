@@ -1202,14 +1202,12 @@ module List =
     @"Haskell Data.List.group
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
     https://hackage.haskell.org/package/base-4.16.1.0/docs/src/Data-OldList.html#group"
-    let rec group (p: 'a -> 'a -> bool) lst: list<list<'a>> =
-      match lst with
+    let rec group: ('a -> 'a -> bool) -> list<'a> -> list<list<'a>> = fun p -> function
       | [] -> []
       | x :: xs ->
         let (ys, zs) = span (p x) xs
         (x :: ys) :: group p zs
-    group (=) ("Mississippi" |> List.ofSeq)
-    |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
+    group (=) ("Mississippi" |> List.ofSeq) |> should equal [['M'];['i'];['s';'s'];['i'];['s';'s'];['i'];['p';'p'];['i']]
 
     @"spanなしの実装
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
@@ -1256,18 +1254,14 @@ module List =
   https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isSubsequenceOf
   https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isSuffixOf"
   module IsSomethingOf =
-    let rec tails = function
-      | [] -> [[]]
-      | x::xs -> (x::xs)::(tails xs)
     let rec isPrefixOf xs ys = match (xs,ys) with
       | ([],_) -> true
       | (_,[]) -> false
-      | otherwise ->
-        let (w::ws,z::zs) = (xs,ys)
-        w = z && isPrefixOf ws zs
+      | otherwise -> let (w::ws,z::zs) = (xs,ys) in w = z && isPrefixOf ws zs
     isPrefixOf (List.ofSeq "Hello") (List.ofSeq "Hello World!") |> should equal true
     isPrefixOf (List.ofSeq "Hello") (List.ofSeq "Wello Horld!") |> should equal false
 
+    let rec tails = function | [] -> [[]] | x::xs -> (x::xs)::(tails xs)
     let isInfixOf needle haystack = List.exists (isPrefixOf needle) (tails haystack)
     isInfixOf (List.ofSeq "Haskell") (List.ofSeq "I really like Haskell.") |> should equal true
     isInfixOf (List.ofSeq "Ial") (List.ofSeq "I really like Haskell.") |> should equal false
