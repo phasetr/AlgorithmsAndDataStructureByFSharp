@@ -525,6 +525,10 @@ module Array =
   Array.scan (+) 1 [|2..4|] = [|1;1 + 2;(1 + 2) + 3;((1 + 2) + 3) + 4|]"
   Array.scan (+) 1 [|2..4|] |> should equal [|1;3;6;10|]
 
+  @"Array.scanBack
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#scanBack"
+  Array.scanBack (+) [|2..4|] 1 |> should equal [|10;8;5;1|]
+
   @"Array.set, もとの配列を書き換える破壊的な関数
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#set"
   module Set =
