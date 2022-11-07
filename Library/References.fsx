@@ -294,6 +294,17 @@ module Array =
         | _ -> acc - 1
     (0, data1, data2) |||> Array.fold2 f |> should equal 1
 
+  @"Array.foldBack
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#foldBack"
+  module FoldBack =
+    type Count = { Positive: int; Negative: int; Text: string }
+    ([| 1;0;-1;-2;3 |], {Positive = 0; Negative = 0; Text = "" })
+    ||> Array.foldBack (fun a acc  ->
+      let text = acc.Text + " " + string a
+      if a >= 0 then { acc with Positive = acc.Positive + 1; Text = text }
+      else { acc with Negative = acc.Negative + 1; Text = text })
+    |> should equal { Positive = 3; Negative = 2; Text = " 3 -2 -1 0 1" }
+
   @"Array.get
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#get"
   Array.get [|"a";"b";"c"|] 1 |> should equal "b"
@@ -948,9 +959,30 @@ module ComputationExpression =
 
 module Dictionary =
   @"C#のDictionaryとHashtable比較: 後者はキー・値ともにObject型で変換処理があって低パフォーマンス
+  Haskell Data.IntMapの代わりに使える
   Dict literal, read only, FSharpPlus
   .NET, https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0
   FSharpPlus, https://fsprojects.github.io/FSharpPlus/reference/fsharpplus-dict.html"
+  @"初期化"
+  let d = System.Collections.Generic.Dictionary<_, _>()
+  @"初期化その2"
+  let d = dict [(1,"a");(2,"b");(3,"c")]
+
+  @"Add, 要素の追加"
+  let d = System.Collections.Generic.Dictionary<int,int>()
+  d.Add(1,2)
+  d |> should equal (dict [(1,2)])
+
+  @"Keysプロパティ"
+  let d = dict [(1,"a");(2,"b");(3,"c")]
+  d.Keys |> should equal (seq [1;2;3])
+
+  @"Valuesプロパティ"
+  let d = dict [(1,"a");(2,"b");(3,"c")]
+  d.Values |> should equal (seq ["a";"b";"c"])
+
+
+  @"Dictionary.TryGetValue"
   let d = dict [(1,"a");(2,"b");(3,"c")]
   d.TryGetValue(3) |> function | true,n -> Some n | false,_ -> None
 
