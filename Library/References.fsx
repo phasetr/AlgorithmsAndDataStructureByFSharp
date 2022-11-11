@@ -977,6 +977,18 @@ module Dictionary =
   d.Add(1,2)
   d |> should equal (dict [(1,2)])
 
+  @"要素の更新, Haskell insertWith
+  https://hackage.haskell.org/package/containers-0.6.6/docs/Data-IntMap-Lazy.html"
+  open System.Collections.Generic
+  // この`insertWith`はサンプルなので適宜書き換えること
+  let insertWith f k v (d:Dictionary<int,int>) =
+    d.TryGetValue(k) |> function | true,n -> d.[k] <- f d.[k] v; d | false,_ -> d.Add(k, v); d
+  Dictionary<int,int>() |> insertWith (+) 2 1 |> should equal (dict [(2,1)])
+  """
+  F#のREPLではDictionaryは`dict [(1,2);(3,4)]`のように出る.
+  各要素は`KeyValuePair<_,_>`で, `x.Key`, `x.Value`で取れる.
+  """
+
   @"Keysプロパティ"
   let d = dict [(1,"a");(2,"b");(3,"c")]
   d.Keys |> should equal (seq [1;2;3])
@@ -984,7 +996,6 @@ module Dictionary =
   @"Valuesプロパティ"
   let d = dict [(1,"a");(2,"b");(3,"c")]
   d.Values |> should equal (seq ["a";"b";"c"])
-
 
   @"Dictionary.TryGetValue"
   let d = dict [(1,"a");(2,"b");(3,"c")]
@@ -1654,6 +1665,12 @@ module Math =
     let myabsfloat x = if x > 0.0 then x else -x
     myabsfloat -1.0 |> should equal 1.0
 
+  @"DivRem, Haskell divMod
+  http://www.fssnip.net/gH/title/DivRem-Operator
+   "
+  module DivRem =
+    System.Math.DivRem(7,3) |> should equal (2,1)
+
   @"競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
   https://kazu-yamamoto.hatenablog.jp/entry/20090223/1235372875"
   module PowMod =
@@ -1826,6 +1843,10 @@ module Math =
       lcm 2L 4L |> should equal 4L
       gcd 147L 105L |> should equal 21L
       lcm 147L 105L |> should equal 735L
+
+      @"配列に対するGCD"
+      [|3;4;9|] |> Array.reduce gcd |> should equal 1
+      [|3;6;9|] |> Array.reduce gcd |> should equal 3
 
     @"参考
     https://docs.microsoft.com/ja-jp/dotnet/fsharp/tour
@@ -2001,6 +2022,34 @@ module Math =
   "@Prime factorization, 素因数分解
   https://atcoder.jp/contests/ABC169/tasks/abc169_d"
   module PrimeFactorization =
+    @"自然数のリストの素因数分解: 階乗の素因数分解などで役に立つ.
+    2022/11時点でのAtCoderの都合で`C#`の`Dictionary`に値を積んでいる.
+    https://atcoder.jp/contests/abc052/tasks/arc067_a"
+    module PFS1 =
+      open System.Collections.Generic
+      let rec primes (i:int64) (k:int64) =
+        let (q,r) = System.Math.DivRem(k,i)
+        if k=1L then []
+        else if r=0L then i::primes i q
+        else if i*i>k then [k]
+        else primes (i+1L) k
+      let insertWith f k v (d:Dictionary<int64,int64>) =
+        d.TryGetValue(k) |> function | true,n -> d.[k] <- f d.[k] v; d | false,_ -> d.Add(k, v); d
+      let f d k = (d, primes 2L k) ||> List.fold (fun d i -> insertWith (+) i 1L d)
+      [2L..5L] |> List.fold f (Dictionary<int64,int64>())
+
+    @"自然数のリストの素因数分解: 階乗の素因数分解などで役に立つ.
+    2022/11時点でのAtCoderの都合で`C#`の`Dictionary`に値を積んでいる.
+    https://atcoder.jp/contests/abc052/tasks/arc067_a"
+   module PFS2 =
+     let rec factorize n =
+       if n=1 then []
+       else
+         let m = Seq.initInfinite ((+) 2) |> Seq.filter (fun i -> n%i=0) |> Seq.head
+         m :: factorize (n/m)
+     let pf n = [1..n] |> List.collect factorize |> List.groupBy id |> List.map (fun (x,xs) -> (x,List.length xs))
+     pf 5 |> should equal [(2,3);(3,1);(5,1)]
+
     @"https://atcoder.jp/contests/ABC169/submissions/13872716"
     module PF1 =
       type Factor = { Number: int64; Count: int }
