@@ -42,6 +42,12 @@ module ActivePattern =
 module Array =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html"
 
+  @"配列の特定の要素だけ拾う方法:
+  `Array.mapi >> Array.filter`は総なめしてしまうためはじめから添字の列を作るべき.
+  特に特定の倍数といった条件がある場合はHaskell風に作れる."
+  [|0..2..9|] |> should equal [|0;2;4;6;8|]
+  [|1..4..10|] |> should equal [|1;5;9|]
+
   @"accessor or slice"
   let a = [|0..4|]
   a.[0] |> should equal 0
@@ -1671,7 +1677,7 @@ module Math =
   module DivRem =
     System.Math.DivRem(7,3) |> should equal (2,1)
 
-  @"競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
+  @"power, 競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
   https://kazu-yamamoto.hatenablog.jp/entry/20090223/1235372875"
   module PowMod =
     let MOD = 998_244_353L
@@ -2905,7 +2911,7 @@ module Sequence =
     |> should equal (seq { ("a", 2);("b", 1) })
 
   @"Haskell cycle"
-  let cycle xs = Seq.concat <| Seq.initInfinite (fun _ -> xs)
+  let cycle xs = Seq.initInfinite (fun _ -> xs) |> Seq.concat
   cycle [1..2] |> Seq.take 4 |> should equal [1;2;1;2]
 
   @"Seq.delay
