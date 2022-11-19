@@ -1186,7 +1186,7 @@ module List =
   @"filtered list comprehension, `for`"
   [for i in 1..10 do if i <= 5 then yield i] |> should equal [1..5]
 
-  @"List.contains
+  @"List.contains, Haskell elem
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#contains"
   List.contains 3 [1..9] |> should equal true
   List.contains 0 [1..9] |> should equal false
@@ -1209,10 +1209,11 @@ module List =
   deleteAll 1 [ 1;2;3;1;1;2;3 ] |> should equal [2;3;2;3]
   deleteAll 4 [ 1;2;3;1;1;2;3 ] |> should equal [1;2;3;1;1;2;3]
 
-  @"filter"
+  @"List.filter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#filter"
   [1..9] |> List.filter (fun x -> x % 2 = 0) |> should equal [2;4;6;8]
 
-  @"fold
+  @"List.fold
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#fold
   初期値を入力のリストの先頭から取りたい場合はreduceを使う."
   List.fold min 0 [1..9] |> should equal 0
@@ -1222,6 +1223,16 @@ module List =
     |> List.fold (fun acc (q, p) -> acc + q * p) 0
   [(1,2);(3,4)] |> getTotal1 |> should equal 14
 
+  @"Haskell filterM, リストモナド特化型
+  https://stackoverflow.com/questions/25476248/powerset-function-1-liner
+  return x = [x]
+  xs >>= f = concatMap f xs"
+  let rec filterM: ('a -> list<bool>) -> list<'a> -> list<list<'a>> = fun p -> function
+    | [] -> [[]]
+    | x::xs -> [ for b in p x do for r in filterM p xs do if b then x::r else r]
+  @"filterMによるベキ集合"
+  filterM (fun _ -> [true;false]) [1..3]
+
   @"List.foldBack, foldr
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#foldBack
   注意: 引数の順番がHaskellと違う
@@ -1230,6 +1241,11 @@ module List =
   [1;2;3] |> fun xs -> List.foldBack (+) xs 0 |> should equal 6
   [1;2;3] |> fun xs -> List.foldBack (-) xs 0 |> should equal 2
   // 1 - (2 - (3 - 0)) = 1 - (2 - 3) = 1 - (-1) = 2
+
+  @"List.forall, Haskell all
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#forall"
+  [2;42] |> List.forall (fun x -> x%2=0) |> should be True
+  [1;2] |> List.forall (fun x -> x%2=0) |> should be False
 
   @"forward-pipe operator"
   let getTotal2 items =
@@ -1351,6 +1367,18 @@ module List =
   ["aaa";"b";"cccc"] |> List.minBy (fun s -> s.Length) |> should equal "b"
   (fun () -> [] |> List.minBy (fun (s: string) -> s.Length) |> ignore) |> should throw typeof<System.ArgumentException>
 
+  @"powerset
+  リストによるベキ集合の生成
+  http://www.fssnip.net/4b/title/Powerset
+  https://stackoverflow.com/questions/32829832/function-to-get-the-power-sets-of-a-set-in-f
+  Haskellでは次のように書ける. -> List filterMも参照すること.
+  powerset :: [Int] -> [[Int]]
+  powerset = filterM (const [True,False])"
+  let rec powerset = function
+    | [] -> [[]]
+    | h::t -> List.fold (fun xs t -> (h::t)::t::xs) [] (powerset t)
+  powerset [1..3] |> should equal [[1;3];[3];[1;2;3];[2;3];[1];[];[1;2];[2]]
+
   @"List.reduce, 初項を初期値にするList.fold
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#reduce"
   List.reduce min [1..9] |> should equal 1
@@ -1369,6 +1397,28 @@ module List =
   `repeat`にも転用可能
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#replicate"
   List.replicate 3 "a" |> should equal ["a";"a";"a"]
+
+  @"Haskell replicateM
+  あるリストに含まれる全ての組み合わせが作れる.
+  https://stackoverflow.com/questions/23657901/replicatem-equivalent-in-f
+  https://atcoder.jp/contests/abc147/submissions/8885675
+  以下の実装は全て「集合としては」同じ結果を生む"
+  let replicateM n xs =
+    let k m acc = List.collect (fun y -> List.collect (fun ys -> [y::ys]) acc) m
+    List.foldBack k (List.replicate n xs) [[]]
+  replicateM 3 [1;2] |> should equal [[1;1;1];[1;1;2];[1;2;1];[1;2;2];[2;1;1];[2;1;2];[2;2;1];[2;2;2]]
+  let replicateM n xs =
+    let k acc m = List.collect (fun y -> List.collect (fun ys -> [y::ys]) acc) m
+    List.fold k [[]] (List.replicate n xs)
+  replicateM 3 [1;2] |> should equal [[1;1;1];[1;1;2];[1;2;1];[1;2;2];[2;1;1];[2;1;2];[2;2;1];[2;2;2]]
+  let replicateM n xs =
+    ([[]], List.replicate n xs)
+    ||> List.fold (fun acc m -> List.collect (fun y -> List.collect (fun ys -> [y::ys]) acc) m)
+  replicateM 3 [1;2] |> should equal [[1;1;1];[1;1;2];[1;2;1];[1;2;2];[2;1;1];[2;1;2];[2;2;1];[2;2;2]]
+  let replicateM n xs =
+    let f xs ys = xs |> List.collect (fun x -> [x::ys])
+    [[]] |> List.fold (<<) id (List.replicate N (List.collect (f xs)))
+  (replicateM 3 [1;2] |> set) |> should equal (set [[1;1;1];[1;1;2];[1;2;1];[1;2;2];[2;1;1];[2;1;2];[2;2;1];[2;2;2]])
 
   @"List.scan, Haskell scanl
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#scan

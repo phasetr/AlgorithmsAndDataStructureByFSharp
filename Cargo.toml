@@ -1,0 +1,15 @@
+[package]
+name = "AlgorithmsAndDataStructureByFSharp"
+version = "0.1.0"
+authors = ["phasetr"]
+edition = "2022"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[[bin]]
+name = "phasetr_sample"
+path = "src/phasetr.rs"
