@@ -2220,22 +2220,34 @@ module Math =
     @"http://www.fssnip.net/3X"
     module FsSnip =
       let isPrime n =
-        let sqrtn = (float >> sqrt >> int) n // square root of integer
-        [|2..sqrtn|] // all numbers from 2 to sqrt'
-        |> Array.forall (fun x -> n % x <> 0) // no divisors
+        let sqrtn = (float >> sqrt >> int) n
+        [|2..sqrtn|] |> Array.forall (fun x -> n % x <> 0)
 
       let allPrimes =
-        // sequences are lazy, so we can make them infinite
         let rec f n = seq {
             if isPrime n then
               yield n
-            yield! f (n+1) // recursing
+            yield! f (n+1)
           }
         f 2 // starting from 2
 
       allPrimes |> Seq.take 5 |> should equal (seq  [|2;3;5;7;11|])
 
-    @"https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-1097596"
+    @"https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-1097596
+    素数のリストはhttps://atcoder.jp/contests/abc084/tasks/abc084_dと解説も参考になる.
+    エラトステネスの篩(Sieve of Eratosthenes)で作るとよい."
+    @"エラトステネスの篩: 配列で高速化.
+    0からはじめていて, 配列の添字と実際の数を対応させている."
+    let sieve N =
+      let primes = Array.create (N+1) true
+      primes.[0] <- false; primes.[1] <- false
+      let rec go i p = if i>=(N+1) then () else (primes.[i] <- false; go (i+p) p)
+      [|0..N|] |> Array.iter (fun p -> if primes.[p] then go (2*p) p)
+      primes
+    sieve 5 |> Array.indexed
+    sieve 5 |> should equal [|false;false;true;true;false;true|]
+
+    @"エラトステネスの篩: リストによる単純な実装"
     module SoSieve =
       let rec sieve = function
         | (p::xs) -> p :: sieve [ for x in xs do if x % p > 0 then yield x ]
