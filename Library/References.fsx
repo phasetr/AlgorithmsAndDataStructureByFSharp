@@ -1728,12 +1728,29 @@ module Math =
     System.Math.DivRem(7,3) |> should equal (2,1)
 
   @"power, 競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
+  くり返し二乗法, iterative square method
   https://kazu-yamamoto.hatenablog.jp/entry/20090223/1235372875"
   module PowMod =
     let MOD = 998_244_353L
     let rec powmod m x n = if n=0L then 1L else if n%2L=0L then powmod m (x*x % m) (n/2L) else (x * (powmod m x (n-1L)) % m)
     powmod MOD 2L 3L |> should equal 8L
     powmod MOD 2L 4L |> should equal 16L
+
+    @"https://atcoder.jp/contests/abc156/submissions/11167232"
+    let rec powmod m x n = ((if (n&&&1L)=1L then x%m else 1L) * (if n=0L then 1L else (powmod m ((x*x)%m) (n>>>1))%m))%m
+    powmod MOD 2L 3L |> should equal 8L
+    powmod MOD 2L 4L |> should equal 16L
+
+    @"順列, permutation, powmodを使った計算
+    https://atcoder.jp/contests/abc156/submissions/11167232"
+    let permmod m n r =
+      let rec frec acc n r = if r=0L then acc else frec ((n*acc)%m) (n-1L) (r-1L)
+      frec 1L n r
+    @"フェルマーの小定理によるmod演算下での逆元計算, 組み合わせの計算用"
+    let invmod m a = powmod m a (m-2L)
+    @"組み合わせ, combination, powmodを使った計算
+    フェルマーの小定理とmod演算下での計算"
+    let combmod m n r = ((permmod m n r) * (invmod m (permmod m r r))) % m
 
   @"** or power for int, 整数のべき乗・累乗
   a^b = pown a b"
