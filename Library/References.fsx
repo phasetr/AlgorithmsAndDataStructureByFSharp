@@ -893,20 +893,7 @@ module Array2D =
     let a = array2D [[1;2];[3;4]]
     transpose a |> should equal (array2D [[1;3];[2;4]])
 
-module Bit =
-  // https://midoliy.com/content/fsharp/text/operator/2_bit.html
-  0xFF |> should equal 255
-  ~~~0xFF |> should equal -256
-  0x80 |> should equal 128
-  0xFF ||| 0x80 |> should equal 255
-  0xFF &&& 0x80 |> should equal 128
-  0xFF ^^^ 0x80 |> should equal 127
-  1 <<< 1 |> should equal 2
-  1 <<< 2 |> should equal 4
-  1 <<< 3 |> should equal 8
-  10 >>> 1 |> should equal 5
-  10 >>> 2 |> should equal 2
-  10 >>> 3 |> should equal 1
+@"module Bit -> ./Arithmetics.fsx"
 
 module Bool =
   @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/symbol-and-operator-reference/boolean-operators"
@@ -1193,10 +1180,13 @@ module List =
 
   @"delete: Haskell delete, Python remove()
   https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:delete"
-  let rec delete x xs =
-    match xs with
-    | [] -> []
-    | y :: ys -> if x = y then ys else y :: delete x ys
+  let rec delete x = function | [] -> [] | y::ys -> if x=y then ys else y::delete x ys
+  delete 1 [1..3] |> should equal [2;3]
+  delete 1 [1;1;2;3] |> should equal [1..3]
+  delete 4 [1..3] |> should equal [1;2;3]
+  delete 'a' ("banana" |> Seq.toList) |> System.String.Concat |> should equal "bnana"
+
+  let delete x xs = if List.contains x xs then (List.takeWhile ((<>) x) xs) @ (List.skipWhile ((<>) x) xs |> List.tail) else xs
   delete 1 [1..3] |> should equal [2;3]
   delete 1 [1;1;2;3] |> should equal [1..3]
   delete 4 [1..3] |> should equal [1;2;3]
@@ -1236,8 +1226,10 @@ module List =
   @"List.foldBack, foldr
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#foldBack
   注意: 引数の順番がHaskellと違う
-  In haskell, foldr :: (a -> b -> b) -> b -> [a] -> [b].
-  But in F#,  foldBack: ('a -> 'b -> 'b) -> [a] -> b -> 'b list"
+  In haskell, foldr  :: (a -> b -> b) -> b -> [a] -> [b].
+  But in F#,  foldBack: (a -> b -> b) -> [a] -> b -> [b]"
+  ([1..5], 0) ||> List.foldBack (fun v acc -> acc + v * v) |> should equal 55
+  List.foldBack (fun v acc -> acc + v * v) [1..5] 0 |> should equal 55
   [1;2;3] |> fun xs -> List.foldBack (+) xs 0 |> should equal 6
   [1;2;3] |> fun xs -> List.foldBack (-) xs 0 |> should equal 2
   // 1 - (2 - (3 - 0)) = 1 - (2 - 3) = 1 - (-1) = 2
@@ -1617,6 +1609,7 @@ module Map =
     m.Change (1,f) |> should equal (Map [(1,"az");(2,"b")])
 
   @"Map.add
+  キーが既にある場合は上書きしてくれる.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#add"
   module Add =
     let input = Map [(1,"a");(2,"b")]
@@ -1644,17 +1637,23 @@ module Map =
     m |> Map.containsKey 1 |> should equal true
     m |> Map.containsKey 3 |> should equal false
 
+  @"Map.count
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#count"
+  Map [ (1,"a"); (2,"b") ] |> Map.count |> should equal 2
+
   @"Map.empty
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#empty"
   Map.empty<int, string> |> Map.isEmpty |> should equal true
 
-  @"Map.fold
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#fold"
-  ("initial", Map [(1,"a");(2,"b")])
-  ||> Map.fold (fun state n s -> sprintf "%s %i %s" state n s)
-  |> should equal "initial 1 a 2 b"
+  @"Map.exists
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#exists"
+  let sample = Map [ (1, "a"); (2, "b") ]
+  sample |> Map.exists (fun n s -> n = s.Length) |> should be True
+  sample |> Map.exists (fun n s -> n < s.Length) |> should be False
 
-  Map.empty<int, string> |> Map.isEmpty |> should equal true
+  @"Map.filter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#filter"
+  Map [(1,"a");(2,"b")] |> Map.filter (fun n s -> n = s.Length) |> should equal (Map [(1,"a")])
 
   @"Map.find
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#find"
@@ -1664,689 +1663,96 @@ module Map =
     m |> Map.find 2 |> should equal "b"
     (fun () -> m |> Map.find 3 |> ignore) |> should throw typeof<System.Collections.Generic.KeyNotFoundException>
 
+  @"Map.findKey
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#findKey"
+  let sample = Map [ (1, "a"); (2, "b") ]
+  sample |> Map.findKey (fun n s -> n = s.Length) |> should equal 1
+  (fun () -> sample |> Map.findKey (fun n s -> n < s.Length) |> ignore) |> should throw typeof<System.Collections.Generic.KeyNotFoundException>
+
+  @"Map.fold
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#fold"
+  ("initial", Map [(1,"a");(2,"b")])
+  ||> Map.fold (fun state n s -> sprintf "%s %i %s" state n s)
+  |> should equal "initial 1 a 2 b"
+  Map.empty<int, string> |> Map.isEmpty |> should equal true
+
+  @"Map.foldBack
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#foldBack"
+  let sample = Map [ (1, "a"); (2, "b") ]
+  (sample, "initial") ||> Map.foldBack (fun n s state -> sprintf "%i %s %s" n s state) |> should equal "1 a 2 b initial"
+
   @"Map.forall
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#forall"
   module Forall =
-  let m = Map [ (1, "a");(2, "b") ]
-  m |> Map.forall (fun n s -> n >= s.Length) |> should equal true
-  m |> Map.forall (fun n s -> n = s.Length) |> should equal false
+    let m = Map [ (1, "a");(2, "b") ]
+    m |> Map.forall (fun n s -> n >= s.Length) |> should equal true
+    m |> Map.forall (fun n s -> n = s.Length) |> should equal false
 
-module Math =
-  """
-  Literal Types: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals
-  Math functions: https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html
-  """
+  @"Map.isEmpty
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#isEmpty"
+  Map.empty<int, string> |> Map.isEmpty |> should be True
+  Map [ (1, "a"); (2, "b") ] |> Map.isEmpty |> should be False
 
-  @"1, 0x1, 0o1, 0b1,
-  1l (int),
-  1u (uint32),
-  1L (int64),
-  1UL (uint64),
-  1s (int16),
-  1y (sbyte),
-  1uy (byte),
-  1.0 (float),
-  1.0f (float32),
-  1.0m (decimal),
-  1I (BigInteger)
-  4N (BigRational)"
-  @"bigint parse"
-  "1" |> bigint.Parse |> should equal 1I
-  @"int64 arithmetic"
-  1L+1L |> should equal 2L
-  @"decimal arithmetic"
-  1.0M/2.0M |> should equal 0.5M
-  @"float infinity"
-  infinity |> should equal infinity
-  @"MinValue, 最小値
-  https://midoliy.com/content/fsharp/text/type/1_primitive-type.html
-  https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
-  System.Int32.MinValue |> should equal -2_147_483_648
-  System.Int64.MinValue |> should equal -9_223_372_036_854_775_808L
-  @"MaxValue, 最大値, OCaml max_int
-  https://midoliy.com/content/fsharp/text/type/1_primitive-type.html
-  https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
-  System.Int32.MaxValue |> should equal 2_147_483_647
-  System.Int64.MaxValue |> should equal 9_223_372_036_854_775_807L
+  @"Haskell insertWith"
+  let insertWith f k v m = Map.tryFind k m |> function | Some(v0) -> Map.add k (f v0 v) m | None -> Map.add k v m
+  Map [(1,2)] |> insertWith (+) 1 3 |> should equal (Map [(1,5)])
+  Map [(1,2)] |> insertWith (+) 2 3 |> should equal (Map [(1,2);(2,3)])
 
-  @"abs
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#abs"
-  abs 1 |> should equal 1
-  abs -1 |> should equal 1
-  abs 1.0 |> should equal 1.0
-  abs -1.0 |> should equal 1.0
-  module Abs =
-    let myabsint x = if x > 0 then x else -x
-    myabsint -1 |> should equal 1
-    let myabsfloat x = if x > 0.0 then x else -x
-    myabsfloat -1.0 |> should equal 1.0
+  @"Map.iter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#iter"
 
-  @"DivRem, Haskell divMod
-  http://www.fssnip.net/gH/title/DivRem-Operator
-   "
-  module DivRem =
-    System.Math.DivRem(7,3) |> should equal (2,1)
+  @"Map.keys
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#keys"
 
-  @"power, 競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
-  くり返し二乗法, iterative square method
-  https://kazu-yamamoto.hatenablog.jp/entry/20090223/1235372875"
-  module PowMod =
-    let MOD = 998_244_353L
-    let rec powmod m x n = if n=0L then 1L else if n%2L=0L then powmod m (x*x % m) (n/2L) else (x * (powmod m x (n-1L)) % m)
-    powmod MOD 2L 3L |> should equal 8L
-    powmod MOD 2L 4L |> should equal 16L
+  @"Map.map
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#map"
 
-    @"https://atcoder.jp/contests/abc156/submissions/11167232"
-    let rec powmod m x n = ((if (n&&&1L)=1L then x%m else 1L) * (if n=0L then 1L else (powmod m ((x*x)%m) (n>>>1))%m))%m
-    powmod MOD 2L 3L |> should equal 8L
-    powmod MOD 2L 4L |> should equal 16L
+  @"Map.maxKeyValue
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#maxKeyValue"
 
-    @"順列, permutation, powmodを使った計算
-    https://atcoder.jp/contests/abc156/submissions/11167232"
-    let permmod m n r =
-      let rec frec acc n r = if r=0L then acc else frec ((n*acc)%m) (n-1L) (r-1L)
-      frec 1L n r
-    @"フェルマーの小定理によるmod演算下での逆元計算, 組み合わせの計算用"
-    let invmod m a = powmod m a (m-2L)
-    @"組み合わせ, combination, powmodを使った計算
-    フェルマーの小定理とmod演算下での計算"
-    let combmod m n r = ((permmod m n r) * (invmod m (permmod m r r))) % m
+  @"Map.minKeyValue
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#minKeyValue"
 
-  @"** or power for int, 整数のべき乗・累乗
-  a^b = pown a b"
-  pown 2 3 |> should equal 8
-  pown 3 2 |> should equal 9
+  @"Map.ofArray
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#ofArray"
 
-  @"2のべき乗 for int64, pow2L n = 2^n, 整数のべき乗・累乗"
-  let pow2L n = 1L <<< n
-  pow2L 50 |> should equal 1125899906842624L
+  @"Map.ofList
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#ofList"
 
-  @"** or power for floating numbers, 実数のべき乗・累乗"
-  2.0 ** 3.0 |> should equal 8.0
+  @"Map.ofSeq
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#ofSeq"
 
-  @"power for bigint"
-  let powI (x:bigint) y =
-    let rec f y acc = if y = 0 then acc else f (y-1) (x*acc)
-    f y 1I
-  powI 2I 20 |> should equal 1048576I
-  powI 2I 50 |> should equal 1125899906842624I
+  @"Map.partition
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#partition"
 
-  @"absolute value"
-  abs 10 |> should equal 10
-  abs (-10) |> should equal 10
+  @"Map.pick
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#pick"
 
-  @"ceiling, 切り上げ"
-  ceil -1.4 |> should equal -1.0
-  ceil -1.5 |> should equal -1.0
-  ceil 1.4  |> should equal 2.0
-  ceil 1.5  |> should equal 2.0
-  @"整数の一桁目の切り上げ
-  cf. ABC123 B, https://atcoder.jp/contests/abc123/submissions/20135376"
-  module Oneceil =
-    let oneceil x = (x+9) / 10 * 10
-    let xs = [|29;20;7;35;120|]
-    let ys = [|30;20;10;40;120|]
-    xs |> Array.map oneceil |> should equal ys
+  @"Map.remove
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#remove"
 
-  @"compare, Generic comparison
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#compare"
-  compare 1 2 |> should equal -1
-  compare [1;2;3] [1;2;4] |> should equal -1
-  compare 2 2 |> should equal 0
-  compare [1;2;3] [1;2;3] |> should equal 0
-  compare 2 1 |> should equal 1
-  compare [1;2;4] [1;2;3] |> should equal 1
+  @"Map.toArray
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#toArray"
 
-  @"Euler's phi, totient, https://ja.wikipedia.org/wiki/オイラーのφ関数
-  cf. ../AOJ/NTL1/01D_fs_00.fsx"
-  module EulerPhi =
-    let phi n =
-      let primeFactors n =
-        let rec frec i x acc =
-          if i*i > n then if x=1 then acc else x :: acc
-          else if x%i = 0 then frec i (x/i) (i :: acc)
-          else frec (i+1) x acc
-        frec 2 n []
-      primeFactors n
-      |> List.countBy id
-      |> List.fold (fun acc (p,e) -> acc * (pown p e - pown p (e-1))) 1
-    phi 6 |> should equal 2
-    phi 1000000 |> should equal 400000
+  @"Map.toList
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#toList"
 
+  @"Map.toSeq
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#toSeq"
 
-  primeFactors N
-  |> List.countBy id
-  |> List.fold (fun acc (p,e) -> acc * (pown p e - pown p (e-1))) 1
+  @"Map.tryFind
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#tryFind"
 
+  @"Map.tryFindKey
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#tryFindKey"
 
-  @"factorial, 階乗"
-  let fact n = Array.reduce (*) [|1..n|]
-  [|1..6|] |> Array.map fact |> should equal [|1;2;6;24;120;720|]
-  module Factorial =
-    @"非正の数に対して1を返す: 状況に応じて修正しよう."
-    //
-    let fact n =
-      let rec f acc n =
-        if n <= 0L then 1L
-        elif n = 1L then acc
-        else f (acc*n) (n-1L)
-      f 1L n
-    [-1L..5L] |> List.map fact |> should equal [1L;1L;1L;2L;6L;24L;120L]
+  @"Map.tryPick
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#tryPick"
 
-    @"comb, combination, 組み合わせ
-    n <= kで1を返すようにした"
-    let comb n k = if n<=k then 1L else (fact n) / ((fact k) * (fact (n-k)))
-    comb 4L 2L |> should equal 6L
-    comb 2 2 |> should equal 1
-    comb 1 2 |> should equal 1
+  @"Map.values
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#values"
 
-    @"homcomb, homogeneous combination, 重複組み合わせ"
-    let homcomb n k = comb (n+k-1L) k
-
-  @"Fibonacci sequence, フィボナッチ数列"
-  module Fib =
-    @"メモ化していない重いフィボナッチ"
-    let rec fibNoMemo n =
-      if n = 0I then 0I
-      else if n = 1I then 1I
-      else fibNoMemo (n - 1I) + fibNoMemo (n - 2I)
-    fibNoMemo 5I |> should equal 5I
-    fibNoMemo 6I |> should equal 8I
-
-    @"メモ化したフィボナッチ"
-    //#nowarn "40"
-    let rec fibMemo =
-      let dict =
-        System.Collections.Generic.Dictionary<_, _>()
-      fun n ->
-        match dict.TryGetValue(n) with
-        | true, v -> v
-        | false, _ ->
-          let temp =
-            if n = 0I then 0I
-            else if n = 1I then 1I
-            else fibMemo (n - 1I) + fibMemo (n - 2I)
-
-          dict.Add(n, temp)
-          temp
-    fibMemo 5I |> should equal 5I
-    fibMemo 6I |> should equal 8I
-    fibMemo 50I |> should equal 12586269025I
-
-    @"unfold によるフィボナッチ数列
-    https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/sequences
-    UntilN とあるが、実際には最終項が N を超えたところでようやく止まる.
-    実際に実行してみるとわかる."
-    let fibByUnfoldUntilN n =
-      (1, 1) // Initial state
-      |> Seq.unfold (fun state ->
-        if (snd state > n)
-        then None
-        else Some(fst state + snd state, (snd state, fst state + snd state)))
-    fibByUnfoldUntilN 1000 |> List.ofSeq |> should equal [2;3;5;8;13;21;34;55;89;144;233;377;610;987;1597]
-
-  @"first digit, 整数の一桁目を得る"
-  module FirstDigit =
-    let firstDigit x = (10 - x%10) % 10
-    let xs = [|29;20;7;35;120|]
-    let ys = [|1;10;3;5;10|]
-    let zs = [|1;0;3;5;0|]
-    xs |> Array.map (fun x -> 10 - x%10) |> should equal ys
-    xs |> Array.map firstDigit |> should equal zs
-
-  @"floor, 切り捨て"
-  floor -1.4 |> should equal -2.0
-  floor -1.5 |> should equal -2.0
-  floor 1.4  |> should equal 1.0
-  floor 1.5  |> should equal 1.0
-
-  @"gcd, lcm
-  http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ALDS1_1_B&lang=ja
-  https://onlinejudge.u-aizu.ac.jp/courses/lesson/1/ALDS1/all/ALDS1_1_B
-  http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=2116711#1"
-
-  module GCD =
-    module GCD1 =
-      let gcd: int64 -> int64 -> int64 = fun x y ->
-        let rec frec x y = if y=0L then x else frec y (x%y)
-        if x >= y then frec x y else frec y x
-      let lcm a b = a * b / (gcd a b)
-
-      gcd 2L 4L |> should equal 2L
-      lcm 2L 4L |> should equal 4L
-      gcd 147L 105L |> should equal 21L
-      lcm 147L 105L |> should equal 735L
-
-      @"配列に対するGCD"
-      [|3;4;9|] |> Array.reduce gcd |> should equal 1
-      [|3;6;9|] |> Array.reduce gcd |> should equal 3
-
-    @"参考
-    https://docs.microsoft.com/ja-jp/dotnet/fsharp/tour
-    https://alexatnet.com/hr-f-computing-the-gcd/"
-    module MyGcd2 =
-      let rec gcd: int64 -> int64 -> int64 = fun a b ->
-        if a = 0L then b
-        elif a < b then gcd a (b - a)
-        else gcd (a - b) b
-      let lcm a b = a * b / (gcd a b)
-
-      gcd 2L 4L |> should equal 2L
-      lcm 2L 4L |> should equal 4L
-      gcd 147L 105L |> should equal 21L
-      lcm 147L 105L |> should equal 735L
-
-    @"../ProjectEuler/00005_Smallest_multiple/01.fsx"
-    module MyGcd3 =
-      let rec gcd a b =
-        let (s, l) = if a < b then (a, b) else (b, a)
-        let r = l % s
-        if r = 0L then s else gcd r s
-      let lcm a b = a * b / (gcd a b)
-
-      gcd 2L 4L |> should equal 2L
-      lcm 2L 4L |> should equal 4L
-      gcd 147L 105L |> should equal 21L
-      lcm 147L 105L |> should equal 735L
-
-  @"Large Numbers
-  巨大な数を扱うとき
-  cf: https://atcoder.jp/contests/abc169/tasks/abc169_b
-  例えば積がオーバーフローするかしないかを判定するとき、
-  積の値そのものを確認するのではなく、
-  オーバーフローチェックすべき値を新たにかける値で割った値で判定する。"
-  module LargeNumbers =
-    // check
-    System.Int32.MaxValue |> should equal 2147483647
-    System.Int32.MaxValue * 2 |> should equal -2
-
-    /// a*b が int を飛び越えるとき、オーバーフローしてマイナスになったりする
-    let checkOverflowBad a b n = n < (a * b)
-    checkOverflowBad System.Int32.MaxValue 2 System.Int32.MaxValue
-    |> should equal false
-
-    /// a: 元の値、b: 新たにかける値、n: オーバーフローチェックする値
-    /// int なら int の範囲内で計算を処理できる
-    let checkOverflowGood a b n = a > (n / b)
-    checkOverflowGood System.Int32.MaxValue 2 System.Int32.MaxValue
-    |> should equal true
-
-  @"log, 自然対数
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#log"
-  module Log =
-    let logBase baseNumber value = (log value) / (log baseNumber)
-    logBase 2.0 32.0 |> should equal 5.0
-    logBase 10.0 1000.0 |> should equal 2.9999999999999996
-
-  @"log10, 常用対数
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#log10"
-  log10 1000.0 |> should equal 3.0
-  log10 100000.0 |> should equal 5.0
-  log10 0.0001 |> should equal -4.0
-  log10 -20.0 |> should equal nan
-
-  @"max
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#max"
-  max 1 2 |> should equal 2
-  max [1;2;3] [1;2;4] |> should equal [1;2;4]
-  max "zoo" "alpha" |> should equal "zoo"
-
-  @"min
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#min"
-  min 1 2 |> should equal 1
-  min [1;2;3] [1;2;4] |> should equal [1;2;3]
-  min "zoo" "alpha" |> should equal "alpha"
-
-  @"剰余, 余り, mod"
-  10 % 2 |> should equal 0
-  10 % 7 |> should equal 3
-
-  @"n 進法 n-ary notation
-  使える文字の都合で n < 26 を仮定するが本質的ではない
-  参考：https://webbibouroku.com/Blog/Article/haskell-nstring
-  AtCoderで出てきた「26進数」：AtCoder/ABC171/C1.fsx"
-  module NaryLT16 =
-    let numbersLT16 = [|"0";"1";"2";"3";"4";"5";"6";"7";"8";"9";"a";"b";"c";"d";"e";"f"|]
-    let rec toNary n x =
-      if x = 0L then []
-      else
-        let q = x / n
-        let r = x % n |> int
-        List.append (toNary n q) [ numbersLT16.[r] ]
-    let to3ary = toNary 3L
-    [0L..3L] |> List.map to3ary |> should equal  [[];["1"];["2"];["1";"0"]]
-
-    let intToNary n x =
-      if x = 0L then [ numbersLT16.[0] ]
-      elif n = 0L then []
-      elif n = 1L then List.replicate (int x) (numbersLT16.[1])
-      elif n <= 16L then toNary n x
-      else []
-    let intTo2ary = intToNary 2L
-    [0L..8L] |> List.map intTo2ary |> should equal [["0"];["1"];["1";"0"];["1";"1"];["1";"0";"0"];["1";"0";"1"];["1";"1";"0"];["1";"1";"1"];["1";"0";"0";"0"]]
-
-  module NaryLT26 =
-    let numbersLT26 = [|'a'..'z'|]
-    let rec toNary n x =
-      if x = 0L then []
-      else
-        let q = x / n
-        let r = x % n |> int
-        List.append (toNary n q) [ numbersLT26.[r |> int] ]
-
-    let intToNary n x =
-      if x = 0L then [ numbersLT26.[0] ]
-      elif n = 0L then []
-      elif n = 1L then List.replicate (int x) (numbersLT26.[1])
-      elif n <= 26L then toNary n x
-      else []
-    let intTo2ary = intToNary 2L
-    [0L..11L] |> List.map intTo2ary |> should equal  [['a'];['b'];['b';'a'];['b';'b'];['b';'a';'a'];['b';'a';'b'];['b';'b';'a'];['b';'b';'b'];['b';'a';'a';'a'];['b';'a';'a';'b'];['b';'a';'b';'a'];['b';'a';'b';'b']]
-
-  @"perfect number, 完全数"
-  module IsPerfectSquare1 =
-    let isPerfect n =
-      if n <= 0L then false
-      else
-        seq {1L..(n-1L)}
-        |> Seq.filter (fun x -> n%x = 0L)
-        |> Seq.sum
-        |> (fun x -> x=n)
-    [1L..28L] |> List.filter isPerfect |> should equal [6L;28L]
-
-  @"perfect square, 完全平方数
-  http://www.fssnip.net/dn/title/Checking-for-perfect-squares
-  An implementation of John D. Cook's algorithm for fast-finding perfect squares: http://www.johndcook.com/blog/2008/11/17/fast-way-to-test-whether-a-number-is-a-square/"
-  module IsPerfectSquare2 =
-    let isPerfectSquare n =
-      let h = n &&& 0xF
-      if (h > 9) then false
-      else
-        if ( h <> 2 && h <> 3 && h <> 5 && h <> 6 && h <> 7 && h <> 8 ) then
-          let t = ((n |> double |> sqrt) + 0.5) |> floor|> int
-          t*t = n
-        else false
-    [1..100]
-    |> List.choose (fun x -> if isPerfectSquare x then Some x else None)
-    |> should equal [1;4;9;16;25;36;49;64;81;100]
-
-  @"Method2 https://www.geeksforgeeks.org/check-if-a-number-is-perfect-square-without-finding-square-root/amp/"
-  module IsPerfectSquare3 =
-    let rec isPerfectSquare x left right =
-      let mid = (left + right) / 2L
-      let midSq = mid * mid
-      if midSq = x then true
-      elif right < left then false
-      elif midSq < x then isPerfectSquare x (mid+1L) right
-      else isPerfectSquare x left (mid-1L)
-
-    [1L..100L] |> List.choose (fun x -> if isPerfectSquare x 1L x then Some x else None)
-    |> should equal [1L;4L;9L;16L;25L;36L;49L;64L;81L;100L]
-
-  @"Permutation, 順列, Bird-Gibbons, perms1"
-  let perms xs =
-    let rec inserts: 'a -> 'a list -> 'a list list = fun x -> function
-      | [] -> [[x]]
-      | y::ys -> (x::y::ys) :: List.map (fun z -> y::z) (inserts x ys)
-    let step x xss = List.collect (inserts x) xss
-    List.foldBack step xs [[]]
-  perms [1..3] |> should equal [[1;2;3];[2;1;3];[2;3;1];[1;3;2];[3;1;2];[3;2;1]]
-
-  "@Prime factorization, 素因数分解
-  https://atcoder.jp/contests/ABC169/tasks/abc169_d"
-  module PrimeFactorization =
-    @"自然数のリストの素因数分解: 階乗の素因数分解などで役に立つ.
-    2022/11時点でのAtCoderの都合で`C#`の`Dictionary`に値を積んでいる.
-    https://atcoder.jp/contests/abc052/tasks/arc067_a"
-    module PFS1 =
-      open System.Collections.Generic
-      let rec primes (i:int64) (k:int64) =
-        let (q,r) = System.Math.DivRem(k,i)
-        if k=1L then []
-        else if r=0L then i::primes i q
-        else if i*i>k then [k]
-        else primes (i+1L) k
-      let insertWith f k v (d:Dictionary<int64,int64>) =
-        d.TryGetValue(k) |> function | true,n -> d.[k] <- f d.[k] v; d | false,_ -> d.Add(k, v); d
-      let f d k = (d, primes 2L k) ||> List.fold (fun d i -> insertWith (+) i 1L d)
-      [2L..5L] |> List.fold f (Dictionary<int64,int64>())
-
-    @"自然数のリストの素因数分解: 階乗の素因数分解などで役に立つ.
-    2022/11時点でのAtCoderの都合で`C#`の`Dictionary`に値を積んでいる.
-    https://atcoder.jp/contests/abc052/tasks/arc067_a"
-   module PFS2 =
-     let rec factorize n =
-       if n=1 then []
-       else
-         let m = Seq.initInfinite ((+) 2) |> Seq.filter (fun i -> n%i=0) |> Seq.head
-         m :: factorize (n/m)
-     let pf n = [1..n] |> List.collect factorize |> List.groupBy id |> List.map (fun (x,xs) -> (x,List.length xs))
-     pf 5 |> should equal [(2,3);(3,1);(5,1)]
-
-    @"https://atcoder.jp/contests/ABC169/submissions/13872716"
-    module PF1 =
-      type Factor = { Number: int64; Count: int }
-      /// m: origN を割っていった値でどんどん小さくなる
-      /// a: 2L からインクリメントしていく値
-      /// origN: 入力値
-      let rec primes m a origN =
-        // sqrt N 以下の値だけ調べればよい
-        if origN < a * a then
-          if m = 1L then [] else [ { Number = origN;Count = 1 } ] // 最終的に素数と分かったとき
-        elif m % a <> 0L then
-          let aPlus = if a = 2L then 3L else a + 2L
-          primes m aPlus origN
-        else
-          /// n: primes オリジナルの引数 m を a でどんどん割っていく
-          /// acc: 割り切った回数のカウンター
-          let rec inner n acc =
-            if n % a <> 0L then (n, acc) else inner (n / a) (acc + 1)
-
-          let (m1, c) = inner m 0
-          // 1 番最初に 2L で呼んでいるため a >= 3 以上では
-          // m がすでに因数として 2 はもっていない。
-          // 2 より大きい偶数を考えても仕方ないので奇数だけ考える
-          let aPlus = if a = 2L then 3L else a + 2L
-          { Number = a;Count = c }
-          :: (primes m1 aPlus origN)
-      let primeFactors n = primes n 2L n
-      @"素数判定: 遅い
-      https://atcoder.jp/contests/arc017/tasks/arc017_1
-      https://qiita.com/drken/items/a14e9af0ca2d857dad23#問題-1-素数判定"
-      let rec isPrime n =
-        if n < 0L then isPrime (-n)
-        elif n = 0L then false
-        elif n = 1L then false
-        else primeFactors n = [ { Number = n;Count = 1 } ]
-      [1L..8L] |> List.filter isPrime |> should equal [2L;3L;5L;7L]
-
-    @"https://jeremybytes.blogspot.com/2016/07/getting-prime-factors-in-f-with-good.html
-    遅い.
-    1の素因数分解を[1]とする(してしまう)"
-    module PF2 =
-      let rec getFactors n proposed acc =
-        if n<=0L then failwith "be positive"
-        elif n=1L then [1L]
-        elif proposed=n then proposed::acc
-        elif n%proposed=0L then getFactors (n/proposed) proposed (proposed::acc)
-        else getFactors n (proposed+1L) acc
-      let primeFactor n = getFactors n 2 []
-      primeFactor 36L |> should equal [3L;3L;2L;2L]
-      primeFactor 1L |> should equal [1L]
-      primeFactor 2L |> should equal [2L]
-      primeFactor 3L |> should equal [3L]
-      primeFactor 4L |> should equal [2L;2L]
-
-    @"遅い: 1の素因数分解を[]にする"
-    module PF2_1 =
-      let rec getFactors n proposed acc =
-        if n<=0L then failwith "be positive"
-        elif n=1L then []
-        elif proposed=n then proposed::acc
-        elif n%proposed=0L then getFactors (n/proposed) proposed (proposed::acc)
-        else getFactors n (proposed+1L) acc
-      let primeFactor n = getFactors n 2 []
-      primeFactor 36L |> should equal [3L;3L;2L;2L]
-      primeFactor 1L |> should equal ([]:list<int64>)
-      primeFactor 2L |> should equal [2L]
-      primeFactor 3L |> should equal [3L]
-      primeFactor 4L |> should equal [2L;2L]
-
-    @"https://atcoder.jp/contests/caddi2018/submissions/9944877"
-    module PF3 =
-      let rec f c i p =
-        if p%i=0L then f (c+1L) i (p/i)
-        elif c<>0L then (i,c) :: f 0L (i+1L) p
-        elif p < i*i then [(p,1L)]
-        else (i,c) :: f 0L (i+1L) p
-      let pf p = f 0L 2L p
-      // 2の倍数を含むと素因数に1が含まれてしまう
-      pf 36 |> should equal [(2L,2L);(3L,2L);(1L,1L)]
-
-    @"https://atcoder.jp/contests/abc142/submissions/7794564"
-    module PF4 =
-      let rec pfrec acc i n =
-        if n<=1L then acc
-        else if n<(i*i) then n::acc
-        else if n%i=0L then pfrec (i::acc) i (n/i)
-        else pfrec acc (i+1L) n
-      let pf n = pfrec [] 2L n
-      pf 1L |> should equal ([]:list<int64>)
-      pf 2L |> should equal [2L]
-      pf 3L |> should equal [3L]
-      pf 4L |> should equal [2L;2L]
-      pf 5L |> should equal [5L]
-      pf 6L |> should equal [3L;2L]
-
-    @"https://atcoder.jp/contests/abc142/submissions/34082293"
-    module PF5 =
-      let rec pfrec acc i n =
-        match i,n with
-        | _,n when n <= 1L -> acc
-        | i,n when n < i * i -> n::acc
-        | i,n when n % i = 0L -> pfrec (i::acc) i (n/i)
-        | _ -> pfrec acc (i+1L) n
-      let pf n = pfrec [] 2L n
-      pf 1L |> should equal ([]:list<int64>)
-      pf 2L |> should equal [2L]
-      pf 3L |> should equal [3L]
-      pf 4L |> should equal [2L;2L]
-      pf 5L |> should equal [5L]
-      pf 6L |> should equal [3L;2L]
-
-    @"http://www.fssnip.net/3X"
-    module FsSnip =
-      let isPrime n =
-        let sqrtn = (float >> sqrt >> int) n
-        [|2..sqrtn|] |> Array.forall (fun x -> n % x <> 0)
-
-      let allPrimes =
-        let rec f n = seq {
-            if isPrime n then
-              yield n
-            yield! f (n+1)
-          }
-        f 2 // starting from 2
-
-      allPrimes |> Seq.take 5 |> should equal (seq  [|2;3;5;7;11|])
-
-    @"https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-1097596
-    素数のリストはhttps://atcoder.jp/contests/abc084/tasks/abc084_dと解説も参考になる.
-    エラトステネスの篩(Sieve of Eratosthenes)で作るとよい."
-    @"エラトステネスの篩: 配列で高速化.
-    0からはじめていて, 配列の添字と実際の数を対応させている."
-    let sieve N =
-      let primes = Array.create (N+1) true
-      primes.[0] <- false; primes.[1] <- false
-      let rec go i p = if i>=(N+1) then () else (primes.[i] <- false; go (i+p) p)
-      [|0..N|] |> Array.iter (fun p -> if primes.[p] then go (2*p) p)
-      primes
-    sieve 5 |> Array.indexed
-    sieve 5 |> should equal [|false;false;true;true;false;true|]
-
-    @"エラトステネスの篩: リストによる単純な実装"
-    module SoSieve =
-      let rec sieve = function
-        | (p::xs) -> p :: sieve [ for x in xs do if x % p > 0 then yield x ]
-        | []    -> []
-      sieve [2..50] |> List.take 5 |> should equal [2;3;5;7;11]
-
-    module SoPrime1 =
-      let twoAndOdds n =
-        Array.unfold (fun x -> if x > n then None else if x = 2 then Some(x, x + 1) else Some(x, x + 2)) 2
-      twoAndOdds 15 |> should equal [|2;3;5;7;9;11;13;15|]
-
-      // https://stackoverflow.com/questions/1097411/learning-f-printing-prime-numbers#answer-35966305
-      let infSeq (limit: int64) =
-        seq {
-          yield 2L
-          let mutable i = 3L
-          let mutable l = 3L
-          while l < limit do // この制約を入れないと f i がオーバーフローしてひどいことになったことがある。
-            let a = i
-            yield a
-            i <- i + 2L
-            l <- i
-        }
-
-      let rec isPrime x =
-        if x < 0L then isPrime (-x)
-        elif x = 0L then false
-        elif x = 1L then false
-        else infSeq x
-          |> Seq.takeWhile (fun i -> i * i <= x)
-          |> Seq.forall (fun i -> x % i <> 0L)
-      [0L..10L] |> List.filter isPrime |> should equal [2L;3L;5L;7L]
-
-    module AojOcaml01 =
-      let isPrime = function
-        | 1 -> false
-        | 2 -> true
-        | n when n%2=0 -> false
-        | n ->
-          let rec frec x =
-            if n<x*x then true
-            else if n%x=0 then false
-            else frec (x+2)
-          frec 3
-      [0..10] |> List.filter isPrime |> should equal [2;3;5;7]
-
-  @"round, 四捨五入
-  どちらにも丸められる場合は偶数にする"
-  round -1.4 |> should equal -1.0
-  round -1.5 |> should equal -2.0
-  round 0.4  |> should equal 0.0
-  round 0.5  |> should equal 0.0
-  round 1.4  |> should equal 1.0
-  round 1.5  |> should equal 2.0
-
-  @"sign, 符号
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#sign"
-  sign -2 |> should equal -1
-  sign -1 |> should equal -1
-  sign 0  |> should equal 0
-  sign 1  |> should equal 1
-  sign 10  |> should equal 1
-
-  @"Math sine, 正弦関数
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#sin"
-  let near0 x y = (abs (x-y)) < 0.0000001
-  near0 (sin System.Math.PI) 0 |> should be True
-
-  @"順列, permutations
-  標準ライブラリある?"
-  let rec choose xs =
-    match xs with
-    | [] -> []
-    | x::xs -> (x, xs) :: List.map (fun (y, ys) -> (y, x::ys)) (choose xs)
-  choose [1;2;3] |> should equal [(1, [2;3]);(2, [1;3]);(3, [1;2])]
-  let rec permutations xs =
-    match xs with
-    | [] -> [[]]
-    | xs ->
-      choose xs
-      |> List.collect (fun (y, ys) -> List.map (fun zs -> y::zs) (permutations ys))
-  permutations [1;2;3] |> should equal [[1;2;3];[1;3;2];[2;1;3];[2;3;1];[3;1;2];[3;2;1]]
+@"module Math -> ./Arithmetics.fsx"
 
 module Operator =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
@@ -3799,36 +3205,10 @@ module SystemIoStdout =
   stdout.Write "a"
   stdout.Write "a\n"
 
-module SystemMath =
-  let near0 x y = (abs (x-y)) < 0.0000001
+@"module SystemMath -> ./Math.fsx"
 
-  "Atan, 逆正接, arctan, atan
-  https://docs.microsoft.com/ja-jp/dotnet/api/system.math.atan?view=net-6.0
-  See atan in the above `module Math`."
-  near0 (System.Math.Atan 1) 0.7853981634 |> should be True
-  near0 (atan 1) 0.7853981634 |> should be True
-
-  @"PI, 円周率
-  https://docs.microsoft.com/ja-jp/dotnet/api/system.math.atan?view=net-6.0"
-  near0 System.Math.PI 3.141592654 |> should be True
-
-module SystemNumerics =
-  open System.Numerics
-
-  @"System.Numerics.Complex, complex number, 複素数
-  https://numerics.mathdotnet.com/api/MathNet.Numerics/Complex32.htm"
-  System.Numerics.Complex.Zero |> should equal (System.Numerics.Complex(0,0))
-  System.Numerics.Complex.One |> should equal (System.Numerics.Complex(1,0))
-  System.Numerics.Complex.ImaginaryOne |> should equal (System.Numerics.Complex(0,1))
-  System.Numerics.Complex(1,0).Real |> should equal 1.0
-  System.Numerics.Complex(1,0).Imaginary |> should equal 0.0
-  System.Numerics.Complex(1,0).Magnitude |> should equal 1.0
-  System.Numerics.Complex(1,0).Phase |> should equal 0.0
-
-  let c1 = Complex(1,2)
-  let c2 = Complex(3,4)
-  c1*c2 |> should equal (Complex(-5,10))
-  Complex(4,0) / Complex(2,0) |> should equal (Complex(2,0))
+@"module SystemNumerics = -> ./Math.fsx
+  open System.Numerics"
 
 module Tuple =
   // 値の取得

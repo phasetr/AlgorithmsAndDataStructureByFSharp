@@ -1,3 +1,5 @@
+import Data.List ( delete )
+
 intToNString :: Int -> Int -> String
 intToNString n x
   | n == 0 = []
@@ -21,6 +23,13 @@ mygcd :: Integral t => t -> t -> t
 mygcd x y = if x<y then f y x else f x y where
   f x y = if y==0 then x else f y (x `mod` y)
 
+partitionOfSet :: Eq a => [a] -> [[[a]]]
+partitionOfSet xs = part_set (reverse xs) [] [] where
+  part_set []     ys zs = ys:zs
+  part_set (x:xs) ys zs =
+--    part_set xs ([x]:ys) $ foldr (\y a -> part_set xs ((x:y):delete y ys) a) zs ys
+    part_set xs ([x]:ys) $ foldl (\a y -> part_set xs ((x:y):delete y ys) a) zs ys
+
 main :: IO ()
 main = do
   print $ 5 `div` 3 == 1
@@ -29,3 +38,4 @@ main = do
   print $ mygcd 147 105 == 21
   print $ all (\n -> 1 `mod` n /= 0) []
   print $ filter isPrime [1..10] == [2,3,5,7]
+  print $ partitionOfSet [1..3]
