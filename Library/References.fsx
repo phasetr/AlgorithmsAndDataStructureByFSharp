@@ -1337,6 +1337,10 @@ module List =
     isSubsequenceOf ('a'::['d'..'z']) ['a'..'z'] |> should equal true
     isSubsequenceOf [1..10] (10::[9..0]) |> should equal false
 
+  @"List.item, Haskell !!, get
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html"
+  ["a";"b";"c"] |> List.item 1 |> should equal "b"
+
   @"List.Item"
   module Item =
     let l = [0..9]

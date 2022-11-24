@@ -890,3 +890,63 @@ module Primes =
       groupPart (List.rev xs) [] []
     groupPartition 2 2 [1;2;3;4] |> should equal [[[1;4];[2;3]];[[1;3];[2;4]];[[1;2];[3;4]]]
     groupPartition 2 3 [1..6] |> should equal [[[1;6];[2;5];[3;4]];[[1;5];[2;6];[3;4]];[[1;6];[2;4];[3;5]];[[1;4];[2;6];[3;5]];[[1;5];[2;4];[3;6]];[[1;4];[2;5];[3;6]];[[1;6];[2;3];[4;5]];[[1;3];[2;6];[4;5]];[[1;2];[3;6];[4;5]];[[1;5];[2;3];[4;6]];[[1;3];[2;5];[4;6]];[[1;2];[3;5];[4;6]];[[1;4];[2;3];[5;6]];[[1;3];[2;4];[5;6]];[[1;2];[3;4];[5;6]]]
+
+    @"集合を`groupPartition`で分割する総数を求める関数`groupPartitionNumber n m`
+    http://www.nct9.ne.jp/m_hiroi/func/yahsp03.html#p62"
+    let groupPartitionNumber n m =
+      let fact n = Array.reduce (*) [|1L..n|]
+      let comb n k = List.fold (fun s i -> s * (n-i+1L)/i ) 1L [1L..k]
+      let rec groupPartNum k a =
+        if k=0L then a / (fact m) else groupPartNum (k-n) (a * comb k n)
+      groupPartNum (n*m) 1L
+    groupPartitionNumber 2L 2L |> should equal 3L
+    groupPartitionNumber 2L 3L |> should equal 15L
+    groupPartitionNumber 3L 3L |> should equal 280L
+    groupPartitionNumber 3L 4L |> should equal 15400L
+    groupPartitionNumber 3L 5L |> should equal 1401400L
+
+    @"`1`から`m`までの整数値で完全順列を生成する関数`perfectPermutation m`
+    http://www.nct9.ne.jp/m_hiroi/func/yahsp03.html#p63"
+    let perfectPermutation m =
+      let rec delete x = function | [] -> [] | y::ys -> if x=y then ys else y::delete x ys
+      let rec permSub n xs ys zs =
+        match xs with
+          | [] -> List.rev ys::zs
+          | _ ->
+            (xs,zs) ||> List.foldBack (fun x a -> if x=n then a else permSub (n+1L) (delete x xs) (x::ys) a)
+      permSub 1L [1L..m] [] []
+    perfectPermutation 3L |> should equal [[2L;3L;1L];[3L;1L;2L]]
+    perfectPermutation 4L |> should equal [[2L;1L;4L;3L];[2L;3L;4L;1L];[2L;4L;1L;3L];[3L;1L;4L;2L];[3L;4L;1L;2L];[3L;4L;2L;1L];[4L;1L;2L;3L];[4L;3L;1L;2L];[4L;3L;2L;1L]]
+
+
+    @"完全順列の総数をモンモール数(Montmort number)を求める関数`montmortNumber n`
+    http://www.nct9.ne.jp/m_hiroi/func/yahsp03.html#p64"
+    let montmortNumber n =
+      let rec iter i a b = if n=i then a else iter (i+1L) b ((i+1L)*(a+b))
+      iter 1L 0L 1L
+    montmortNumber 1L |> should equal 0L
+    montmortNumber 2L |> should equal 1L
+    montmortNumber 3L |> should equal 2L
+    montmortNumber 4L |> should equal 9L
+    montmortNumber 5L |> should equal 44L
+    montmortNumber 10L |> should equal 1334961L
+    montmortNumber 20L |> should equal 895014631192902121L
+
+    @"ラテン方陣を全て求める関数`latina n`
+    http://www.nct9.ne.jp/m_hiroi/func/yahsp03.html#p65"
+    let latina size =
+      let rec delete x = function | [] -> [] | y::ys -> if x=y then ys else y::delete x ys
+      let checkLatina n x xss = xss |> List.map (List.item (n-1)) |> List.contains x
+      let rec solver n xs a b c =
+        match xs with
+          | [] ->
+            if size-1=List.length b then (List.rev (List.rev a :: b) :: c)
+            else let m = List.length b + 2 in solver 2 (delete m [1..size]) [m] (List.rev a :: b) c
+          | _ ->
+            (xs,c) ||> List.foldBack (fun x z -> if checkLatina n x b then z else solver (n+1) (delete x xs) (x::a) b z)
+      solver 1 [1..size] [] [[1..size]] []
+    latina 3 |> should equal [[[1;2;3];[2;3;1];[3;1;2]]]
+    latina 4 |> should equal [[[1;2;3;4];[2;1;4;3];[3;4;1;2];[4;3;2;1]];
+                              [[1;2;3;4];[2;1;4;3];[3;4;2;1];[4;3;1;2]];
+                              [[1;2;3;4];[2;3;4;1];[3;4;1;2];[4;1;2;3]];
+                              [[1;2;3;4];[2;4;1;3];[3;1;4;2];[4;3;2;1]]]
