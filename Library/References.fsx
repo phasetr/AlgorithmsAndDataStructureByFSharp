@@ -54,6 +54,10 @@ module Array =
   a.[0..2] |> should equal [|0;1;2|]
   a.[1..] |> should equal [|1;2;3;4|]
   a.[..3] |> should equal [|0;1;2;3|]
+  @"前を刈り取るタイプの単純なスライスは`Array.skip`を使う"
+  a |> Array.skip 0 |> should equal a
+  a |> Array.skip 1 |> should equal a.[1..]
+  a |> Array.skip 2 |> should equal a.[2..]
 
   @"Haskell, Array.accum, Vector.accum
   http://zvon.org/other/haskell/Outputarray/accum_f.html"
@@ -2528,7 +2532,7 @@ module Sequence =
   http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group"
   module Group =
     let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
-      if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
+      if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.tail xs)
 
     let rec group = function
       | SeqEmpty -> Seq.empty
@@ -2567,7 +2571,7 @@ module Sequence =
   Active Pattern利用"
   module InitInfinite =
     let (|SeqEmpty|SeqCons|) (xs: 'a seq) =
-      if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.skip 1 xs)
+      if Seq.isEmpty xs then SeqEmpty else SeqCons(Seq.head xs, Seq.tail xs)
     Seq.initInfinite id |> Seq.take 3 |> should equal {0..2}
     Seq.initInfinite (fun x -> x + 1) |> Seq.take 3 |> should equal {1..3}
 

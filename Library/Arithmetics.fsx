@@ -54,6 +54,13 @@ module Arithmetics =
   let myabsfloat x = if x > 0.0 then x else -x
   myabsfloat -1.0 |> should equal 1.0
 
+  @"bottom, 整数の最低桁の数.
+  cf. 整数の最高桁は`top`"
+  let bottom n = n%10
+  bottom 1 |> should equal 1
+  bottom 21 |> should equal 1
+  bottom 342 |> should equal 2
+
   @"DivRem, Haskell divMod
   http://www.fssnip.net/gH/title/DivRem-Operator"
   System.Math.DivRem(7,3) |> should equal (2,1)
@@ -81,7 +88,7 @@ module Arithmetics =
   let invmod m a = powmod m a (m-2L)
   @"組み合わせの数, combination, powmodを使った計算
   剰余演算のもとでの処理だから,
-フェルマーの小定理とmod演算下での計算を使って効率化できる."
+  フェルマーの小定理とmod演算下での計算を使って効率化できる."
   let combmod m n r = ((permmod m n r) * (invmod m (permmod m r r))) % m
 
   @"** or power for int, 整数のべき乗・累乗
@@ -364,6 +371,13 @@ module Arithmetics =
   sign 0  |> should equal 0
   sign 1  |> should equal 1
   sign 10  |> should equal 1
+
+  @"top, 整数の最高桁, firstDigit
+  cf. 整数の最低桁は`bottom`参照"
+  let rec top = function | n when n<10 -> n | n -> top (n/10)
+  top 1 |> should equal 1
+  top 21 |> should equal 2
+  top 342 |> should equal 3
 
   @"Math sine, 正弦関数
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#sin"
@@ -770,8 +784,33 @@ module Primes =
     divisorSum 11111111111L |> should equal 11111646000L
 
     @"自然数`n`の約数のリスト `divisor n`
+    O(\sqrt{N})
+    テストで確認を楽にするために`Array.sort`をつけているので不要なら削除する"
+    let divisor n =
+      let sqrtN = n+1L |> float |> sqrt |> int64
+      [|1L..sqrtN|] |> Array.filter (fun x -> n%x=0L)
+      |> Array.collect (fun x -> [|x;n/x|]) |> Array.distinct |> Array.sort
+    divisor 1L |> should equal [|1L|]
+    divisor 2L |> should equal [|1L;2L|]
+    divisor 3L |> should equal [|1L;3L|]
+    divisor 4L |> should equal [|1L;2L;4L|]
+    divisor 5L |> should equal [|1L;5L|]
+    divisor 12L |> should equal [|1L;2L;3L;4L;6L;12L|]
+
+    @"自然数`n`の約数のリスト `divisor n`
+    必ずしも速くないが確実"
+    let divisor n = [|1L..n|] |> Array.filter (fun i -> n%i=0L)
+    divisor 1L |> should equal [|1L|]
+    divisor 2L |> should equal [|1L;2L|]
+    divisor 3L |> should equal [|1L;3L|]
+    divisor 4L |> should equal [|1L;2L;4L|]
+    divisor 5L |> should equal [|1L;5L|]
+    divisor 12L |> should equal [|1L;2L;3L;4L;6L;12L|]
+
+    @"自然数`n`の約数のリスト `divisor n`
     http://www.nct9.ne.jp/m_hiroi/func/yahsp03.html#p54
-    直移植はバグがあって`1L`などで動作しないため修正"
+    直移植はバグがあって`1L`で動作しないため修正.
+    (多分)遅い."
     let divisor n =
       let product: seq<int64> -> seq<int64> -> seq<int64> =
         fun xs ys -> Seq.allPairs xs ys |> Seq.map (fun (x,y) -> x*y)
