@@ -222,7 +222,7 @@ module Array =
   //Array.exactlyOne<int> [||] // 例外発生「System.ArgumentException: 入力シーケンスが空でした。」
   Array.singleton 3 |> should equal [|3|] // (Array.exactlyOneとは逆)
 
-  @"Array.except
+  @"Array.except, 除外する
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#except
   配列 2 の要素から配列 1 の要素を取り除いた配列を得る。
   配列 1 は list, seq, set でもいい。
