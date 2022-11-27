@@ -17,7 +17,7 @@ module SimpleBenchmark =
   let benchmark n f =
     let sw  = new System.Diagnostics.Stopwatch()
     sw.Start()
-    for i in 1..n do f() |> ignore
+    for _ in 1..n do f() |> ignore
     sw.Stop()
     sw.Elapsed
   let n = 15
@@ -115,20 +115,19 @@ module Array =
   filterd map, Haskell mapMaybe, OCaml filtered_map
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose
   https://stackoverflow.com/questions/55674656/how-to-combine-filter-and-mapping-in-haskell"
-  module Choose =
-    Array.choose
-      (fun elem ->
-        if elem % 2 = 0 then Some(float (elem * elem - 1))
-        else None)
-      [|1..10|]
-    |> should equal [|3.0; 15.0; 35.0; 63.0; 99.0|]
+  Array.choose
+    (fun elem ->
+      if elem % 2 = 0 then Some(float (elem * elem - 1))
+      else None)
+    [|1..10|]
+  |> should equal [|3.0; 15.0; 35.0; 63.0; 99.0|]
 
-    [|Some 1;None;Some 2|] |> Array.choose id |> should equal [|1;2|]
-    [|1;2;3|] |> Array.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal [|2|]
+  [|Some 1;None;Some 2|] |> Array.choose id |> should equal [|1;2|]
+  [|1;2;3|] |> Array.choose (fun n -> if n % 2 = 0 then Some n else None) |> should equal [|2|]
 
-    [|(1,20);(2,30);(1,40);(2,50)|]
-    |> Array.choose (fun (i,v) -> if i = 1 then Some v else None)
-    |> should equal [|20;40|]
+  [|(1,20);(2,30);(1,40);(2,50)|]
+  |> Array.choose (fun (i,v) -> if i = 1 then Some v else None)
+  |> should equal [|20;40|]
 
   @"Array.chunkBySize
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#chunkBySize
@@ -145,13 +144,12 @@ module Array =
 
   @"Array.compareWith
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#compareWith"
-  module CompareWith =
-    let compare elem1 elem2 =
-      if elem1 > elem2 then 1
-      elif elem1 < elem2 then -1
-      else 0
-    Array.compareWith compare [|1..3|] [|1;2;4|] |> should equal -1
-    Array.compareWith compare [|1..3|] [|1;2;3|] |> should equal  0
+  let compare elem1 elem2 =
+    if elem1 > elem2 then 1
+    elif elem1 < elem2 then -1
+    else 0
+  Array.compareWith compare [|1..3|] [|1;2;4|] |> should equal -1
+  Array.compareWith compare [|1..3|] [|1;2;3|] |> should equal  0
 
   @"Array.concat
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#concat"
@@ -164,10 +162,9 @@ module Array =
 
   @"Array.countBy
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#countBy"
-  module CountBy =
-    type Foo = { Bar: string }
-    let inputs = [|{Bar = "a"}; {Bar = "b"}; {Bar = "a"}|]
-    inputs |> Array.countBy (fun foo -> foo.Bar) |> should equal [|("a",2);("b",1)|]
+  type Foo = { Bar: string }
+  [|{Bar = "a"}; {Bar = "b"}; {Bar = "a"}|]
+  |> Array.countBy (fun foo -> foo.Bar) |> should equal [|("a",2);("b",1)|]
 
   @"Array.create, OCaml Array.make
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#create"
@@ -180,14 +177,13 @@ module Array =
 
   @"Array.delete, あるk番目の要素だけ取り除く
   See also Array.removeAt."
-  module Delete =
-    let delete k xa = Array.append (Array.take k xa) (Array.skip (k+1) xa)
-    let xa = [|0..4|]
-    delete 0 xa |> should equal [|1;2;3;4|]
-    delete 1 xa |> should equal [|0;2;3;4|]
-    delete 2 xa |> should equal [|0;1;3;4|]
-    delete 3 xa |> should equal [|0;1;2;4|]
-    delete 4 xa |> should equal [|0;1;2;3|]
+  let delete k xa = Array.append (Array.take k xa) (Array.skip (k+1) xa)
+  let xa = [|0..4|]
+  delete 0 xa |> should equal [|1;2;3;4|]
+  delete 1 xa |> should equal [|0;2;3;4|]
+  delete 2 xa |> should equal [|0;1;3;4|]
+  delete 3 xa |> should equal [|0;1;2;4|]
+  delete 4 xa |> should equal [|0;1;2;3|]
 
   @"Array.distinct 一意化, unique
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#distinct"
@@ -846,6 +842,9 @@ module Array2D =
   @"array2D, constructor"
   array2D [[1..2];[2..3]]
 
+  @"配列への変換"
+  array2D [[1..2];[2..3]] |> Seq.cast<int> |> Seq.toArray |> should equal [|1;2;2;3|]
+
   @"Array2D.create
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#create"
   Array2D.create 2 3 1 |> should equal (array2D [[1;1;1];[1;1;1]])
@@ -932,6 +931,12 @@ module Char =
   @"int: char -> int
   文字コードを取得, Ocaml Char.code"
   int '0' |> should equal 48
+
+  @"文字のシフト"
+  let shift k (c:char) = int c + k |> char
+  shift 1 'a' |> should equal 'b'
+  shift 2 'a' |> should equal 'c'
+  shift 3 'a' |> should equal 'd'
 
   @"文字を文字列ではなく数値にする"
   let inline charToInt c = int c - int '0'
@@ -2975,6 +2980,10 @@ module String =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html
   @つき文字列: 逐語的文字列, verbatim string
   https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/strings#verbatim-strings"
+
+  @"String.ToCharArray()メソッド.
+  文字列を文字の配列にする."
+  "abc".ToCharArray() |> should equal [|'a';'b';'c'|]
 
   @"文字列結合
   https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/strings#string-operators"

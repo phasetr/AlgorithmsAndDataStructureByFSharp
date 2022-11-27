@@ -1,8 +1,8 @@
 #r "nuget: FsUnit"
 open FsUnit
 
-let N = 575
-let N = 3600
+// let N = 575
+// let N = 3600
 @"TLE, Stack overflow"
 let solve N =
   let rec f acc k a b c =

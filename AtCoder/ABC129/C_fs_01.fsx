@@ -14,7 +14,7 @@ let solve N M Aa =
     |> snd
 let N,M = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0], x.[1])
 let Aa = [| for i in 1..M do (stdin.ReadLine() |> int) |]
-solve N M Aa |> Array.map stdout.WriteLine
+solve N M Aa |> stdout.WriteLine
 
 solve 6 1 [|3|] |> should equal 4
 solve 10 2 [|4;5|] |> should equal 0
