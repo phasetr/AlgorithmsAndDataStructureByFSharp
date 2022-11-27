@@ -3029,7 +3029,7 @@ module String =
     ['1';'2';'3'] |> System.String.Concat |> should equal "123"
 
   module Contains =
-    @"部分文字列の検索: ブールで返してくれる
+    @"String.Containsメソッド: 部分文字列の検索, ブールで返してくれる
     https://atmarkit.itmedia.co.jp/ait/articles/0602/17/news119.html"
     "fish frog dog".Contains("frog") |> should be True
     "fish frog dog".Contains("bird") |> should be False
@@ -3123,8 +3123,14 @@ module String =
   競プロのOCamlコードを見て発見"
   "abcde" |> String.map (function | 'a' -> 'z' | c -> c) |> should equal "zbcde"
 
-  @"System.String.Replace"
+  @"System.String.Replace, 文字列の置換"
   "abcde" |> fun s -> s.Replace("a", "z") |> should equal "zbcde"
+
+  @"`Regex.Replace`メソッド: 文字列の置換回数の指定"
+  open System.Text.RegularExpressions
+  let re = new Regex("abc")
+  re.Replace("abc abc abc", "def", 1) |> should equal "def abc abc"
+  re.Replace("abc abc abc", "def", 2) |> should equal "def def abc"
 
   @"String.replicate
   文字列のくり返し.
