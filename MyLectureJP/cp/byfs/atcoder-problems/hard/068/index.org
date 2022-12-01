@@ -1,0 +1,93 @@
+* 68 D - String Equivalence
+- created: 2022-11-30
+- [公式ページ, Panasonic 2020 D - String Equivalence](https://atcoder.jp/contests/panasonic2020/tasks/panasonic2020_d)
+- [公式解説](https://atcoder.jp/contests/panasonic2020/editorial), [PDF](https://img.atcoder.jp/panasonic2020/editorial.pdf)
+** 解説1
+- [下記方針に基づいた最終実装例](https://atcoder.jp/contests/panasonic2020/submissions/36884934)
+- 実装を見ると特に明確なように,
+  長さ`N`の標準形は長さ`N-1`の文字列に一文字足して作られます.
+- 出題例をもとに特に小さい`N`で実験してもわかります.
+- 追加できる文字は`a`を先頭に, 各文字列の中の最大の文字の一つ次までです.
+
+ここまでの情報をもとにすれば素直に実装できます.
+まず補助関数を二つ作ります.
+
+```
+#r "nuget: FsUnit"
+open FsUnit
+
+// ある文字の次の文字
+let succ (c:char) = int c |> (+) 1 |> char
+// 文字列の中の最大の文字の一つ次
+let m xs = List.max xs |> succ
+
+succ 'a' |> should equal 'b'
+succ 'b' |> should equal 'c'
+succ 'z' |> should equal '{'
+
+m ['a'] |> should equal 'b'
+m ['a';'b'] |> should equal 'c'
+```
+
+今回の問題の範囲では困らないためそのままにしているものの,
+`succ 'z'`の挙動が気になるなら適切に書き換えてください.
+
+さて, 長さ`2`の標準形の一つ`ab`に対して長さ`3`の標準形を作りましょう.
+関数`m`によって`a`から`c`まで追加できます.
+文字の追加の仕方はいろいろあって文字列の連結で素直に後ろにつなげてもいいでしょう.
+ここでは文字列(.NETとしては文字の配列)を文字のリストにし,
+リストの連結も`cons`を使って前に追加します.
+
+```
+let xs = ['b';'a']
+xs |> ['a'..(m xs)] |> List.map (fun c -> c::xs))
+|> should equal [['a';'b';'a'];['b';'b';'a'];['c';'b';'a']]
+```
+
+長さ`2`の標準形は`aa`と`ab`だから両方に作用させましょう.
+
+```
+let xss = [['a';'a'];['b';'a']]
+xss |> List.map (fun xs -> ['a'..(m xs)] |> List.map (fun c -> c::xs))
+|> should equal [[['a'; 'a'; 'a']; ['b'; 'a'; 'a']]; [['a'; 'b'; 'a']; ['b'; 'b'; 'a']; ['c'; 'b'; 'a']]]
+```
+
+これで長さ`3`の標準形が得られました.
+しかしこれは`char list list list`です.
+実際に欲しいのは`string list`で,
+`char list`を`string = char[]`に変える必要もあります.
+
+リストのネストを一つ減らすのは`List.concat`で,
+`List.collect = List.map >> List.concat`を使ってつなげて書けます.
+`char list -> string`は.NETレベルのメソッド`System.String.Concat`を使います.
+リストはほしい文字列の逆になっているから`List.rev`の処理も必要です.
+
+これを再帰でまとめると次の解答が得られます.
+
+```
+let solve N =
+  let succ (c:char) = int c |> (+) 1 |> char
+  let m xs = List.max xs |> succ
+  let rec frec n =
+    if n=1 then [['a']]
+    else frec (n-1) |> List.collect (fun xs -> ['a'..(m xs)] |> List.map (fun c -> c::xs))
+  frec N |> List.map (List.rev >> System.String.Concat)
+
+let N = stdin.ReadLine() |> int
+solve N |> List.iter stdout.WriteLine
+```
+** 解説2: 末尾再帰
+少し書き方を変えれば末尾再帰にできます.
+結論だけ書くと次の通りです.
+
+```
+let solve N =
+  let succ (c:char) = int c |> (+) 1 |> char
+  let m xs = List.max xs |> succ
+  let rec frec n acc =
+    if n=1 then acc
+    else acc |> List.collect (fun xs -> ['a'..(m xs)] |> List.map (fun c -> c::xs)) |> frec (n-1)
+  frec N [['a']] |> List.map (List.rev >> System.String.Concat)
+
+stdin.ReadLine() |> int |> solve |> List.iter stdout.WriteLine
+```

@@ -1,0 +1,175 @@
+* 69 C - Align
+- created: 2022-11-30
+- [公式ページ, Tenka1 Programmer Contest C - Align](https://atcoder.jp/contests/tenka1-2018/tasks/tenka1_2018_c)
+- [公式解説](https://atcoder.jp/contests/tenka1-2018/editorial), [PDF](https://img.atcoder.jp/tenka1-2018/editorial.pdf)
+** 解説
+- [下記方針に基づいた最終実装例](https://atcoder.jp/contests/tenka1-2018/submissions/36891257)
+*** はじめに
+公式解説の他にもいくつか解答を見ていると,
+偶奇で場合分けをしているコードもあれば,
+一本で計算しきっているコードもありました.
+ただ私にはあまり直観的でなくすっと理解しにくかったため,
+ここでは[cojnaさんのコード例](https://atcoder.jp/contests/tenka1-2018/submissions/3564874)を参考にした実装を紹介します.
+*** 簡単な方針
+大きな数値から小さな数値を引いた方がよいのは明らかです.
+ソートして大きい数のリスト`hs`と小さい数のリスト`ls`にわけ,
+大きい数と小さい数を順に並べ続ければいいでしょう.
+特に分けたリストを再帰的に先頭から取れば十分です.
+
+問題は全要素数が奇数の場合の処理で,
+`hs`と`ls`から一つずつ取り続けて余った項をどこに置くかが問題です.
+*** 具体例で実装
+入力例1で上の方針を追いかけます.
+
+```
+let N, Aa = 5, [|6L;8L;1L;2L;3L|]
+```
+
+まずは「ソートして大きい数のリスト`hs`と小さい数のリスト`ls`にわけ」の部分を実装します.
+
+```fsharp
+#r "nuget: FsUnit"
+open FsUnit
+
+let (xs,ys) = Aa |> Array.sort |> Array.toList |> List.splitAt (N/2)
+xs |> should equal [1L; 2L]
+ys |> should equal [3L; 6L; 8L]
+```
+
+大きい方は大きい順に取るため`List.rev`で順序を反転します.
+
+```fsharp
+#r "nuget: FsUnit"
+open FsUnit
+
+let zs = ys |> List.rev
+zs|> should equal [8L; 6L; 3L]
+```
+
+あとは`xs`と`zs`の先頭から再帰的に処理します.
+再帰関数を`frec`として次のような呼び出しを前提にしましょう.
+
+```fsharp
+let (xs,ys) = Aa |> Array.sort |> Array.toList |> List.splitAt (N/2)
+let (l,ls) = (List.head xs, List.tail xs)
+let (h,hs) = ys |> List.rev |> fun zs -> (List.head zs, List.tail zs)
+frec (h-l) l h (ls,hs)
+```
+
+はじめから初項を分離しなくてもいいとは思いますが,
+cojnaコードに合わせています.
+`h-l`の部分が結果を積むaccumlator変数です.
+`h`はhigh, `l`はlowで値の大小の分割を表しています.
+最後の`(ls,hs)`はタプルにせず分けても構いません.
+次の実装を前提にタプルにしています.
+
+さて, 再帰関数の本体を考えましょう.
+
+```fsharp
+let rec frec acc low high = function
+  | (l::ls),(h::hs) -> frec (acc + h-low + high-l) l h (ls,hs)
+  | [],[h] -> acc + ???
+  | _,_ -> acc
+```
+
+`function`の部分は次の省略表記です.
+
+```fsharp
+let rec frec acc low high (xs,ys) =
+  match (xs,ys) with
+    | (l::ls),(h::hs) -> frec (acc + h-low + high-l) l h (ls,hs)
+    | [],[h] -> acc + ???
+    | _,_ -> acc
+```
+
+これは次のように書いても構いません.
+
+```fsharp
+let rec frec acc low high xs ys =
+  match (xs,ys) with
+    | (l::ls),(h::hs) -> frec (acc + h-low + high-l) l h ls hs
+    | [],[h] -> acc + ???
+    | _,_ -> acc
+```
+
+以下前者のコードを前提に考えます.
+まずパターンマッチの`match`の第一行から考えましょう.
+
+```fsharp
+let rec frec acc low high xs ys =
+  (l::ls),(h::hs) -> frec (acc + h-low + high-l) l h ls hs
+```
+
+まさにリストを先頭と残りに分割して処理しています.
+再帰呼び出しの`acc + h-low + high-l`の項は,
+一つ前の先頭の項に対して大きい数と小さい数の差を取るそのままの処理です.
+`low`, `high`, `xs`, `ys`の項も分割した項をそのまま積めば問題ありません.
+
+残り二行を確認しましょう.
+
+```fsharp
+let rec frec acc low high xs ys =
+  match (xs,ys) with
+    | [],[h] -> acc + ???
+    | _,_ -> acc
+```
+
+`[],[h]`は項数が奇数の場合の余りの処理で,
+最後の`_,_`が項数が偶数の場合の処理です.
+後者は積み切った値を素直に返せばよく何も考える必要はありません.
+したがってあとは一つ余った項の処理だけです.
+
+結論から言えば`max (h-low) (high-h)`です.
+はじめに`splitAt (N/2)`でわけました.
+この分け方で最後の項が`ls`と`hs`のどちらに入るか変わります.
+どうしても揺れが起こるため`max`でその揺れを吸収しています.
+
+入力例1と新たに作った以下のもう一つの入力例をもとに確認しましょう.
+
+入力例1での最後の余りの処理は次のようになります.
+
+```
+xs -> [1L; 2L]
+ys -> [8L; 6L; 3L]
+
+low -> 2L
+high -> 6L
+h -> 3L
+
+h-low -> 1L
+high-h -> 3L
+```
+
+したがってこちらは`high-h`を取るべきです.
+具体的に全体としてどのような並び方を選んだのかを考えるのも大事です.
+実際には次のようになっています.
+
+- `h-low`: `8 1 6 2 3`
+- `high-h`: `1 8 2 6 3`
+
+つまり初項を大きい方から取るか, 小さい方から取るかが最後の取り方で決まります.
+
+さて, 新たな入力例は`let Aa = [|1L;4L;5L|]`とします.
+この余りの処理は次のようになります.
+
+```fsharp
+Aa -> [|1L;4L;5L|]
+xs -> [1L]
+ys -> [5L;4L]
+
+low -> 1L
+high -> 5L
+h -> 4L
+h-low -> 3L
+high-h -> 1L
+```
+
+入力例1と違って`h-low`を取るべきです.
+具体的に全体としてどのような並び方を選んだかと言えば次の通りです.
+
+- `h-low`: `5 1 4`
+- `high-h`: `1 5 4`
+
+もちろん他の可能性がないかも考えるべきではありますが,
+前の項との差を取るアルゴリズムの組み方からしてありうるのはこの二通りしかありません.
+あとはこれを一般的にきちんと書き切れば適切なコードができます.

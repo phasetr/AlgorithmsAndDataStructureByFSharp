@@ -1,0 +1,15 @@
+* F#による関数型競技プログラミングへの道
+- created: 2022/11/28
+** 記事群の目次
+- [はじめに](intro/index.md)
+- [競技プログラミングのためのF#入門](fsharp-for-cp/index.md)
+- [AtCoder Problems](atcoder-problems/index.md)
+** 参考記事・サイト
+- [AtCoder](https://atcoder.jp/)
+- [AtCoder Problems, kenkoooo](https://kenkoooo.com/atcoder/)
+    - [入門者向け300題](https://kenkoooo.com/atcoder/#/training)
+- [cannorin, F#を知ってほしい](https://qiita.com/cannorin/items/59d79cc9a3b64c761cd4)
+- [phasetr, AlgorithmsAndDataStructureByFSharp](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp)
+- [phasetr, mathcodes](https://github.com/phasetr/mathcodes)
+- [AOJ, Aizu Online Judge](https://onlinejudge.u-aizu.ac.jp/home)
+- [アルゴ式](https://algo-method.com/)

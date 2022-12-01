@@ -1,0 +1,49 @@
+* 競技プログラミング
+** 配下の記事一覧
+- [F#による関数競技プログラミングへの道](byfs/index.md)
+** 学習メモ: 特に初学時
+- AtCoderなど解答・解説がある状況を前提にする.
+- まずは適当な時間を決めて自力で考える.
+- 自力で解けなければ解説を読み, 適当な時間を決めて実装だけ考える.
+- 他の人の解答を読む.
+** 技術メモ
+*** 回数の計算
+- 再帰または無限リストで処理したくなるとき,
+  それが回数に関わる計算なら`mod`や割り算を使うべし.
+*** グラフ・ネットワーク
+- グラフ・ネットワークを追いかけるときは再帰または`scanl`を使うとよい.
+    - ただし**無限ループがありうる**.
+      F#なら`Seq.scan`を使うか,
+      再帰なら辿った回数を記憶して適当なところで打ち切る.
+      `Seq.scan`からの`Seq.take n`でTLEになったことがあり,
+      F#なら`initInfinite`的な`yield`で処理した方がよさそう.
+    - 参考
+        - [AtCoder ABC065 B](https://atcoder.jp/contests/abc065/tasks/abc065_b){target=_blank}
+        - [上記解答1](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC065/B1.fsx){target=_blank}
+        - [上記解答2](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC065/B2.fsx){target=_blank}
+*** 小数の処理
+- 状況に応じて高い精度を使う必要がある.
+- 有効桁など微妙な処理が出る場合は整数上で計算するのも一手
+    - 例: [Sqrt Inequality](https://atcoder.jp/contests/panasonic2020/tasks/panasonic2020_c){target=_blank}
+*** 対象を捨てるか拾うか
+- 問題に応じて適切な方を選ぶべし.
+- 参考
+    - [ABC107 B - Grid Compression](https://atcoder.jp/contests/abc107/tasks/abc107_b){target=_blank}
+    - 白のマスを潰すか?
+    - 黒のマスを拾うか?
+*** 文字列処理
+- 連続する文字の判定はスタックに積みつつ再帰を使うとよい.
+    - cf. [AGC005 A STring](https://atcoder.jp/contests/agc005/tasks/agc005_a)
+*** 両端の処理
+- ときどきリストや配列の端の処理の場合分けが必要.
+- 特に要素数が少ない場合, 両端に要素を追加してメイン処理のロジックを綺麗にするといいことがある.
+- 参考
+    - [ABC096 C - Grid Repainting 2](https://atcoder.jp/contests/abc096/tasks/abc096_c){target=_blank}
+    - [参考解答](https://atcoder.jp/contests/abc096/submissions/22914132){target=_blank}
+    - 絵を表す文字列の上下左右を「.」で埋めてメインロジックの`if`を読みやすくしている.
+*** TODO 累積和とscan
+- TODO 累積和を書く
+- F#・Haskellでは`scan`を使うとよい.
+- 参考
+    - [ARC078 A, Splitting Pile](https://atcoder.jp/contests/abc067/tasks/arc078_a){target=_blank}
+    - [ABC084 D, 2017-like Number](https://atcoder.jp/contests/abc084/tasks/abc084_d)

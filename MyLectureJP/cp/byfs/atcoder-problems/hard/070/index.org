@@ -1,0 +1,154 @@
+* 70 C - Snuke Festival
+- created: 2022-12-01
+- [公式ページ, ABC 077 C - Snuke Festival](https://atcoder.jp/contests/abc077/tasks/arc084_a)
+- [公式解説](https://atcoder.jp/contests/abc077/editorial), [PDF](https://img.atcoder.jp/arc084/editorial.pdf)
+
+** 自分用の記録
+公式解説では二分探索を提案しています.
+それぞれ次のような解答例があります.
+
+- [F#](https://atcoder.jp/contests/abc077/submissions/30018764)
+- [Haskell](https://atcoder.jp/contests/abc077/submissions/17594768)
+
+F#版は`start-1`や`stop+1`を外して書けないかと思って轟沈し,
+Haskell版も番兵なしで書けないかと思って轟沈し,
+自力実装もTLEではまり倒したため,
+CやPythonなどのコードを見つついろいろ試し,
+最終的には[Rustのコード](https://atcoder.jp/contests/abc077/submissions/27280251)を参考にしました.
+ここでもこれに基づいた解説をつけます.
+
+** 解説
+- [下記方針に基づいた最終実装例](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/AtCoder/ARC084/A_fs_00_02.fsx)
+
+参考にした命令型の[Rustのコード](https://atcoder.jp/contests/abc077/submissions/27280251)の焼き直しを説明したあと,
+関数型に書き換えたバージョンを説明します.
+
+まずは公式解説と同じく配列で入力を取ってソートします.
+あとの都合があるため`Ba`もソートします.
+
+```fsharp
+  let Xa = Aa |> Array.sort
+  let Ya = Ba |> Array.sort
+  let Za = Ca |> Array.sort
+```
+
+以下ソートした配列`Xa`, `Ya`, `Za`で考えます.
+何も考えずRustを直移植した結果は次の通りです.
+
+```fsharp
+  let Xa = Aa |> Array.sort
+  let Ya = Ba |> Array.sort
+  let Za = Ca |> Array.sort
+  let mutable i = 0
+  let mutable k = 0
+  let mutable ans = 0L
+  for b in Ya do
+    while i<N-1 && Xa.[i+1]<b do i <- i+1
+    while k<N-1 && Za.[k]<=b  do k <- k+1
+    if Xa.[i]<b && b<Za.[k] then ans <- ans + (int64 (i+1) * int64 (N-k))
+  ans
+```
+
+アルゴリズム上のポイントは`Ba`のソートと`i`, `k`の引き継ぎです.
+`Aa`と`Ca`をソートしているため配列の引数からそのまま個数が計算できます.
+さらに`Ba`のソートのおかげで,
+`Ba`に関する添字を`j`とすれば,
+`j+1`に関する結果を計算するとき`j`で計算した`i`と`k`から再開でき,
+余計な計算が省略できます.
+`Za`の関する計算は問題の素直な不等式ではなく`Za.[k]<=b`にした上で`N-k`を計算しています.
+(解説を書きながら気づいたのですが,
+`Array.sortDescending`を使えば問題の条件のまま計算できます.)
+
+F#コードのポイントは`ans <- ans + (int64 (i+1) * int64 (N-k))`にもあります.
+ここで`int64 (i+1) * (N-k)`としてしまうと`WA`が出ます.
+実際に出てはまり倒しました.
+理由は`int`で`(i+1) * (N-k)`が計算されるとオーバーフローを起こす場合があり,
+このかけ算自体も`int64`で計算しないといけないからです.
+配列の添字は`int`で`int64`にはできないため,
+配列の添字を使った計算には注意が必要です.
+
+命令型での焼き直しができました.
+一般的には命令型の方が速くメモリ効率もよいため,
+これで終わらせても問題ありません.
+しかし関数型競技プログラミングを標榜している以上やはり関数型に書き換えます.
+
+まずは`for b in Ya do`から書き換えます.
+最終的には`let mutable ans`相当の値を返したいため,
+`fold`を使って処理すればいいでしょう.
+具体的には次のように書けます..
+
+```fsharp
+  let mutable i = 0
+  let mutable k = 0
+  let mutable ans = 0L
+  (0L, Ya) |> Array.fold (fun acc b ->
+    while i<N-1 && Xa.[i+1]<b do i <- i+1
+    while k<N-1 && Za.[k]<=b  do k <- k+1
+    if Xa.[i]<b && b<Za.[k] then acc + (int64 (i+1) * int64 (N-k)) else acc)
+```
+
+F#では最後に計算した式の値を返してくれるため,
+これを関数の最後に書けば問題ありません.
+ポイントは`if`に対して`else`節を書いて値を返す部分です.
+そもそも`else`節がないとエラーを吐いてくれるため,
+そこで気付けるでしょう.
+
+あとは`mutable`の`i`と`k`をうまく処理する必要があります.
+積んだ結果を引き回す必要があるため,
+`acc`をタプルに変えて積む必要があります.
+
+ループは一般に再帰で書き換えられます.
+これも`else`節で値を返す必要があり,
+特に次のように書けます.
+
+```fsharp
+  let rec a i b = if i<N-1 && Xa.[i+1]<b then a (i+1) b else i
+  let rec c k b = if k<N-1 && Za.[k]<=b  then c (k+1) b else k
+```
+
+関数名は一文字で`a`と`c`です.
+短いプログラムだからこれで十分意図は伝わるでしょう.
+気にいらなければもう少し長く説明的な名前でも構いません.
+この関数を使うと`fold`は次のように書き換えられます.
+
+```fsharp
+  ((0L,0,0),Ya) ||> Array.fold (fun (acc0,i0,k0) b ->
+    let i = a i0 b
+    let k = c k0 b
+    let acc = if Xa.[i]<b && b<Za.[k] then acc0 + (int64 (i+1) * int64(N-k)) else acc0
+    (acc,i,k)) |> fun (acc,_,_) -> acc
+```
+
+`acc`が`(acc,i,k)`に書き換わりました.
+計算結果もタプルで返します.
+先程と違い, `fold`の最終的な返り値もタプルになってしまうため,
+最後に必要な第一要素だけ取り出す関数を噛ませてあります.
+最終的な全体実装は次の通りです.
+
+```fsharp
+let solve N Aa Ba Ca =
+  let Xa = Aa |> Array.sort
+  let Ya = Ba |> Array.sort
+  let Za = Ca |> Array.sort
+  let rec a i b = if i<N-1 && Xa.[i+1]<b then a (i+1) b else i
+  let rec c k b = if k<N-1 && Za.[k]<=b  then c (k+1) b else k
+  ((0L,0,0),Ya) ||> Array.fold (fun (acc0,i0,k0) b ->
+    let i = a i0 b
+    let k = c k0 b
+    let acc = if Xa.[i]<b && b<Za.[k] then acc0 + (int64 (i+1) * int64(N-k)) else acc0
+    (acc,i,k)) |> fun (acc,_,_) -> acc
+
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int64
+let Ba = stdin.ReadLine().Split() |> Array.map int64
+let Ca = stdin.ReadLine().Split() |> Array.map int64
+solve N Aa Ba Ca |> stdout.WriteLine
+```
+
+コードをもっと短くしたければ次のように読み込み時点でソートできます.
+
+```
+let Aa = stdin.ReadLine().Split() |> Array.map int64 |> Array.sort
+let Ba = stdin.ReadLine().Split() |> Array.map int64 |> Array.sort
+let Ca = stdin.ReadLine().Split() |> Array.map int64 |> Array.sort
+```

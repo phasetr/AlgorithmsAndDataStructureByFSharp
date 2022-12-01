@@ -1,0 +1,298 @@
+* 競技プログラミングのためのF#入門
+- created: 2022/11/28
+** サンプルコード
+ごちゃごちゃと説明を読むよりもコードをさっと見たい人も多いでしょう.
+データ構造とアルゴリズム,
+さらには私の競プロのコードを集めた[AlgorithmsAndDataStructureByFSharp](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp)を参考にしてください.
+特に次の2ファイルが役に立つでしょう.
+
+- [Arithmetics.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Arithmetics.fsx)
+    - 競プロ用の`mod`つき階乗・順列・組み合わせの例を収録している.
+- [Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Reference.fsx)
+    - 基本は[公式リファレンス](https://fsharp.github.io/fsharp-core-docs/reference/)の参照用まとめ.
+    - サンプルが即実行できるように一緒に載せている.
+    - 処理したい内容から日本語で検索しやすいように日本語も添えている.
+    - Haskellとは関数名が違う場合にその情報を添えている.
+    - Haskellにある便利関数がない場合はその実装を載せている.
+
+基本的に収録しているF#コードのインデントは標準の`4`ではなく`2`です.
+** C#との相互運用
+`.NET`の資産が使えます.
+F#との相性は必ずしもよくないものの,
+入門レベルでも`.NET`の破壊的な`Queue`はよく使います.
+F#標準の非破壊的な`Queue`はないようです.
+** F#開発環境構築
+- インストール関連はメンテナンスが大変なため省略します.
+  公式情報を参照してください.
+- インストールが面倒なら[Try F#](https://try.fsharp.org/)があります.
+- Microsoft製なのもありVSCode+ionideがお勧めです.
+    - 私はお気に入りエディタがEmacsだからEmacsで書いています.
+      特に勧めません.
+- 拡張子`fsx`でF#をスクリプト言語のように書いて使えます.
+    - [参考: 私のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder)中のコード
+    - 例えば具体的には[ABC042/B_fs_01.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/AtCoder/ABC042/B_fs_01.fsx)
+    - 2022/11時点で私は`fsx`でしかF#のプログラムを書いた経験がありません.
+- `fsx`+REPLを使うと気持ちよく書けます.
+** F#入門
+まずは命令型的なコードの直移植に役立つ要素から解説し,
+関数プログラミング的な最小限の解説をします.
+競技プログラミングの実コードが大量にあるため例はほぼ割愛します.
+*** 一般的な特徴
+- cannorinさんの[F#を知ってほしい](https://qiita.com/cannorin/items/59d79cc9a3b64c761cd4)を読んでください.
+*** (可変な)変数定義
+- (不変な)変数は`let a = 1`のように`let`で定義します.
+- 可変な変数は`let mutable a = 1`と`mutable`をつけて宣言します.
+- 可変な変数`<-`を使って`a <- 2`で書き換えられます.
+*** `for`文
+- ScalaやKotlinと違い,
+  F#で`for`は式でなく文です.
+- `0`から`10`までカウントアップのループを作るには次のように書きます.
+
+```
+for i in 0..10 do
+  pritfn "%A" i
+```
+
+- 逆にカウントダウンは次のように書きます.
+
+```
+for i in 10..(-1)..0 do
+  printfn "%A" i
+```
+*** データ構造は配列を例にする
+- F#にも配列・リスト・辞書・集合・キューなどのデータ構造があります.
+- `.NET`標準・共用の場合もあればF#独自の場合もあります.
+- いちいち全て挙げていては煩雑なため以下の説明では配列で通します.
+*** 配列リテラル
+- `[|1;2;3|]`のように書きます.
+    - ちなみにリストは`[1;2;3]`です.
+- 配列の区切り文字はOCamlと同じくセミコロン`;`です.
+- `[|1..10|]`と書くと連番で生成します.
+- `[|1..2..9|]`と書くと`2`刻みの配列を生成します.
+*** 配列の参照
+- 配列の各要素は`a.[i]`で取れます.
+- Pythonでの`a[i]`などと違ってドット(`.`)が必要です.
+- OCamlの丸括弧流`a.(i)`とも違います.
+- ちなみにHaskellではデータ型に応じて`a !! i`や`a ! i`と`!`演算子を使います.
+*** `for`の二つの役割: 新たな配列作成・結果の積み上げ
+- 競技プログラミングでは配列の処理が重要です.
+- 配列処理用の代表的な関数は`map`と`fold`です.
+- これらの違いを考えるには`for`の使い方を考え直す必要があります.
+- `for`の典型的な使い方は次の二つです.
+    - ある配列から新たな配列を作る: `map`系の処理.
+        - 例: 配列の各要素を二倍にする.
+    - ある配列から新たな値を作る: `fold`系の処理.
+        - 例: `int`の配列の和を取る.
+- 既に説明を書いて添えたように,
+  上記の二通りの意図・目的で`map`と`fold`を使い分けます.
+- 以下`map`と`fold`を便利に使うためにいくつか準備します.
+*** 関数の定義
+- 変数と同じく,
+  次のように`let`で定義します.
+
+```fsharp
+#r "nuget: FsUnit"
+open FsUnit
+
+let f x y = x + y
+f 2 3 |> should equal 5
+```
+
+- 引数が複数ある場合,
+  CやPythonなどと違ってカンマ区切りではなくスペース区切りで書きます.
+- 無名関数は`fun x y -> x + y`のように定義できます.
+- 無名関数も変数に束縛できます.
+
+```
+#r "nuget: FsUnit"
+open FsUnit
+
+let f = fun x y -> x + y
+f 2 3 |> should equal 5
+```
+
+- 再帰関数を定義するときは`let rec f x`のように`rec`キーワードが必要です.
+*** 関数の部分適用
+- F#やHaskellをはじめとしたいわゆる関数型言語では関数の部分適用があります.
+- 有名な例は次の例です.
+
+```
+#r "nuget: FsUnit"
+open FsUnit
+
+let plus x y = x + y
+let plus2 x = plus 2 x
+plus2 3 |> should equal 5
+```
+
+- 例えばPythonでは関数が第一級のオブジェクトであるため,
+  返り値として関数を返せます.
+- F#も同じで関数の返り値として関数が返せます.
+*** パイプライン演算子`|>`
+- F#の特徴的な要素です.
+- 例えばHaskellでも同じ役割の`Data.Functor.&`があるものの,
+  ほとんど見かけません.
+- これを多用するのが**F# way**です.
+- Unixコマンドに慣れているならまさにUnixのパイプラインのように扱えます.
+- オブジェクト指向系の言語に慣れているなら,
+  とりあえずはメソッドチェーンのように思えばいいでしょう.
+- 例はこれから`map`と`fold`の中で取り上げます.
+- [実際のコード](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder)も参照してください.
+- 次のように考えるとF#のプログラムを書きやすいはずです.
+    - 基礎のデータを用意する.
+    - 自作コマンドのように書き捨ての関数(無名関数)を作る.
+    - `Array.map`や`Array.fold`に自作コマンドを部分適用させて処理をつなげる.
+*** `map`
+- まずは`map`を取り上げます.
+- 配列の全ての要素を二倍にする簡単な例は次のように書けます.
+
+```
+#r "nuget: FsUnit"
+open FsUnit
+
+[|1..5|] |> Array.map (fun i -> i*2)
+|> should equal [|2;4;6;8;10|]
+```
+
+- もっとシンプルに次のようにも書けます.
+
+```
+#r "nuget: FsUnit"
+open FsUnit
+
+[|1..5|] |> Array.map ((*) 2)
+|> should equal [|2;4;6;8;10|]
+```
+
+- 一般に演算子を括弧でくくると関数化できるため,
+  それを使って表記を簡潔にしています.
+- ここでまさにパイプライン・部分適用が出てきます.
+    - 元データが配列`[|1..5|]`
+    - 各要素を二倍する関数として`fun x -> x*2`
+    - 全体に適用するのが`Array.map`
+- これがF#スタイル, ひいては関数プログラミングの基本的な構造です.
+- 部分適用は次の通りです.
+    - `Array.map`: `('T -> 'U) -> 'T array -> 'U array`
+    - `Array.map ((*) 2)`: `'T array -> 'U array`
+- まさに配列を新たな配列に変換する関数ができています.
+- これで`map`と自作コマンドとしての無名関数の組み合わせ(部分適用)でデータを処理するフローができました.
+*** `fold`
+- `fold`の典型例は配列の総和です.
+
+```fsharp
+[|1..3|] |> Array.fold (fun acc i -> acc + i) 0
+|> should equal 6
+```
+
+- `Array.fold`は次の構造を持ちます.
+    - 型: `('State -> 'T -> 'State ) -> 'State -> 'T array -> 'State`
+    - 第一引数: 個々の要素を処理する関数
+    - 第二引数: 初期値
+    - 第三引数: 元データの配列
+- つまり先のコードは元データの`[|1..3|]`に対して,
+  型`'T array -> 'State`を持つ関数`Array.fold (fun acc i -> acc + i) 0`を作用させています.
+- 初期値の`'State`が遠くに`0`と書かれているとわかりにくいため,
+  F#では次のようにも書けます.
+
+```fsharp
+(0,[|1..3|]) ||> Array.fold (fun acc i -> acc + i)
+|> should equal 6
+```
+
+- `Array.fold`の前の演算子が`||>`でパイプライン`|`が二本になっています.
+- これも慣れると便利です.
+- ちなみにF#には配列の和を取る関数として`Array.sum`があるため,
+  上の処理は素直に`Array.sum [|1..3|]`で十分です.
+- もう一つ, 初期値として配列の先頭の値を取りたい場合には`Array.reduce`があります.
+
+```fsharp
+#r "nuget: FsUnit"
+open FsUnit
+
+[|1..3|] |> Array.reduce (+) |> should equal 6
+```
+*** 配列処理関数の最後の引数は配列
+- 部分適用で関数をつなげて処理を書きやすくするための大事な特徴です.
+- これに気をつければ部分適用でパイプライン処理がつなげられます.
+- ただし`Array.foldBack`のような重要な例外があります.
+    - OCamlの`fold_right`と同じ引数の順番です.
+    - Haskellの`foldr`とは違います.
+    - Haskellコードを読むとき・参考にするときには注意してください.
+*** 再帰関数
+- いわゆる関数型言語で真っ先に取り上げられるテーマです.
+- その一方で実際のプログラムでそこまで使われないとも言われる要素です.
+- 実際のプログラムで直接的に再帰がそこまで使われない理由は簡単で,
+  `map`や`fold`を使うからです.
+- そして`map`や`fold`で書ける処理は再帰でも書けます.
+- むしろ`map`や`fold`はパイプライン演算子・部分適用とセットにして処理全体を書きやすくするための再帰の構文糖衣と思うといいでしょう.
+- もちろん再帰でないと書けない・再帰の方が書きやすい処理もあります.
+    - 例えば`Seq`で無限リストを作って処理を回しでもしない限り,
+      無限ループは再帰でないと書けません.
+- 逆に言えば`map`や`fold`には再帰の強さを制限して無限ループのような嫌な振る舞いをおさえる役割もあります.
+- 再帰関数自体は他の言語にもある概念で,
+  競技プログラミングでも良く使われる要素でもあるため,
+  これ以上は詳しくは説明しません.
+*** `return`
+- RubyやScalaと同じくF#は最後に評価した式を返すため`return`は必要ありません.
+- F#の`return`はコンピュテーション式の中で独自の意味を持つため,
+  下手に`return`を使うとエラーが出ます.
+*** その他の配列処理
+- 個別のコードで確認する方が理解もしやすいため,
+  ここでは最小限の要素だけ説明します.
+- 公式のリファレンスや,
+  それを実行・参照しやすくまとめた[Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/References.fsx)も参考にしてください.
+- 配列中の不要な要素を削りたい: `filter`関数.
+- ある基準をもとにグループ化したい: `groupBy`関数
+- 和を取りたい: `sum`または`sumBy`関数
+- ある要素を含むか知りたい: `contains`関数
+- `i`番目の要素を取得したい: `get`関数または`a.[i]`
+** 入出力の基礎
+*** 注意
+私は以下のテンプレートを使っています.
+注意を箇条書きにします.
+
+- テンプレートそのままではエディタのエラーが出ます.
+  使うたびに必要なところだけ見繕って削ってください.
+- 競技プログラミングでは`int`の範囲でおさまらない処理が多いため,
+  `int64`を基本にするのが無難です.
+- コードの確認用に簡単なテストを実行できるようにしていて,
+  最初の`#r "nuget: FsUnit"`と最後の`should equal`はテストライブラリの読み込みと実行です.
+  提出用コードには含めません.
+
+入門レベルの入出力なら下記コードの多少のバリエーションでまかなえます.
+私の勉強が進んでもっと凝った入出力テンプレートが必要になってきたら追記・修正します.
+*** 記号選択
+- AtCoderの問題文でよく大文字が出てくるため,
+  F#の流儀よりもAtCoderの文章との対応を重視して`N`や`M`を使っています.
+- リストは`Xs`, 配列は`array`から`Xa`, シーケンスは`Xq`のように書きます.
+  リストに`xs`をあてるのは少なくともHaskellでは標準的な記法で,
+  それを採用しています.
+  そしてF#は`as`が予約語で自由に使えないため,
+  変数名の先頭を大文字にしているのは変数名`As`を使いやすくするための処置でもあります.
+*** テンプレート
+```fsharp
+#r "nuget: FsUnit"
+open FsUnit
+
+System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__
+
+let solve Xa =
+  let MOD = 1_000_000_007L
+  System.Int32.MaxValue
+  System.Int64.MaxValue
+  1
+
+let N = stdin.ReadLine() |> int64
+let M = stdin.ReadLine() |> bigint.Parse
+let D,X = stdin.ReadLine().Split() |> Array.map int64 |> (fun x -> x.[0],x.[1])
+let Xa = stdin.ReadLine().Split() |> Array.map int64
+let Aa = Array.init N (stdin.ReadLine() |> int64)
+let Aa = Array.init N (fun _ -> stdin.ReadLine().Split() |> Array.map int64 |> fun x -> x.[0],x.[1])
+let Alls = Console.ReadLine() |> Seq.initInfinite |> Seq.takeWhile ((<>) null)
+let S = stdin.ReadLine()
+solve Xa |> Array.map string |> String.concat " " |> stdout.WriteLine
+solve Xa |> Array.iter stdout.WriteLine
+solve Xa |> stdout.WriteLine
+
+solve Aa |> should equal 1
+```
