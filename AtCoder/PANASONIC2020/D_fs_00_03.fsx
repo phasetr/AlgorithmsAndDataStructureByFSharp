@@ -6,10 +6,10 @@ open FsUnit
 let solve N =
   let succ (c:char) = int c |> (+) 1 |> char
   let m xs = List.max xs |> succ
-  let rec frec n =
-    if n=1 then [['a']]
-    else frec (n-1) |> List.collect (fun xs -> ['a'..(m xs)] |> List.map (fun c -> c::xs))
-  frec N |> List.map (List.rev >> System.String.Concat)
+  let rec frec n acc =
+    if n=1 then acc
+    else acc |> List.collect (fun xs -> ['a'..(m xs)] |> List.map (fun c -> c::xs)) |> frec (n-1)
+  frec N [['a']] |> List.map (List.rev >> System.String.Concat)
 
 let N = stdin.ReadLine() |> int
 solve N |> List.iter stdout.WriteLine
