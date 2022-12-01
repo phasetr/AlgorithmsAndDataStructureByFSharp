@@ -1,0 +1,100 @@
+* 71 C - Linear Approximation
+- created: 2022-12-02
+- [公式ページ, ABC 077 C - Snuke Festival](https://atcoder.jp/contests/abc102/tasks/arc100_a)
+- [公式解説](https://atcoder.jp/contests/abc102/editorial), [PDF](https://img.atcoder.jp/arc100/editorial.pdf)
+
+** 解説
+- [下記方針に基づいた最終実装例](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/AtCoder/ABC102/C_fs_00.fsx)
+
+公式解説通り入力`Aa`をシフトした配列を`Ba`とします.
+解説の便宜のため`Ba`をソートした配列を`Ca`としましょう.
+
+公式解説通りに実装すれば問題ありません.
+他の人のコードを見ていると中央値の扱いにぶれがあるようです.
+単に`Ba.[N/2]`だけとしているコードもあれば,
+偶奇でわけたコードもあります.
+
+ちなみに私はさらに違う処理にしました.
+選ぶべき`b`が整数でなければならないため,
+`N`が奇数のときは`Ca.[N/2]`,
+`N`が偶数のときは`Ca.[N/2]`と`Ca.{N/2-1}`を中央値の候補としています.
+もちろん`N`が偶数のときは二つの値を計算して小さい方を取ります.
+
+どう書くとすっきりするかは人によるものの,
+私は中央値の候補を配列にして処理しました.
+具体的には次のように中央値の候補を作っています.
+
+```fsharp
+  let Ba = Aa |> Array.mapi (fun i a -> a - (int64 (i+1)))
+  let Ma = Ba |> Array.sort |> fun Ba -> if N%2=1 then [|Ba.[N/2]|] else [|Ba.[N/2-1];Ba.[N/2]|]
+```
+
+最終的な悲しさの最小値は中央値の配列`Ma`から次のように計算しています.
+
+```fsharp
+  Ma |> Array.map (fun b -> Ba |> Array.sumBy (fun x -> abs(x-b))) |> Array.min
+```
+
+よほど複雑な処理をかませる場合は適切な対処が必要ですが,
+`Array.map f |> Array.sum`は`Array.sumBy`で書くとすっきりします.
+
+私がはまり倒したため念のため書いておきます.
+次のように書くと`Ma`の値を取ってしまい正しい悲しさの最小値が得られません.
+
+```fsharp
+  Ma |> Array.minBy (fun b -> Ba |> Array.sumBy (fun x -> abs(x-b)))
+```
+** おまけ
+次の二つのコードの結果が面白いです.
+
+- <https://atcoder.jp/contests/abc102/submissions/2783376>
+- 言語: F# (Mono 4.0)
+- 実行時間: 207 ms
+- メモリ: 35328 KB
+
+```fsharp
+let n = int (stdin.ReadLine())
+let a = stdin.ReadLine().Split() |> Array.mapi (fun i x -> int64 x - int64 i - 1L) |> Array.sort
+let b = if n % 2 = 0 then (a.[n / 2] + a.[n / 2 - 1]) / 2L else a.[n / 2]
+printfn "%d" (Array.sumBy (fun x -> abs (x - b)) a)
+```
+
+- <https://atcoder.jp/contests/abc102/submissions/2783237>
+- 言語: F# (Mono 4.0)
+- 実行時間: 207 ms
+- メモリ: 31932 KB
+
+```fsharp
+let n = int (stdin.ReadLine())
+let a = stdin.ReadLine().Split() |> Array.mapi (fun i x -> int64 x - int64 i + 1L) |> Array.sort
+let b = if n % 2 = 0 then (a.[n / 2] + a.[n / 2 - 1]) / 2L else a.[n / 2]
+printfn "%d" (Array.fold (fun (l : int64) k -> l + abs (k - b)) 0L a)
+```
+
+違うのは最後の和を取る部分で`sumBy`なのか`fold`かです.
+実行時間は変わらないものの消費メモリが一割違います.
+少なくとも`Mono 4.0`でメモリ効率を考えるなら`fold`の方がよいようです.
+
+そしてさらに私の提出コードも見てみましょう.
+
+- <https://atcoder.jp/contests/abc102/submissions/36920080>
+- 言語: F# (.NET Core 3.1.201)
+- 実行時間: 154 ms
+- メモリ: 49092 KB
+
+```fsharp
+let solve N Aa =
+  let Ca = Aa |> Array.mapi (fun i a -> a - (int64 (i+1)))
+  let Ba = Ca |> Array.sort |> fun Ba -> if N%2=1 then [|Ba.[N/2]|] else [|Ba.[N/2-1];Ba.[N/2]|]
+  Ba |> Array.map (fun b -> Ca |> Array.sumBy (fun x -> abs(x-b))) |> Array.min
+
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int64
+solve N Aa |> stdout.WriteLine
+```
+
+偶数項のとき和を二回取っているため明らかにこちらの方が遅いはずですが,
+`Mono 4.0`よりも高速です.
+[Mono 4.0のリリースが2015年](https://www.mono-project.com/docs/about-mono/releases/4.0.0/),
+[.NET core 3.1.201のリリースが2021年](https://versionsof.net/core/3.1/)で後者の方が新しいため,
+処理系の高速化のおかげでしょう.

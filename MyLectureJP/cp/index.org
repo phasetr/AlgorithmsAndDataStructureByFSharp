@@ -1,5 +1,6 @@
 * 競技プログラミング
 - [公開用サイトへのリンク](https://phasetr.com/archive/fc/pg/cp/)
+- [issue・プルリク用のGitHubへのリンク](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)
 ** 配下の記事一覧
 - [F#による関数競技プログラミングへの道](byfs/index.md)
 ** 学習メモ: 特に初学時

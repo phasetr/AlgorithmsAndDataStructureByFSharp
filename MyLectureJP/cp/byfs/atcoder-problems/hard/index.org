@@ -1,3 +1,5 @@
 * Hard
 - [68 D - String Equivalence](068/index.md)
 - [69 C - Align](069/index.md)
+- [70 C - Snuke Festival](070/index.md)
+- [71 C - Linear Approximation](071/index.md)
