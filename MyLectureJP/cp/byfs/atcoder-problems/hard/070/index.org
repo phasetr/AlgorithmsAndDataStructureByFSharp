@@ -1,8 +1,9 @@
 * 70 C - Snuke Festival
 - created: 2022-12-01
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [公式ページ, ABC 077 C - Snuke Festival](https://atcoder.jp/contests/abc077/tasks/arc084_a)
 - [公式解説](https://atcoder.jp/contests/abc077/editorial), [PDF](https://img.atcoder.jp/arc084/editorial.pdf)
-
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 ** 自分用の記録
 公式解説では二分探索を提案しています.
 それぞれ次のような解答例があります.

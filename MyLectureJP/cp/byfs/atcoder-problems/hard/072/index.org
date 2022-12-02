@@ -1,0 +1,137 @@
+* 72 C - 4/N
+- created: 2022-12-02 fri
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [公式ページ, TENKA1 2017 C - 4/N](https://atcoder.jp/contests/tenka1-2017/tasks/tenka1_2017_c)
+- [公式解説](https://atcoder.jp/contests/tenka1-2017/editorial), [PDF](https://img.atcoder.jp/tenka1-2017/editorial.pdf)
+** 数学から決まる議論
+特に小さい`N`に対して大学受験でもよくある問題です.
+数学の話でもあって数学系学習と並行した議論を目指す私のスタンスからは大事なため,
+公式解説の議論を簡単にくり返します.
+
+対称性によってどれから議論してもよいためまずは`h`から考えましょう.
+必要条件からの絞り込みで`h`を小さい方から増やして具体的に確認し続ければよく,
+まさにアルゴリズミックに次のように議論を進めます.
+
+- `h=1`として`4/N - 1`を計算する.
+    - これは`1/n+1/k`に等しいはずだから再び`n=1`として左辺に移行する.
+        - `4/N-1-1`と`1/k`が等しくなる整数`k`が取れるか確認する.
+    - 取れなければ`n=2`で確認する.
+        - `4/N-1/2-1`と`1/k`が等しくなる整数`k`が取れるか確認する.
+    - 取れなければ`n=3`で確認する.
+        - `4/N-1/2-1`と`1/k`が等しくなる整数`k`が取れるか確認する.
+    - ...
+    - 順次`n=h`まで確認する.
+- `h=2`として`4/N-1/2`を計算する.
+    - ...
+
+と続けます.
+原理的にこれしか議論しようはないものの,
+時間内に解けるかが懸念点です.
+そして問題文で`h,n,w≤3500`が保証されているため,
+この範囲内でけりが着くはずと思って全探索します.
+もちろん3つ全てでループすると`TLE`するため,
+2つ決まれば3つ目は自動的に決まる性質を使って二重ループで片付けます.
+** 解答1: 素直なループ
+1つ求めればよいため,
+1つ決まったら計算を停止させます.
+命令型的な`for`文と`break`を使えればよいのですが,
+残念ながら`F#`には`break`がないようで,
+使うなら`while`とフラグ管理です.
+
+ただし命令型として素直な`for`と`break`がないだけです.
+Haskellの遅延リスト・遅延評価と同じく,
+遅延評価してくれる`seq`を使いましょう.
+次のような適切な書き方をすれば明示的な`break`が不要です.
+
+```fsharp
+  seq {
+    for h in 1L..N do
+      for k in 1L..M do
+        if someJudge then yield value
+  } |> Seq.head
+```
+
+`for h in 1L..N do`がカウントアップの`for`で,
+二重ループだから二つ出てきます.
+条件を満たした値を取る部分が`if b then yield value`です.
+この場合は`yield`キーワードはなくてもよいようですが手癖で書いています.
+詳しくは公式の[シーケンス](https://learn.microsoft.com/ja-jp/dotnet/fsharp/language-reference/sequences)を見てください.
+`seq`とコンピュテーション式による見慣れない構文には慣れるしかありません.
+
+`seq {...}`でいわば遅延リストを作り,
+その先頭の値を`Seq.head`で取れば必要な計算だけで処理が終わります.
+Schemeのように有理数を処理してくれる言語もありますが,
+F#標準で有理数はないため整数の範囲でおさまるように標準的な対処を取ります.
+適当なところで打ち切った数による積で構成する三つ目の整数が`int`に入る保証がないため,
+`int64`で計算する点に注意すれば,
+あとは特に問題ないでしょう.
+結論としては次のようなコードで通ります.
+
+```fsharp
+let solve N =
+  seq {
+    for h in 1L..3500L do
+      for k in 1L..h do
+        let d = 4L*h*k-N*(k+h)
+        if d>0L && (N*h*k)%d=0L then yield (h,k,(N*h*k)/d)
+  } |> Seq.head |> fun (h,k,w) -> [|h;k;w|]
+
+let N = stdin.ReadLine() |> int64
+solve N |> Array.map string |> String.concat " " |> stdout.WriteLine
+```
+
+出力処理は何となく既存の出力処理を流用するために配列にしました.
+タプルのまま次のようにも書けます.
+
+```fsharp
+solve N |> fun (h,n,k) -> printfn "%d %d %d" h n k
+```
+** 解説2: 再帰
+[競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)で無限ループを含めてループは再帰で書けると書きました.
+実際ここでも再帰で書けます.
+[提出結果](https://atcoder.jp/contests/tenka1-2017/submissions/me)を見ると再帰の方がメモリを食っています.
+2022-12時点では効率を求めるよりも通るコードを書く,
+さらには基本的なアルゴリズムの教育用コンテンツを作る方に主眼があるため,
+別解として再帰によるコードも紹介します.
+
+`for`のコードを素直に書き換えればよく,
+結論としては次のように書けます.
+
+```fsharp
+let solve N =
+  let rec frec h k =
+    let d = 4L*h*k - N*(k+h)
+    if d>0L && (N*h*k)%d=0L then (h,k,(N*h*k)/d)
+    elif k<h then frec h (k+1L)
+    else frec (h+1L) 1L
+  frec 1L 1L
+
+let N = stdin.ReadLine() |> int64
+solve N |> fun (h,k,w) -> printfn "%d %d %d" h k w
+```
+
+ポイントはもちろん`if`の条件分岐です.
+最初に条件をみたして値を返すか(停止するか)判定し,
+停止しなければ`h`か`k`を適切にカウントアップします.
+ここでは上記の`seq`+ループアルゴリズムに合わせました.
+
+コードが読みにくくなるためここでは勧めませんが,
+例えば次のようにまとめて書けます.
+
+
+```fsharp
+let solve N =
+  let rec frec h k = let d = 4L*h*k - N*(k+h) in if d>0L && (N*h*k)%d=0L then (h,k,(N*h*k)/d) elif k<h then frec h (k+1L) else frec (h+1L) 1L
+  frec 1L 1L
+
+stdin.ReadLine() |> int64 |> solve |> fun (h,k,w) -> printfn "%d %d %d" h k w
+```
+
+さらに次のようにも書けます.
+
+```fsharp
+let solve N = let rec frec h k = let d = 4L*h*k - N*(k+h) in if d>0L && (N*h*k)%d=0L then (h,k,(N*h*k)/d) elif k<h then frec h (k+1L) else frec (h+1L) 1L in frec 1L 1L
+stdin.ReadLine() |> int64 |> solve |> fun (h,k,w) -> printfn "%d %d %d" h k w
+```
+
+`let ... in`はOCamlのコードでよく出てきます.

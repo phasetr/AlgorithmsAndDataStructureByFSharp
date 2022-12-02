@@ -1,8 +1,8 @@
 * 71 C - Linear Approximation
 - created: 2022-12-02
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [公式ページ, ABC 077 C - Snuke Festival](https://atcoder.jp/contests/abc102/tasks/arc100_a)
 - [公式解説](https://atcoder.jp/contests/abc102/editorial), [PDF](https://img.atcoder.jp/arc100/editorial.pdf)
-
 ** 解説
 - [下記方針に基づいた最終実装例](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/AtCoder/ABC102/C_fs_00.fsx)
 
