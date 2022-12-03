@@ -1,6 +1,8 @@
 * 69 C - Align
 - created: 2022-11-30
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/TENKA1-2018)
 - [公式ページ, Tenka1 Programmer Contest C - Align](https://atcoder.jp/contests/tenka1-2018/tasks/tenka1_2018_c)
 - [公式解説](https://atcoder.jp/contests/tenka1-2018/editorial), [PDF](https://img.atcoder.jp/tenka1-2018/editorial.pdf)
 ** 解説

@@ -1035,14 +1035,14 @@ module Function =
 
   @"CPS変換: See CpsTr.fsx"
 
-  @"memoized recursion, メモ化再帰"
+  @"memoized recursion, メモ化再帰, System.Collections.Generic.Dictionary版"
   module MemoRec =
     let memorec f =
-      let memo = System.Collections.Generic.Dictionary<_, _>()
+      let memo = System.Collections.Generic.Dictionary<_,_>()
       let rec frec j =
         match memo.TryGetValue j with
-        | exist, value when exist -> value
-        | _ -> let value = f frec j in memo.Add(j, value); value
+          | exist, value when exist -> value
+          | _ -> let value = f frec j in memo.Add(j, value); value
       frec
     let fact frec i =
       if i = 1L then 1L
