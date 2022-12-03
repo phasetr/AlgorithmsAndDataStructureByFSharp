@@ -1,0 +1,35 @@
+* 74 D - Harlequin
+- created: 2022-12-03 sat
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/CADDI2018)
+- [公式ページ, CADDI 2018](https://atcoder.jp/contests/caddi2018b/tasks/caddi2018_b)
+- [公式解説](https://atcoder.jp/contests/caddi2018b/editorial), [PDF](https://img.atcoder.jp/caddi2018/editorial.pdf)
+** 解説
+特記事項はなく, 解説通り次のように書けばいいでしょう.
+
+```fsharp
+let solve = Array.forall (fun x -> x%2=0) >> fun b -> if b then "second" else "first"
+
+let N = stdin.ReadLine() |> int
+let Aa = Array.init N (fun _ -> stdin.ReadLine() |> int)
+solve Aa |> stdout.WriteLine
+```
+
+関数の合成として`solve`の引数を省略して書いています.
+関数の合成は`>>`です.
+数学での関数合成は$f \circ g$で$g$を作用させてから$f$を作用させます.
+F#でこれを書きたいなら$f << g$です.
+パイプラインの発想と同じく左から右に流して書くには`g >> f`です.
+
+上記の`solve`は引数をつけると次のように書けます.
+
+```fsharp
+let solve Aa = Aa |> Array.forall (fun x -> x%2=0) |> fun b -> if b then "second" else "first"
+```
+
+「全て偶数」の代わりに「奇数が存在する」と書きたければ次のようにも書けます.
+
+```fsharp
+let solve = Array.exists (fun x -> x%2=1) >> fun b -> if b then "first" else "second"
+```

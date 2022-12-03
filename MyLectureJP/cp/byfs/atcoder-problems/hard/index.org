@@ -4,4 +4,5 @@
 - [70 C - Snuke Festival](070/index.md)
 - [71 C - Linear Approximation](071/index.md)
 - [72 C - 4/N](072/index.md)
-- [73 C - C - Strange Bank](073/index.md)
+- [73 C - Strange Bank](073/index.md)
+- [74 D - Harlequin](074/index.md)
