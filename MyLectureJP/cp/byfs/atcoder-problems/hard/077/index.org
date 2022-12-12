@@ -1,0 +1,25 @@
+* 77 A - 01 Matrix
+- created: 2022-12-12 mon
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/AGC038)
+- [公式ページ](https://atcoder.jp/contests/agc038/tasks/agc038_a)
+- [公式解説](https://atcoder.jp/contests/agc038/editorial)
+** 解説
+アルゴリズムを考えるのが大変なだけで,
+公式解説通りに素直に実装すればよいでしょう.
+
+F#の文字列連結は単純な`+`でよく,
+連続した文字からなる文字列は`String.init (W-A) (fun _ -> "1")`で作れます.
+`List.iter`や`for`文で順次`stdout.WriteLine`しても構いません.
+あえて文字列のリスト(や配列)を作りたければ,
+例えば次のような形で`B`行と`H-B`行分の文字列を生成すればいいでしょう.
+
+```fsharp
+let solve H W A B =
+  List.init B (fun _ -> String.init A (fun _ -> "0") + String.init (W-A) (fun _ -> "1"))
+  @ List.init (H-B) (fun _ -> String.init A (fun _ -> "1") + String.init (W-A) (fun _ -> "0"))
+```
+F#でのリストの連結は`List.append`または`@`演算子です.
+** TODO
+- 配列やシーケンスにしたときどれだけ速度が変わるか?
