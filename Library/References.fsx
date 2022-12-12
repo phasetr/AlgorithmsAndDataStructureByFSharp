@@ -1405,6 +1405,7 @@ module List =
 
   @"Haskell replicateM
   あるリストに含まれる全ての組み合わせが作れる.
+  特にベキ集合が作れる: filterMも参照するとよい.
   https://stackoverflow.com/questions/23657901/replicatem-equivalent-in-f
   https://atcoder.jp/contests/abc147/submissions/8885675
   以下の実装は全て「集合としては」同じ結果を生む"
@@ -2885,9 +2886,19 @@ module Sequence =
   @"Seq.where
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#where"
   [1;2;3;4] |> Seq.where (fun elm -> elm % 2 = 0) |> should equal [2;4]
-  @"Seq.windowed"
-  @"Seq.zip"
-  @"Seq.zip3"
+
+  @"Seq.windowed
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#windowed"
+  [1; 2; 3; 4; 5] |> Seq.windowed 3 |> should equal (seq [[|1; 2; 3|]; [|2; 3; 4|]; [|3; 4; 5|]])
+
+  @"Seq.zip
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#zip"
+  ([1;2], ["one";"two"]) ||> Seq.zip |> should equal (seq { (1, "one"); (2, "two") })
+
+  @"Seq.zip3
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#zip3"
+  ([1; 2],["one"; "two"],["I"; "II"]) |||> Seq.zip3
+  |> should equal (seq { (1, "one", "I"); (2, "two", "II") })
 
 module Set =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html"

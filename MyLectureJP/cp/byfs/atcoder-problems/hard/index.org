@@ -6,3 +6,5 @@
 - [72 C - 4/N](072/index.md)
 - [73 C - Strange Bank](073/index.md)
 - [74 D - Harlequin](074/index.md)
+- [75 D - Face Produces Unhappiness](075/index.md)
+- [76 C - たくさんの数式](076/index.md)
