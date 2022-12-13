@@ -1,0 +1,58 @@
+* 79 D Handstand
+- created: 2022-12-13 tue
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC124)
+- [公式ページ](https://atcoder.jp/contests/abc124/tasks/abc124_d)
+- [公式解説](https://atcoder.jp/contests/abc124/editorial)
+** 解説
+これも基本方針は公式解説です.
+自力実装ではまり倒したため,
+今回は[Pythonコード](https://atcoder.jp/contests/abc124/submissions/4981941)を参考にしました.
+
+まずは前後で文字が切り替わる番地を取得しましょう.
+シンプルなのは次のような`fold`処理です.
+
+```fsharp
+    ([0], [|0..N-2|])
+    ||> Array.fold (fun acc i -> if S.[i]=S.[i+1] then acc else (i+1)::acc)
+    |> List.rev |> List.toArray
+```
+
+公式解説の後半ではいくつかややこしい条件分岐処理があります.
+これをシンプルに処理するために番地に`N`を追加します.
+
+```fsharp
+  let Ia =
+    ([0], [|0..N-2|])
+    ||> Array.fold (fun acc i -> if S.[i]=S.[i+1] then acc else (i+1)::acc)
+    |> fun xs -> N::xs
+    |> List.rev |> List.toArray
+```
+
+これで公式解説で言う`i_k`を要素とする配列が作れました.
+あとは`X_k`の配列を作れば終わります.
+
+配列を作ってから`Array.max`を作っても構いません.
+ただ今回は添字に関する処理をしながら逐次最大値を計算していくだけで求める値が得られるため,
+はじめから`fold`を使って処理します.
+配列`Ia`は`N`を追加していていわば余計な項を含んでいます.
+このため添字に関してやや面倒な処理が必要です.
+具体的には次のように書きます.
+
+```fsharp
+  let l0 = Array.length Ia - 1
+  (0, [|0..l0-1|])
+  ||> Array.fold (fun acc i ->
+    let j = min (i+2*K + (int S.[Ia.[i]] - int '0')) l0
+    max acc (Ia.[j]-Ia.[i]))
+```
+
+`fold`は`Ia`自身ではなく`Ia`の添字の配列で回します.
+`N`の追加があるため`[|0..l0-1|]`とループは`Ia`の最後まで回らないようにします.
+ポイントは`j`の構成です.
+解説の`S_{i_k} = 0 or 1`での添字の変化は`int S.[Ia.[i]] - int '0'`で対応します.
+さらに「`k>r`なら`i_k=N+1`」の処理がまさに`min hoge l0`の部分です.
+これで添字を作れば`Ia.[j]`で必要な値が取れます.
+** TODO
+- [ユーザー解説](https://blog.hamayanhamayan.com/entry/2019/04/14/100439)の尺取り法実装

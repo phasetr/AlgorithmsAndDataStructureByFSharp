@@ -1257,7 +1257,7 @@ module List =
   @"List.groupBy
   注意: F#版groupByとHaskell版groupByは挙動が違う."
   module GroupBy =
-    @"F#のList.groupBy: !!注意!! Haskellとは違う
+    @"F#のList.groupBy: !!注意!! Haskellの`group`とは違う.
     Haskellのgroupは下記参照.
     https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#groupBy"
     [1;2;3;4;5;7;6;5;4;3] |> List.groupBy (fun x -> x)
@@ -1270,6 +1270,7 @@ module List =
       | x::xs as lst -> if p x then let (ys, zs) = span p xs in  (x :: ys, zs) else ([], lst)
 
     @"Haskell Data.List.group
+    下記`span`なしの実装も参考にすること.
     http://hackage.haskell.org/package/base-4.14.0.0/docs/Data-List.html#v:group
     https://hackage.haskell.org/package/base-4.16.1.0/docs/src/Data-OldList.html#group"
     let rec group: ('a -> 'a -> bool) -> list<'a> -> list<list<'a>> = fun p -> function
@@ -1301,21 +1302,25 @@ module List =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#init"
   List.init 4 (fun v -> v + 5) |> should equal [5;6;7;8]
 
-  @"Haskell init, not List.init
+  @"Haskell init, not List.init in F#
   https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:init"
   module InitHaskellPrelude =
+    @"競プロでは下記の一本化が楽"
     let rec init: list<'a> -> list<'a> = function
-    | [] -> failwith "Undefined"
-    | [x] -> []
-    | x::xs -> x :: init xs
+      | [] -> failwith "Undefined"
+      | [x] -> []
+      | x::xs -> x :: init xs
+    init [1] |> should equal List.empty<int>
+    init [1;2;3;4] |> should equal [1;2;3]
+
+    let init xs = if List.length xs <= 1 then [] else xs.[0..(List.length xs-2)]
+    init ([]:list<int>) |> should equal List.empty<int>
     init [1] |> should equal List.empty<int>
     init [1;2;3;4] |> should equal [1;2;3]
 
   @"Haskell inits
   https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:inits"
-  let inits xs =
-    [ 0..(List.length xs) ]
-    |> List.map (fun i -> List.take i xs)
+  let inits xs = [ 0..(List.length xs) ] |> List.map (fun i -> List.take i xs)
   inits [1..3] |> should equal [[];[1];[1;2];[1;2;3]]
 
   @"Haskell isSomethingOf
@@ -1540,8 +1545,8 @@ module List =
   @"Haskell tails
   https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-List.html#v:tails"
   let rec tails: list<'a> -> list<list<'a>> = function
-  | [] -> [[]]
-  | x::xs -> (x::xs)::(tails xs)
+    | [] -> [[]]
+    | x::xs as all -> all::(tails xs)
   tails [1;2;3;4] |> should equal [[1;2;3;4];[2;3;4];[3;4];[4];[]]
 
   @"takeWhile: Haskell の takeWhile と同じ
@@ -2991,6 +2996,15 @@ module String =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-stringmodule.html
   @つき文字列: 逐語的文字列, verbatim string
   https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/strings#verbatim-strings"
+
+  @"ある文字列の長さ`k`以下の部分文字列を全て取得する.
+  cf. ベキ集合の生成.
+  https://atcoder.jp/contests/abc097/tasks/arc097_a"
+  module Substrings =
+    let substrings k (S:string) =
+      let n = S.Length - 1
+      [|0..n|] |> Array.collect (fun i -> [|i..(min n (i+K-1))|] |> Array.map (fun j -> S.[i..j]))
+    "aba" |> substrings 4 |> should equal [|"a";"ab";"aba";"b";"ba";"a"|]
 
   @"String.ToCharArray()メソッド.
   文字列を文字の配列にする."
