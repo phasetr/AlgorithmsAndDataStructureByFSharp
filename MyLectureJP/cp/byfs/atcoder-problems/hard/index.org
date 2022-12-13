@@ -11,3 +11,6 @@
 - [77 A - 01 Matrix](077/index.md)
 - [78 C - K-th Substring](078/index.md)
 - [79 D - Handstand](079/index.md)
+- [80 D - Remainder Reminder](080/index.md)
+- [81 C - Boxes and Candies](081/index.md)
+- [82 C - Different Strokes](082/index.md)
