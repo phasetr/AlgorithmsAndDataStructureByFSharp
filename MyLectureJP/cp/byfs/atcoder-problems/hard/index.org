@@ -14,3 +14,4 @@
 - [80 D - Remainder Reminder](080/index.md)
 - [81 C - Boxes and Candies](081/index.md)
 - [82 C - Different Strokes](082/index.md)
+- [83 A - Darker and Darker](083/index.md)

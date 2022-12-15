@@ -845,10 +845,6 @@ module Array2D =
   @"配列への変換"
   array2D [[1..2];[2..3]] |> Seq.cast<int> |> Seq.toArray |> should equal [|1;2;2;3|]
 
-  @"Array2D.create
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#create"
-  Array2D.create 2 3 1 |> should equal (array2D [[1;1;1];[1;1;1]])
-
   @"行または列だけ取る, slice.
   Array3D, Array4Dでも同じ.
   https://stackoverflow.com/questions/2366899/f-array2d-slices"
@@ -863,6 +859,22 @@ module Array2D =
     a.[1,0..] |> should equal [|11..20|]
     a.[0,*] |> should equal [|1..10|]
     a.[1,*] |> should equal [|11..20|]
+
+  @"Array2D.create
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#create"
+  Array2D.create 2 3 1 |> should equal (array2D [[1;1;1];[1;1;1]])
+
+  @"Array2D.init
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#inite"
+  Array2D.init 2 3 (fun i j -> i+j) |> should equal (array2D [[0;1;2];[1;2;3]])
+
+  @"Array2D.iter
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#iter"
+  array2D [[3;4];[13;14]] |> Array2D.iter (fun v -> printfn $"value = {v}")
+
+  @"Array2D.iteri
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#iteri"
+  array2D [[3;4];[13;14]] |> Array2D.iteri (fun i j v -> printfn $"value at ({i},{j}) = {v}")
 
   @"Array2D.length: Array2D.length1, Array2D.length2
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#length1"
@@ -2273,12 +2285,36 @@ module PriorityQueue =
   pq.Dequeue() |> should equal 0
 
 module Queue =
-  @".NET Queue
+  @".NET Queue, FIFO
   https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1?view=net-6.0"
   open System.Collections.Generic
 
   @"Queue.new"
+  open System.Collections.Generic
   let queue = Queue<int>()
+
+  @"Queue.Count, `q.Count <> 0`で空判定できる
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1.dequeue?view=net-6.0"
+  open System.Collections.Generic
+  let q = Queue<string>() in q.Enqueue("one"); q.Count |> should equal 1
+  let q = Queue<string>() in q.Enqueue("one"); q.Enqueue("two"); q.Count |> should equal 2
+
+  @"Queue.Dequeue
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1.dequeue?view=net-6.0"
+  open System.Collections.Generic
+  let q = Queue<string>() in q.Enqueue("one"); q.Dequeue() |> should equal "one"
+  let q = Queue<string>() in q.Enqueue("one"); q.Enqueue("two"); q.Dequeue() |> should equal "one"
+
+  @"Queue.Enqueue
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1.enqueue?view=net-6.0"
+  open System.Collections.Generic
+  let q = Queue<string>() in q.Enqueue("one"); q |> should equal (seq ["one"])
+  let q = Queue<string>() in q.Enqueue("one"); q.Enqueue("two"); q |> should equal (seq ["one";"two"])
+
+  @"Queue.Peek, 先頭の値を見るだけで取り出さない
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1.peek?view=net-6.0"
+  open System.Collections.Generic
+  let q = Queue<string>() in q.Enqueue("one"); q.Peek() |> should equal "one"
 
 module Random =
   let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
