@@ -387,17 +387,32 @@ module Arithmetics =
 module Bit =
   // https://midoliy.com/content/fsharp/text/operator/2_bit.html
   0xFF |> should equal 255
-  ~~~0xFF |> should equal -256
   0x80 |> should equal 128
+  @"bit単位の論理否定"
+  ~~~0xFF |> should equal -256
+  [|0..10|] |> Array.map (fun i -> ~~~i) |> should equal [|-1;-2;-3;-4;-5;-6;-7;-8;-9;-10;-11|]
+  @"bit論理積"
   0xFF ||| 0x80 |> should equal 255
+  [|0..10|] |> Array.map (fun i -> i ||| 1) |> should equal [|1;1;3;3;5;5;7;7;9;9;11|]
+  [|0..10|] |> Array.map (fun i -> i ||| 2) |> should equal [|2;3;2;3;6;7;6;7;10;11;10|]
+  [|0..10|] |> Array.map (fun i -> i ||| 3) |> should equal [|3;3;3;3;7;7;7;7;11;11;11|]
+  @"bit論理和"
   0xFF &&& 0x80 |> should equal 128
+  [|0..10|] |> Array.map (fun i -> i &&& 1) |> should equal [|0;1;0;1;0;1;0;1;0;1;0|]
+  [|0..10|] |> Array.map (fun i -> i &&& 2) |> should equal [|0;0;2;2;0;0;2;2;0;0;2|]
+  [|0..10|] |> Array.map (fun i -> i &&& 3) |> should equal [|0;1;2;3;0;1;2;3;0;1;2|]
+  @"bit排他的論理和"
   0xFF ^^^ 0x80 |> should equal 127
-  1 <<< 1 |> should equal 2
-  1 <<< 2 |> should equal 4
-  1 <<< 3 |> should equal 8
-  10 >>> 1 |> should equal 5
-  10 >>> 2 |> should equal 2
-  10 >>> 3 |> should equal 1
+  [|0..10|] |> Array.map (fun i -> i ^^^ 1) |> should equal [|1;0;3;2;5;4;7;6;9;8;11|]
+  [|0..10|] |> Array.map (fun i -> i ^^^ 2) |> should equal [|2;3;0;1;6;7;4;5;10;11;8|]
+  [|0..10|] |> Array.map (fun i -> i ^^^ 3) |> should equal [|3;2;1;0;7;6;5;4;11;10;9|]
+  @"右辺のbit数だけ左にシフト: 2倍される"
+  [|0..10|] |> Array.map (fun i -> 1 <<< i) |> should equal [|1;2;4;8;16;32;64;128;256;512;1024|]
+  [|0..10|] |> Array.map (fun i -> 3 <<< i) |> should equal [|3;6;12;24;48;96;192;384;768;1536;3072|]
+  @"右辺のbit数だけ右にシフト: 1/2される"
+  [|0..10|] |> Array.map (fun i -> 10 >>> i) |> should equal [|10;5;2;1;0;0;0;0;0;0;0|]
+  [|0..10|] |> Array.map (fun i -> 100 >>> i) |> should equal [|100;50;25;12;6;3;1;0;0;0;0|]
+  [|0..10|] |> Array.map (fun i -> 1024 >>> i) |> should equal [|1024;512;256;128;64;32;16;8;4;2;1|]
 
 module Combinatorics =
   module Factorial =
@@ -838,11 +853,11 @@ module Primes =
       ||> List.foldBack (fun a x -> let m = divisorSum a - a in if a<m && ((divisorSum m) - m = a) then (a,m)::x else x)
     amicableNumbers 220L |> should equal [(220L,284L)]
     amicableNumbers 284L |> should equal [(220L,284L)]
-    amicableNumbers 1500L |> should equal [(220L, 284L); (1184L, 1210L)]
-    amicableNumbers 3000L |> should equal [(220L, 284L); (1184L, 1210L); (2620L, 2924L)]
-    amicableNumbers 6000L |> should equal [(220L, 284L); (1184L, 1210L); (2620L, 2924L); (5020L, 5564L)]
-    amicableNumbers 7000L |> should equal [(220L, 284L); (1184L, 1210L); (2620L, 2924L); (5020L, 5564L); (6232L, 6368L)]
-    amicableNumbers 11000L |> should equal [(220L, 284L); (1184L, 1210L); (2620L, 2924L); (5020L, 5564L); (6232L, 6368L); (10744L, 10856L)]
+    amicableNumbers 1500L |> should equal [(220L, 284L);(1184L, 1210L)]
+    amicableNumbers 3000L |> should equal [(220L, 284L);(1184L, 1210L);(2620L, 2924L)]
+    amicableNumbers 6000L |> should equal [(220L, 284L);(1184L, 1210L);(2620L, 2924L);(5020L, 5564L)]
+    amicableNumbers 7000L |> should equal [(220L, 284L);(1184L, 1210L);(2620L, 2924L);(5020L, 5564L);(6232L, 6368L)]
+    amicableNumbers 11000L |> should equal [(220L, 284L);(1184L, 1210L);(2620L, 2924L);(5020L, 5564L);(6232L, 6368L);(10744L, 10856L)]
 
     @"自然数`n`の分割数を求める関数`partitionNumber n`
     動的計画法を使う.

@@ -107,7 +107,7 @@ module Array =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#blit"
   // Copy 4 elements from index 3 of array1 to index 5 of array2.
   let blit1 = [|1..10|]
-  let blit2: int [] = Array.zeroCreate 20
+  let blit2: int[] = Array.zeroCreate 20
   Array.blit blit1 3 blit2 5 4
   blit2 |> should equal [|0; 0; 0; 0; 0; 4; 5; 6; 7; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]
 
@@ -649,6 +649,10 @@ module Array =
   @"Array.sumBy
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sumBy"
   [|"aa";"bbb";"cc"|] |> Array.sumBy (fun s -> s.Length) |> should equal 7
+  @"配列中で条件をみたす要素の数を数えられる.
+  例えば`Aa |> Array.filter id |> Array.length`の代わりに`Array.sumBy`が使える."
+  [| false;true;true |] |> Array.filter id |> Array.length |> should equal 2
+  [| false;true;true |] |> Array.sumBy (fun b -> if b then 1 else 0) |> should equal 2
 
   @"Array.tail
   先頭の要素をなくした配列を得る.
