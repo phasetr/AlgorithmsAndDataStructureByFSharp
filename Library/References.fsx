@@ -300,7 +300,9 @@ module Array =
         | _ -> acc - 1
     (0, data1, data2) |||> Array.fold2 f |> should equal 1
 
-  @"Array.foldBack
+  @"Array.foldBack,
+  `Array.foldBack folder array state`
+  `folder : 'T -> 'State -> 'State`
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#foldBack"
   module FoldBack =
     type Count = { Positive: int; Negative: int; Text: string }

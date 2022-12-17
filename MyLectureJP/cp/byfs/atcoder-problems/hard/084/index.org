@@ -229,8 +229,8 @@ let solve N (Fa:int[][]) (Pa:int[][]) =
     if Array.exists id opn then max acc ((Ga, Pa) ||> Array.map2 (cal opn) |> Array.sum) else acc)
 ```
 *** 参考
-ちなみに`replicateM`や`filterM`を含め,
-いくつかリスト版の実装を[Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/References.fsx)に収録しています.
+`replicateM`や`filterM`などいくつかのアクションに対して,
+F#のリスト版の実装を[Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/References.fsx)に収録しています.
 ** 解説3: 解説2の実装のビットマスク化
 まず実装は次の通りです.
 
@@ -244,10 +244,10 @@ let solve N (Fa:int[][]) (Pa:int[][]) =
     else acc)
 ```
 
-まず`cal`を少し書き換えました.
-真偽値ではなく`0,1`のままで処理を進めているため,
+`cal`が少し書き換わります.
+`map2 >> sumBy`ではなく`fold2`で一気に和を計算しています.
+さらに真偽値ではなく`0,1`のままで処理を進めているため,
 `map2 (&)`の部分で`o=b && o=1`のような書き方が必要です.
-さらに`map2`してから`sum`ではなく`fold2`で一気に和まで計算しました.
 
 あとのポイントはビットマスクからの`opn`の手動生成です.
 私はこれでようやくビットマスクで何をやっているか理解できました.

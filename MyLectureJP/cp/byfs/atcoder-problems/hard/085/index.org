@@ -1,0 +1,68 @@
+* 85 C - Pyramid
+- created: 2022-12-17 sat
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC112)
+- [公式ページ](https://atcoder.jp/contests/abc112/tasks/abc112_c)
+** 解説
+公式解説通りに素直に実装します.
+*** 入出力
+```fsharp
+let N = stdin.ReadLine() |> int
+let Aa = Array.init N (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1],x.[2])
+solve Aa |> stdout.WriteLine
+```
+*** 補助関数
+`l1`距離を測る関数`l1`を定義します.
+
+```fsharp
+  let l1 (x1,y1) (x2,y2) = abs(x1-x2) + abs(y1-y2)
+```
+
+はじめ `l1 x1 y1 x2 y2`で定義したものの,
+間違って右辺の出てくる順番で`l1 x1 x2 y1 y2`と書いてバグったため,
+(私にとって)間違えにくいタプルで書き直しました.
+*** 参照点の選出
+`Array.find`で探せます.
+
+```fsharp
+  let (x0,y0,h0) = Aa |> Array.find (fun (_,_,h) -> h<>0)
+```
+
+F#の`not equal`は`a <> b`です.
+ちなみにHaskellでは`a /= b`です.
+
+問題の条件によって必ず条件をみたす点が存在するため`Array.tryFind`などを使う必要はありません.
+*** 全探索
+まず中心のデータを一気に生成します.
+
+```fsharp
+  [| for x in 0..100 do for y in 0..100 do x,y |]
+  |> Array.map (fun (x,y) -> x, y, h0 + l1 (x,y) (x0,y0))
+```
+
+あとは再び`Array.find`で条件をみたす要素を探します.
+これも必ず, それも一意的に存在するとわかっているため`Array.tryFind`などで保険をかける必要はありません.
+
+全ての入力が条件をみたすか確認する必要があるため,
+`Array.find`の中で`Aa`に対するチェックのループが走ります.
+
+```fsharp
+  [| for x in 0..100 do for y in 0..100 do x,y |]
+  |> Array.map (fun (x,y) -> x, y, h0 + l1 (x,y) (x0,y0))
+  |> Array.find (fun (x,y,h) ->
+    Aa |> Array.forall (fun (xi,yi,hi) -> hi = max 0 (h - l1 (x,y) (xi,yi))))
+```
+
+最後に返り値の数値のタプルから`sprintf`で文字列を生成しましょう.
+
+```fsharp
+let solve Aa =
+  let l1 (x1,y1) (x2,y2) = abs(x1-x2) + abs(y1-y2)
+  let (x0,y0,h0) = Aa |> Array.find (fun (_,_,h) -> h<>0)
+  [| for x in 0..100 do for y in 0..100 do x,y |]
+  |> Array.map (fun (x,y) -> x, y, h0 + l1 (x,y) (x0,y0))
+  |> Array.find (fun (x,y,h) ->
+    Aa |> Array.forall (fun (xi,yi,hi) -> hi = max 0 (h - l1 (x,y) (xi,yi))))
+  |> fun (x,y,h) -> sprintf "%d %d %d" x y h
+```

@@ -16,3 +16,5 @@
 - [82 C - Different Strokes](082/index.md)
 - [83 A - Darker and Darker](083/index.md)
 - [84 C - Shopping Street](084/index.md)
+- [85 C - Pyramid](085/index.md)
+- [86 D - Coloring Dominoes](086/index.md)

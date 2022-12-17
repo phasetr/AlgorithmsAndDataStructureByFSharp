@@ -4,6 +4,11 @@
 - [はじめに](intro/index.md)
 - [競技プログラミングのためのF#入門](fsharp-for-cp/index.md)
 - [AtCoder Problems](atcoder-problems/index.md)
+** TODO
+- [競技プログラミングの鉄則 演習問題集](https://atcoder.jp/contests/tessoku-book)
+- [レッドコーダーが教える、競プロ・AtCoder上達のガイドライン【上級編：目指せレッドコーダー！】](https://qiita.com/e869120/items/acba3dd8649d913102b5)
+    - [3-3. 分野別 上級者が解くべき過去問精選 100 + 50 問](https://qiita.com/e869120/items/acba3dd8649d913102b5#3-3-分野別上級者が解くべき過去問精選-100--50-問)
+    - [3-4. 「競プロ典型 90 問」のすすめ（2021/7/12 追記）](https://qiita.com/e869120/items/acba3dd8649d913102b5#3-4-競プロ典型-90-問のすすめ2021712-追記)
 ** 参考記事・サイト
 - [AtCoder](https://atcoder.jp/)
 - [AtCoder Problems, kenkoooo](https://kenkoooo.com/atcoder/)
