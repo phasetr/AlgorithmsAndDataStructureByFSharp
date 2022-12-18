@@ -53,12 +53,16 @@ FOR 10^10: 00:00:23.2159475
 
 ```fsharp
 let solve A B =
-  let g x = Array.get [|x;1L;x+1L;0L|] (x%4L |> int)
+  let g x = Array.get [|x;1L;x+1L;0L|] ((x+4L)%4L |> int)
   g (A-1L) ^^^ g B
 
 let A,B = stdin.ReadLine().Split() |> Array.map int64 |> (fun x -> x.[0],x.[1])
 solve A B |> stdout.WriteLine
 ```
+
+ちなみに`(x+4L)%4L`は`A = 0`への対策です.
+F#では`(-1)%4 = -1`で配列外参照が起きます.
+ここでは場合分けではなく`mod`の部分に手を入れました.
 
 問題は`g`の実装です.
 条件文をいろいろ書いて頑張ってもいいのですが,

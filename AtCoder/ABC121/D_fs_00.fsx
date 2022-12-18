@@ -5,11 +5,12 @@ open FsUnit
 let A,B = 2L,4L
 let A,B = 123L,456L
 let A,B = 123456789012L,123456789012L
+let A,B = 0L,0L
 let solve (A:int64) B = [|A..B|] |> Array.reduce (fun a b -> a^^^b)
 *)
 
 let solve A B =
-  let g x = Array.get [|x;1L;x+1L;0L|] (x%4L |> int)
+  let g x = Array.get [|x;1L;x+1L;0L|] ((x+4L)%4L |> int)
   g (A-1L) ^^^ g B
 
 let A,B = stdin.ReadLine().Split() |> Array.map int64 |> (fun x -> x.[0],x.[1])
@@ -18,6 +19,9 @@ solve A B |> stdout.WriteLine
 solve 2L 4L |> should equal 5L
 solve 123L 456L |> should equal 435L
 solve 123456789012L 123456789012L |> should equal 123456789012L
+solve 0L 0L |> should equal 0L
+solve 0L 1L |> should equal 1L
+solve 0L 1000000000000L |> should equal 1000000000000L
 
 let benchmark i =
   let N = pown 10L i
