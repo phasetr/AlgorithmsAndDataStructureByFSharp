@@ -4,6 +4,7 @@
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC157)
 - [公式ページ](https://atcoder.jp/contests/abc157/tasks/abc157_d)
+- - 要点: アルゴリズムの検討・実装
 ** 入出力
 ```
 let N,M,K = stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1],x.[2]

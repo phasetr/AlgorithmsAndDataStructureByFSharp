@@ -664,6 +664,7 @@ module Array =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#sumBy"
   [|"aa";"bbb";"cc"|] |> Array.sumBy (fun s -> s.Length) |> should equal 7
   @"配列中で条件をみたす要素の数を数えられる.
+  cf. sumBy = filter >> length
   例えば`Aa |> Array.filter id |> Array.length`の代わりに`Array.sumBy`が使える."
   [| false;true;true |] |> Array.filter id |> Array.length |> should equal 2
   [| false;true;true |] |> Array.sumBy (fun b -> if b then 1 else 0) |> should equal 2

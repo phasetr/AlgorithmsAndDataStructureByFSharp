@@ -4,10 +4,12 @@
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC121)
 - [公式ページ](https://atcoder.jp/contests/abc121/tasks/abc121_d)
+- 要点: アルゴリズムの検討・実装
 ** 入出力
 ```
 let A,B = stdin.ReadLine().Split() |> Array.map int64 |> (fun x -> x.[0],x.[1])
-solve A B |> stdout.WriteLine```
+solve A B |> stdout.WriteLine
+```
 ** 解説
 *** 素直な計算では`TLE`する
 最大で`10^12`個の項の計算が入るため,
