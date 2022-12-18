@@ -19,3 +19,4 @@
 - [85 C - Pyramid](085/index.md)
 - [86 D - Coloring Dominoes](086/index.md)
 - [87 D - Friend Suggestions](087/index.md)
+- [88 D - XOR World](088/index.md)

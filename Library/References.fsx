@@ -12,7 +12,19 @@ F# https://fsharp.github.io/fsharp-core-docs/reference
 FsUnit: https://fsprojects.github.io/FsUnit/
 FTP: Use FluentFTP, https://github.com/robinrodricks/FluentFTP"
 
-module SimpleBenchmark =
+module SimpleBenchmark1 =
+  @"https://dobon.net/vb/dotnet/system/stopwatch.html"
+  let benchmark i =
+    let N = pown 10L i
+    let sw = System.Diagnostics.Stopwatch()
+    sw.Start()
+    let mutable x = 0L
+    for i in 0L..N do x <- x^^^i
+    sw.Stop()
+    printfn "FOR 10^%2d: %A" i (sw.Elapsed)
+  for i in 0..10 do benchmark i
+
+module SimpleBenchmark2 =
   // https://nenono.hatenablog.com/entry/2014/06/17/223141
   let benchmark n f =
     let sw  = new System.Diagnostics.Stopwatch()
@@ -2258,7 +2270,7 @@ module Print =
   @"https://docs.microsoft.com/ja-jp/dotnet/fsharp/language-reference/plaintext-formatting"
   @"Abraham Get Programming with F#-A guide for NET developers
   %c: char
-  %d: int
+  %d: int, %2dなどで桁数指定
   %f: float, %.4fなどで桁数指定
   %b: boolean
   %s: string

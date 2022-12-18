@@ -385,6 +385,18 @@ module Arithmetics =
   near0 (sin System.Math.PI) 0 |> should be True
 
 module Bit =
+  @"十進展開から二進展開の文字列へ変換, decimal expansion to binary expansion
+  System.Convert.ToString(i,2)
+  https://rosettacode.org/wiki/Binary_digits#F#
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.convert.tostring?view=net-7.0
+  https://smdn.jp/programming/dotnet-samplecodes/bitwise_operations/14b0b0560fb111eb8931d93b9158057a/"
+  [|0..5|] |> Array.map (fun i -> System.Convert.ToString(i, 2)) |> should equal [|"0";"1";"10";"11";"100";"101"|]
+  [|0..5|] |> Array.map (fun i -> System.Convert.ToString(i, 2).PadLeft(3,'0')) |> should equal [|"000";"001";"010";"011";"100";"101"|]
+  @"二進展開から十進展開の文字列へ変換, binary expansion todecimal expansion,
+  System.Convert.ToString(n,2)
+  https://stackoverflow.com/questions/9742777/binary-to-decimal-conversion-formula"
+  10L |> fun n -> System.Convert.ToString(n, 2) |> fun s -> System.Convert.ToInt64(s,2) |> should equal 10L
+
   // https://midoliy.com/content/fsharp/text/operator/2_bit.html
   0xFF |> should equal 255
   0x80 |> should equal 128
