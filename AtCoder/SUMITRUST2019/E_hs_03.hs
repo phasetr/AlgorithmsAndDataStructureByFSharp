@@ -1,5 +1,6 @@
 -- https://atcoder.jp/contests/sumitrust2019/submissions/8755584
 import qualified Data.ByteString.Char8 as BS
+import Data.List ( foldl' )
 import Data.Maybe ( fromJust )
 
 main :: IO ()
@@ -9,7 +10,7 @@ main = do
   print . solve $ ns
 
 solve :: [Int] -> Int
-solve = fst . foldl step (1,(0, 0, 0)) where
+solve = fst . foldl' step (1,(0, 0, 0)) where
   modulo = 10^9 +7
 
   step (0, x) _ = (0, x)

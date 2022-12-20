@@ -11,11 +11,10 @@ module AdjacencyList =
 module DepthFirstSearch =
   @"DFS"
   // https://gist.github.com/jdh30/512962cb29b96787c29964b2a7080db3
-  open System.Collections.Generic
   /// Imperative depth-first search
   let dfs (V, E) =
-    let visited = HashSet(HashIdentity.Structural)
-    let stack = Stack[V]
+    let visited = System.Collections.Generic.HashSet(HashIdentity.Structural)
+    let stack = System.Collections.Generic.Stack[V]
     while stack.Count > 0 do
       let u = stack.Pop()
       if not(visited.Contains u) then
@@ -31,6 +30,8 @@ module DepthFirstSearch =
           then loop visited a us
           else loop (u::us) (f a u) (E u @ us)
     loop a V
+
+  /// Ex: AtCoder ABC126 D, ../AtCoder/ABC126/D_fs_00_01.fsx
 
 module FloydWarshall =
   @"Floyd-Warshall for int[][]"

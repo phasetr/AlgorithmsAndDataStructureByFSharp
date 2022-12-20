@@ -90,6 +90,13 @@ module Array =
       |> Array.ofList
     accumArray (+) 0 (1,3) [(1,20);(2,30);(1,40);(2,50)] |> should equal [|(1,60);(2,80);(3,0)|]
 
+  @"Haskell, Data.Vector.accumulate
+  https://hackage.haskell.org/package/vector-0.12.3.1/docs/Data-Vector.html#v:accumulate"
+  module Accumulate =
+    let accumulate: ('a -> 'b -> 'a) -> 'a[] -> (int*'b)[] -> 'a[] = fun f av ibv ->
+      av |> Array.mapi (fun k a -> (a,ibv) ||> Array.fold (fun acc (i,b) -> if i=k then f acc b else acc))
+    accumulate (+) [|1000;2000;3000|] [|(2,4);(1,6);(0,3);(1,10)|] |> should equal [|1003;2016;3004|]
+
   @"Addメソッド, ResizeArray
   可変配列に対して破壊的に値を追加する."
   let xa = ResizeArray<int>() in xa.Add(1); xa.Add(2); xa |> should equal (seq {1;2})
@@ -935,6 +942,12 @@ module Bool =
 
   @"boolean not"
   not true |> should equal false
+
+  @"Haskell, Data.Bool.bool
+  https://hackage.haskell.org/package/base-4.17.0.0/docs/Data-Bool.html#v:bool"
+  let bool x y p = if p then y else x
+  bool "foo" "bar" true  |> should equal "bar"
+  bool "foo" "bar" false |> should equal "foo"
 
 module Char =
   @"https://docs.microsoft.com/ja-jp/dotnet/api/system.char?view=net-6.0"

@@ -1,0 +1,96 @@
+* 90 D - Even Relation
+- created: 2022-12-20 tue
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC126)
+- [公式ページ](https://atcoder.jp/contests/abc126/tasks/abc126_d)
+- 要点: アルゴリズムの検討・実装
+** 入出力
+```
+let N = stdin.ReadLine() |> int
+let Ia = Array.init (N-1) (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1],x.[2])
+solve N Ia |> Array.iter stdout.WriteLine
+```
+** 解説
+DFSで素直に木を走査します.
+*** 隣接リスト生成
+二点間の距離の処理によって全体の処理が変わるため,
+そこに注意すればあとは素直に作るだけです.
+ここでは`w&&&1`とビットの論理和で処理します.
+
+```fsharp
+  let Aa =
+    (Array.init N (fun _ -> []),Ia)
+    ||> Array.fold (fun Aa (u,v,w) ->
+      Aa.[u-1]<-(v-1,w&&&1)::Aa.[u-1]; Aa.[v-1]<-(u-1,w&&&1)::Aa.[v-1]; Aa)
+```
+
+他の問題では`ResizeArray`で処理したときもありますが,
+ここでは`List`で処理しています.
+今回せっかくなので試してみたら,
+少なくとも今回のケースでは`List`の方が速いようでした.
+*** DFS
+再帰と`fold`で隣接リストを走査します.
+今回は`Array.zeroCreate N`で初期化した配列の値を再帰の中でゴリゴリ書き換える形で実装します.
+
+根と初期値を適当に決める必要があります.
+ここでは`dfs`関数を`pi`を根のインデックス,
+`ci`を子ノードのインデックス,
+`v`を`0,1`の値として構成します.
+特に次の形で計算をはじめます.
+
+```fsharp
+  let rec dfs pi ci v Xa = "処理を書く"
+  Array.zeroCreate N |> dfs 0 0 0
+```
+
+`dfs`を実装しましょう.
+本体の`fold`処理は次のように書きます.
+
+```fsharp
+  let rec dfs pi ci v Xa =
+    // 値の書き換え処理が必要
+    Array.get Aa ci
+    |> List.filter (fun (i,_) -> i <> pi)
+    |> List.fold (fun acc (gci,w) -> dfs ci gci (v^^^w) acc) Xa
+```
+
+まず`Array.get Aa ci`で`dfs`の引数で指定した隣接リストの子ノードを取ります.
+`Array.filter`で親のノードを除外した上で`fold`の中で`Xa`をゴリゴリ書き換えます.
+`fold`の`gci`は`dfs`に「子ノードの子ノード」として食わせる前提で孫(grandchild)の想定で名付けた変数です.
+再帰的に`dfs ci gci`で呼び出して値を更新します.
+ここで`v^^^w`と排他的論理和で距離を処理しています.
+親子で偶奇が違う場合だけフラグが立ちます.
+
+最後にコメントアウトで残した書き換え処理を考えましょう.
+`ci`で渡した子ノードの値を書き換えます.
+ここでは`v^^^1`として排他的論理和で値を書き換えます.
+結果的に`dfs`は次のように書けます.
+
+```fsharp
+  let rec dfs pi ci v Xa =
+    Array.set Xa ci (v^^^1)
+    Array.get Aa ci
+    |> List.filter (fun (i,_) -> i <> pi)
+    |> List.fold (fun acc (gci,w) -> dfs ci gci (v^^^w) acc) Xa
+  Array.zeroCreate N |> dfs 0 0 0
+```
+*** まとめ
+```fsharp
+let solve N Ia =
+  let Aa =
+    (Array.init N (fun _ -> []),Ia)
+    ||> Array.fold (fun Aa (u,v,w) ->
+      Aa.[u-1]<-(v-1,w&&&1)::Aa.[u-1]; Aa.[v-1]<-(u-1,w&&&1)::Aa.[v-1]; Aa)
+
+  let rec dfs pi ci v Xa =
+    Array.set Xa ci (v^^^1)
+    Array.get Aa ci
+    |> List.filter (fun (i,_) -> i <> pi)
+    |> List.fold (fun acc (gci,w) -> dfs ci gci (v^^^w) acc) Xa
+  Array.zeroCreate N |> dfs 0 0 1
+
+let N = stdin.ReadLine() |> int
+let Ia = Array.init (N-1) (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1],x.[2])
+solve N Ia |> Array.iter stdout.WriteLine
+```
