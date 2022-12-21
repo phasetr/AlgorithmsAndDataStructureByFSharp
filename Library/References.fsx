@@ -1087,9 +1087,22 @@ module Function =
 
   @"CPS変換: See CpsTr.fsx"
 
-  @"TODO: memoized recursion, メモ化再帰, Map版
-  AtCoder上でMapが使えるためMapを使おう"
-  @"memoized recursion, メモ化再帰, System.Collections.Generic.Dictionary版"
+  @"TODO: memoized recursion, メモ化再帰, Map版"
+  module MemoRec =
+    let memorec f =
+      let memo = Map.empty<_,_>
+      let rec frec j =
+        match memo |> Map.tryFind j with
+          | Some v -> v
+          | _ -> let v = f frec j in memo |> Map.add j v |> ignore; v
+      frec
+    let fact frec i =
+      if i = 1L then 1L
+      else i * frec (i-1L)
+    (memorec fact) 20L
+
+  @"memoized recursion, メモ化再帰, System.Collections.Generic.Dictionary版
+  AtCoder上でMapが使えるためMapを使おう "
   module MemoRec =
     let memorec f =
       let memo = System.Collections.Generic.Dictionary<_,_>()
@@ -1815,12 +1828,18 @@ module Map =
 
   @"Map.tryFind
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#tryFind"
+  Map [(1,"a");(2,"b")] |> Map.tryFind 1 |> should equal (Some "a")
+  Map [(1,"a");(2,"b")] |> Map.tryFind 3 |> should equal None
 
   @"Map.tryFindKey
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#tryFindKey"
 
   @"Map.tryPick
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#tryPick"
+  Map [(1,"a");(2,"b");(10,"ccc");(20,"ddd")] |> Map.tryPick (fun n s -> if n > 5 && s.Length > 2 then Some s else None)
+  |> should equal (Some "ccc")
+  Map [(1,"a");(2,"b");(10,"ccc");(20,"ddd")] |> Map.tryPick (fun n s -> if n > 5 && s.Length > 4 then Some s else None)
+  |> should equal None
 
   @"Map.values
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#values"
