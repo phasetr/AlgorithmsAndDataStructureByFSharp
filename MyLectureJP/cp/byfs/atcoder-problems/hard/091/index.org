@@ -1,0 +1,105 @@
+* 91 D - Coloring Edges on Tree
+- created: 2022-12-21 wed
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC146)
+- [公式ページ](https://atcoder.jp/contests/abc146/tasks/abc146_d)
+- 要点: アルゴリズムの検討・実装
+** 入出力
+```
+let N = stdin.ReadLine() |> int
+let Ia = Array.init (N-1) (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1],x.[2])
+solve N Ia |> Array.iter stdout.WriteLine
+```
+** 解説
+公式解説ではBFSで解説していました.
+ここでDFSで木を走査します.
+*** 隣接リスト生成
+問題の指示によって`i`本目の辺は`a_i`と`b_i`を含むとしているため,
+隣接リストを作るときに辺の番号も同時に割り振ります.
+ループのときの配列の添字と混同しないようにここで`edge`の`e`を採用して記述します.
+
+```fsharp
+  let Ga =
+    ((0, Array.init N (fun _ -> List.empty)), Ia)
+    ||> Array.fold (fun (e,Ga) (a,b) -> Ga.[a-1] <- (e,b-1)::Ga.[a-1]; Ga.[b-1] <- (e,a-1)::Ga.[b-1]; (e+1,Ga))
+    |> snd
+```
+
+ここでは配列の中身をリストにしました.
+問題90では`ResizeArray`よりリストの方が速かったため,
+何となくリストにしています.
+何が速いかはきちんと検証するべきです.
+*** DFS
+再帰と`fold`で隣接リストを走査します.
+今回は`Array.zeroCreate N`で初期化した配列の値を再帰の中でゴリゴリ書き換える形で実装します.
+`IntMap`(いわゆる辞書)を使っているHaskell実装もあります.
+
+`dfs`関数には親ノード・子ノード・色と書き換える配列を渡せばよいでしょう.
+大枠として次のように書けばよいはずです.
+
+```fsharp
+  let rec dfs pi ci color Xa = "処理"
+  Array.zeroCreate (N-1) |> dfs 0 0 0
+```
+
+では`dfs`の中身を考えましょう.
+まず指定した子ノードがつながっている頂点を取るため`Ga.[ci]`を取ります.
+この中から親ノードを排除したいため`filter`をかませます.
+
+```fsharp
+    let Cq = Ga.[ci] |> List.filter (snd >> (<>) pi)
+```
+
+これに対して最終的にノード番号とのタプルになるように色を順に割り振ります.
+`dfs`の引数に入っている`color`以外の色を割り当てるように色を振るため少し工夫します.
+前段の`filter`と合わせると要素数の処理が面倒なため,
+遅延処理の`Seq`を使って力づくで辻褄を合わせます.
+結論から言うと次のように書きます.
+
+```fsharp
+    let Cq = Ga.[ci] |> List.filter (snd >> (<>) pi) |> Seq.zip (Seq.initInfinite ((+) 1) |> Seq.filter ((<>) color))
+```
+
+`Seq.zip`は`seq`を二つ与えてそれらをタプルにした`seq`を返します.
+
+```fsharp
+#r "nuget: FsUnit"
+open FsUnit
+Seq.zip [1..4] [11..15] |> should equal [(1,11);(2,12);(3,13);(4,14)]
+```
+
+二番目のリストの最後の`15`が結果で消えている点に注意してください.
+`List.zip`や`Array.zip`では「長さが等しいリスト・配列を与えなさい」と怒られます.
+`Seq.zip`なら余計な長さの部分を切り落としてくれるため,
+`Seq.initInfinite`で無限リストを生成し,
+無限リスト中の不要な要素を`filter`で切りつつ,
+必要なところだけ切り出す都合のいい処理が書けます.
+あとはこれと入力の配列を`fold`で処理します.
+
+```fsharp
+  let rec dfs pi ci color Xa =
+    let Cq = Ga.[ci] |> List.filter (snd >> (<>) pi) |> Seq.zip (Seq.initInfinite ((+) 1) |> Seq.filter ((<>) color))
+    (Xa, Cq) ||> Seq.fold (fun Xa (color,(e,gci)) -> dfs ci gci color (Array.set Xa e color; Xa))
+```
+
+`fold`中では`dfs`の引数を子ノード・孫ノードの`ci`と`gci`にずらして,
+`Cq`中で指定した色と更新した配列を与えます.
+
+最後に`dfs`の結果から出力用のデータを生成します.
+出力では色の数も返す必要があるからです.
+出力の`Xa`から最大値を返せばよく,
+例えば次のように書けばよいでしょう.
+
+```fsharp
+  let rec dfs pi ci color Xa =
+    let Cq = Ga.[ci] |> List.filter (snd >> (<>) pi) |> Seq.zip (Seq.initInfinite ((+) 1) |> Seq.filter ((<>) color))
+    (Xa, Cq) ||> Seq.fold (fun Xa (color,(e,gci)) -> dfs ci gci color (Array.set Xa e color; Xa))
+  Array.zeroCreate (N-1) |> dfs 0 0 0
+  |> fun Xa -> Array.append [|Array.max Xa|] Xa
+```
+
+`Seq`も`Array`もリストの`cons`(`::`)のような先頭への追加がなく,
+配列同士の結合の`append`しかありません.
+配列にせず,
+最終的に返すべき改行区切りの文字列を生成してもいいでしょう.

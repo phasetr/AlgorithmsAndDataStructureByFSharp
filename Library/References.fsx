@@ -323,6 +323,7 @@ module Array =
   `Array.foldBack folder array state`
   `folder : 'T -> 'State -> 'State`
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#foldBack"
+  ([|1..3|], 4) ||> Array.foldBack (fun a acc -> a+acc) |> should equal 10
   module FoldBack =
     type Count = { Positive: int; Negative: int; Text: string }
     ([| 1;0;-1;-2;3 |], {Positive = 0; Negative = 0; Text = "" })
@@ -1023,8 +1024,15 @@ module Dictionary =
   d.Add(1,2)
   d |> should equal (dict [(1,2)])
 
+  @"要素の更新, Haskell insert
+  https://hackage.haskell.org/package/containers-0.6.6/docs/Data-IntMap-Lazy.html#v:insertWith"
+  open System.Collections.Generic
+  let insert k v (d:Dictionary<int,int>) =
+    d.TryGetValue(k) |> function | true,n -> d.[k] <- v; d | false,_ -> d.Add(k, v); d
+  Dictionary<int,int>() |> insert 2 1 |> should equal (dict [(2,1)])
+
   @"要素の更新, Haskell insertWith
-  https://hackage.haskell.org/package/containers-0.6.6/docs/Data-IntMap-Lazy.html"
+  https://hackage.haskell.org/package/containers-0.6.6/docs/Data-IntMap-Lazy.html#v:insertWith"
   open System.Collections.Generic
   // この`insertWith`はサンプルなので適宜書き換えること
   let insertWith f k v (d:Dictionary<int,int>) =
@@ -1079,6 +1087,8 @@ module Function =
 
   @"CPS変換: See CpsTr.fsx"
 
+  @"TODO: memoized recursion, メモ化再帰, Map版
+  AtCoder上でMapが使えるためMapを使おう"
   @"memoized recursion, メモ化再帰, System.Collections.Generic.Dictionary版"
   module MemoRec =
     let memorec f =
@@ -1756,7 +1766,7 @@ module Map =
   Map.empty<int, string> |> Map.isEmpty |> should be True
   Map [ (1, "a"); (2, "b") ] |> Map.isEmpty |> should be False
 
-  @"Haskell insertWith"
+  @"Haskell insertWith: Map.addでよい"
   let insertWith f k v m = Map.tryFind k m |> function | Some(v0) -> Map.add k (f v0 v) m | None -> Map.add k v m
   Map [(1,2)] |> insertWith (+) 1 3 |> should equal (Map [(1,5)])
   Map [(1,2)] |> insertWith (+) 2 3 |> should equal (Map [(1,2);(2,3)])
@@ -2577,7 +2587,12 @@ module Sequence =
   Seq.fold (-) 0 [1..5] |> should equal -15
 
   @"Seq.foldBack2
-  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#foldBack2"
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#foldBack2
+  Seq.foldBack folder source state
+  folder : 'T -> 'State -> 'State
+  source : seq<'T>
+  state : 'State
+  Returns: 'State"
   module FoldBack2 =
     type Count = { Positive: int;Negative: int;Text: string }
     let inputs1 = [-1;-2;-3]
@@ -2643,7 +2658,7 @@ module Sequence =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#init"
   Seq.init 4 (fun v -> v + 5) |> should equal (seq [5..8])
 
-  @"Seq.initInfinite, infinite seq
+  @"Seq.initInfinite, infinite seq, 無限リストの生成
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#initInfinite
   https://atcoder.jp/contests/abc169/tasks/abc169_d
   Seqに対するhead-tailの分解

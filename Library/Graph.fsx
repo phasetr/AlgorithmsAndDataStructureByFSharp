@@ -31,7 +31,14 @@ module DepthFirstSearch =
           else loop (u::us) (f a u) (E u @ us)
     loop a V
 
-  /// Ex: AtCoder ABC126 D, ../AtCoder/ABC126/D_fs_00_01.fsx
+  /// Ex: AtCoder ABC126 D, ../AtCoder/ABC126/D_fs_00_04.fsx
+  let Aa = [|[(1,0)];[(2,1);(0,0)];[(1,1)]|]
+  let rec dfs pi ci v Xa =
+    Array.set Xa ci (v^^^1)
+    Array.get Aa ci
+    |> List.filter (fun (i,_) -> i <> pi)
+    |> List.fold (fun acc (gci,w) -> dfs ci gci (v^^^w) acc) Xa
+  Array.zeroCreate N |> dfs 0 0 1 |> should equal [|0;0;1|]
 
 module FloydWarshall =
   @"Floyd-Warshall for int[][]"
