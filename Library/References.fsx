@@ -3072,7 +3072,7 @@ module Set =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#remove"
   set [1..3] |> Set.remove 1 |> should equal (set [2;3])
 
-  @"Set.singleton
+  @"Set.singleton, setの初期化
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#singleton"
   Set.singleton 7 |> should equal (set [7])
 

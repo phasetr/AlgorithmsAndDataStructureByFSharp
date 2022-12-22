@@ -7,15 +7,15 @@ let solve N (Aa: int list[]) =
     let d = Array.create N maxInt
     d.[s] <- 0
     let av = Array.create N true
-    let rec min_cost i r =
+    let rec minCost i r =
       if i=N then r
       else if av.[i] then
         match r with
-          | None -> min_cost (i+1) (Some i)
-          | Some j -> if d.[i] < d.[j] then min_cost (i+1) (Some i) else min_cost (i+1) r
-      else min_cost (i+1) r
+          | None -> minCost (i+1) (Some i)
+          | Some j -> if d.[i] < d.[j] then minCost (i+1) (Some i) else minCost (i+1) r
+      else minCost (i+1) r
     let rec loop () =
-      match min_cost 0 None with
+      match minCost 0 None with
         | None -> d
         | Some u ->
           av.[u] <- false

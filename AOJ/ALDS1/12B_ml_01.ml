@@ -1,4 +1,4 @@
-(* https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_12_B/review/2460093/rabbisland/OCaml *) 
+(* https://onlinejudge.u-aizu.ac.jp/solutions/problem/ALDS1_12_B/review/2460093/rabbisland/OCaml *)
 open Printf
 open Scanf
 
