@@ -1798,6 +1798,7 @@ module Map =
 
   @"Map.minKeyValue
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#minKeyValue"
+  Map [(1,"a");(2,"b")] |> Map.minKeyValue |> should equal (1,"a")
 
   @"Map.ofArray
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#ofArray"

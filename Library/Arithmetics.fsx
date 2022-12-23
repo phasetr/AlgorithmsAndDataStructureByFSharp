@@ -422,10 +422,10 @@ module Bit =
   [|0..10|] |> Array.map (fun i -> i ^^^ 1) |> should equal [|1;0;3;2;5;4;7;6;9;8;11|]
   [|0..10|] |> Array.map (fun i -> i ^^^ 2) |> should equal [|2;3;0;1;6;7;4;5;10;11;8|]
   [|0..10|] |> Array.map (fun i -> i ^^^ 3) |> should equal [|3;2;1;0;7;6;5;4;11;10;9|]
-  @"右辺のbit数だけ左にシフト: 2倍される"
+  @"`<<<`: 右辺のbit数だけ左にシフト: 2倍される"
   [|0..10|] |> Array.map (fun i -> 1 <<< i) |> should equal [|1;2;4;8;16;32;64;128;256;512;1024|]
   [|0..10|] |> Array.map (fun i -> 3 <<< i) |> should equal [|3;6;12;24;48;96;192;384;768;1536;3072|]
-  @"右辺のbit数だけ右にシフト: 1/2される"
+  @"`>>>`: 右辺のbit数だけ右にシフト: 1/2される"
   [|0..10|] |> Array.map (fun i -> 10 >>> i) |> should equal [|10;5;2;1;0;0;0;0;0;0;0|]
   [|0..10|] |> Array.map (fun i -> 100 >>> i) |> should equal [|100;50;25;12;6;3;1;0;0;0;0|]
   [|0..10|] |> Array.map (fun i -> 1024 >>> i) |> should equal [|1024;512;256;128;64;32;16;8;4;2;1|]
@@ -433,7 +433,8 @@ module Bit =
 module Combinatorics =
   module Factorial =
     @"階乗その1, factorial
-    cf. 競プロ用のmodつき計算はpowmod利用の処理を使おう."
+    cf. 競プロ用のmodつき計算はpowmod利用の処理を使おう.
+    TODO `factmod`を書く"
     let fact n = if n=0L then 1L else Array.reduce (*) [|1L..n|]
     [|0L..6L|] |> Array.map fact |> should equal [|1L;1L;2L;6L;24L;120L;720L|]
 
@@ -450,6 +451,7 @@ module Combinatorics =
     [-1L..5L] |> List.map fact |> should equal [1L;1L;1L;2L;6L;24L;120L]
 
     @"comb, combination, 組み合わせの数, nCr
+    cf. 競プロ用のmodつき計算はpowmod利用の処理`combmod`を使おう.
     https://rosettacode.org/wiki/Evaluate_binomial_coefficients#F#"
     let comb n k = List.fold (fun s i -> s * (n-i+1L)/i ) 1L [1L..k]
     [0L..2L] |> List.map (comb 2L) |> should equal [1L;2L;1L]
@@ -458,11 +460,12 @@ module Combinatorics =
     [0L..5L] |> List.map (comb 5L) |> should equal [1L;5L;10L;10L;5L;1L]
 
     @"comb, combnation, 組み合わせの数, nCr
+    cf. 競プロ用のmodつき計算はpowmod利用の処理`combmod`を使おう.
     TODO https://www.geeksforgeeks.org/program-to-calculate-the-value-of-ncr-efficiently/"
 
     @"comb, combination, 組み合わせの数, nCr
     n <= kで1を返すようにした
-    cf. 競プロ用のmodつき計算はpowmod利用の処理を使おう.
+    cf. 競プロ用のmodつき計算はpowmod利用の処理`combmod`を使おう.
     cf. 定義通りの計算は余計な計算が発生する."
     let comb n k = if n<=k then 1L else (fact n) / ((fact k) * (fact (n-k)))
     [0L..2L] |> List.map (comb 2L) |> should equal [1L;2L;1L]
@@ -471,10 +474,12 @@ module Combinatorics =
     [0L..5L] |> List.map (comb 5L) |> should equal [1L;5L;10L;10L;5L;1L]
 
     @"homcomb, homogeneous combination, 重複組み合わせ
-    cf. 競プロ用のmodつき計算はpowmod利用の処理を使おう."
+    cf. 競プロ用のmodつき計算はpowmod利用の処理`homcombmod`を使おう.
+    TODO `homcombmod`がなければ作る"
     let homcomb n k = comb (n+k-1L) k
 
-  @"順列, Permutation, Bird-Gibbons, perms1"
+  @"順列, Permutation, Bird-Gibbons, perms1
+  cf. 競プロ用のmodつき計算はpowmod利用の処理`permmod`を使おう."
   let perms xs =
     let rec inserts: 'a -> 'a list -> 'a list list = fun x -> function
       | [] -> [[x]]
@@ -484,6 +489,7 @@ module Combinatorics =
   perms [1..3] |> should equal [[1;2;3];[2;1;3];[2;3;1];[1;3;2];[3;1;2];[3;2;1]]
 
   @"順列, permutations, 場合の数ではなく実際に列挙する
+  cf. 競プロ用のmodつき計算はpowmod利用の処理`permmod`を使おう.
   標準ライブラリある?"
   let rec choose xs =
     match xs with

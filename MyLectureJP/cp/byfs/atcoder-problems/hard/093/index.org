@@ -3,7 +3,7 @@
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC070)
-- [公式ページ](<https://atcoder.jp/contests/abc070/tasks/abc070_d)
+- [公式ページ](https://atcoder.jp/contests/abc070/tasks/abc070_d)
 - 要点: アルゴリズムの検討
 ** 解説1, DFS
 公式解説通りにDFSで実装します.
@@ -134,7 +134,8 @@ let dijkstra N K (Ga: (int * int64) list []) =
 ポイントは優先度つきキューの代わりに`Set`を使っている点です.
 キュー代わりの`Set`に積んだ値から最小値を取り出し,
 キューが尽きるまでループをくり返しています.
-配列の`Array.set`と違って`Set.add`は更新した`Set`を返してくれる非破壊的な関数です.
+もちろん`Set`では速度は出ません.
+また配列の`Array.set`と違って`Set.add`は更新した`Set`を返してくれる非破壊的な関数です.
 
 ちなみに`.NET6`で優先度つきキューが実装されたものの,
 AtCoder上のF#は`.NET Core 3.1.201`で使えません.

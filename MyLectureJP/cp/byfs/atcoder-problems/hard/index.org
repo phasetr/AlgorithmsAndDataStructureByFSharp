@@ -25,3 +25,5 @@
 - [91 D - Coloring Edges on Tree](091/index.md)
 - [92 B - Unplanned Queries](092/index.md)
 - [93 D - Transit Tree Path](093/index.md)
+- [94 D - Blue and Red Balls](094/index.md)
+- [95 D - Xor Sum 4](095/index.md)

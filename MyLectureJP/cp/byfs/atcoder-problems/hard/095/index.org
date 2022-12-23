@@ -1,0 +1,50 @@
+* 95 D - Xor Sum 4
+- created: 2022-12-23 fri
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC147)
+- [公式ページ](https://atcoder.jp/contests/abc147/tasks/abc147_d)
+- 要点: 組み合わせの処理
+** 解説
+*** 入出力
+`2^{60}`は`int64`の範囲におさまります.
+
+```fsharp
+let N = stdin.ReadLine() |> int64
+let Aa = stdin.ReadLine().Split() |> Array.map int64
+solve N Aa |> stdout.WriteLine
+```
+*** `mod`計算用の演算子定義
+```fsharp
+  let (.+) a b = ((a%MOD)+(b%MOD))%MOD
+  let (.*) a b = ((a%MOD)*(b%MOD))%MOD
+```
+
+たまにはまる場合があるため,
+`a`と`b`にも都度`%MOD`をかませています.
+*** 実装
+計算するのは排他的論理和で各ビットごとに計算した結果を積めば十分です.
+特に10進表記の`a`の各`i`ビットは`(a>>>i)%2L`で取れます.
+ビットごとの和が必要なため,
+ビットでの各`i`桁ごとに`Aa |> Array.sumBy (fun a -> (a>>>i)%2L)`を計算します.
+
+```fsharp
+  [|0..60|]
+  |> Array.map (fun i -> Aa |> Array.sumBy (fun a -> (a>>>i)%2L))
+```
+
+解説にあるように各ビットごとの問題の`XOR`の総和は`0の個数 * 1の個数`です.
+最終的には10進数としての和を取る必要があるため,
+各`i`ごとに`2^i`をかける必要があります.
+この和は`fold2`で次のように計算できます.
+
+```
+  let Xa = [|0..60|] |> Array.map (fun i -> Aa |> Array.sumBy (fun a -> (a>>>i)%2L))
+  (0L,[|0..60|],Xa) |||> Array.fold2 (fun acc i y ->
+    acc .+ ((pown 2L i) .* y .* (N-y)))
+```
+
+本体は`i`と`y`の計算です.
+解説にある`0の個数 * 1の個数`を`y .* (N-y)`です.
+上で書いたように, これに`2^i = pown 2L i`をかけています.
+あとはそこまでの和`acc`に積めば総和が計算できます.

@@ -13,6 +13,8 @@
 - [AtCoder](https://atcoder.jp/)
 - [AtCoder Problems, kenkoooo](https://kenkoooo.com/atcoder/)
     - [入門者向け300題](https://kenkoooo.com/atcoder/#/training)
+- [Haskell, arithmoi, Efficient basic number-theoretic functions](https://hackage.haskell.org/package/arithmoi)
+    - TODO F#に移植したい
 - [cannorin, F#を知ってほしい](https://qiita.com/cannorin/items/59d79cc9a3b64c761cd4)
 - [phasetr, AlgorithmsAndDataStructureByFSharp](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp)
 - [phasetr, mathcodes](https://github.com/phasetr/mathcodes)
