@@ -1,0 +1,47 @@
+* 97 C - Base -2 Number
+- created: 2022-12-24 sat
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC105)
+- [公式ページ](https://atcoder.jp/contests/abc105/tasks/abc105_c)
+- 要点: アルゴリズムの検討
+** 解説
+*** 入出力
+```fsharp
+let N = stdin.ReadLine() |> int
+solve N |> stdout.WriteLine
+```
+*** 大枠
+うまく実装すれば処理できると思いますが,
+ここでは単純に`N=0`かどうかで場合わけします.
+本体の処理は再帰関数で対応するため,
+大枠は次のように実装します.
+
+```fsharp
+  let rec frec acc n = "再帰関数"
+  if N=0 then [0] else frec [] N
+  |> List.map string |> String.concat ""
+```
+
+再帰関数は数値のリストを作って,
+最後に`String.concat`で連結します.
+*** 再帰関数
+まず引数にわたってくる`n`を`2`で割ってどんどん小さくします.
+`n=0`になったら積んできたリストを返せばよいため,
+`if n=0 then acc`は規定路線です.
+あとは本体の再帰プロセスを考えます.
+
+`-2`進の部分で少し工夫が必要です.
+結論から書くと次のように書けます.
+
+```fsharp
+  let rec frec acc n =
+    if n=0 then acc
+    else let k = abs (n%2) in frec (k::acc) ((k-n)/2)
+```
+
+F#の`%`は負の数に対して負の値を返すため,
+`abs`をかませて正の値にした上で`acc`に積みます.
+次に`frec`に食わせる値は`(k-n)/2`にしています.
+もちろんここは`(n-k)/(-2)`でいいのですが,
+符号分を手計算で処理しています.

@@ -61,9 +61,14 @@ module Arithmetics =
   bottom 21 |> should equal 1
   bottom 342 |> should equal 2
 
-  @"DivRem, Haskell divMod
-  http://www.fssnip.net/gH/title/DivRem-Operator"
+  @"DivRem, Haskell divMod: ただし負の数に対してHaskellの`divMod`とは挙動が違うため注意する.
+  http://www.fssnip.net/gH/title/DivRem-Operator
+
+  TODO Haskellの実装を確認して実装する
+  https://hackage.haskell.org/package/base-4.17.0.0/docs/src/GHC.Real.html#quotRem
+  https://hackage.haskell.org/package/base-4.17.0.0/docs/src/GHC.Real.html#divMod"
   System.Math.DivRem(7,3) |> should equal (2,1)
+  System.Math.DivRem(-9,2) |> should equal (-4,-1) // Haskellでは (-5,1)
 
   @"power, powmod 競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
   くり返し二乗法, iterative square method

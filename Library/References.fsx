@@ -97,10 +97,6 @@ module Array =
       av |> Array.mapi (fun k a -> (a,ibv) ||> Array.fold (fun acc (i,b) -> if i=k then f acc b else acc))
     accumulate (+) [|1000;2000;3000|] [|(2,4);(1,6);(0,3);(1,10)|] |> should equal [|1003;2016;3004|]
 
-  @"Addメソッド, ResizeArray
-  可変配列に対して破壊的に値を追加する."
-  let xa = ResizeArray<int>() in xa.Add(1); xa.Add(2); xa |> should equal (seq {1;2})
-
   @"Array.allPairs
   配列 1 と配列 2 の各要素のすべての組み合わせをタプルの要素とする配列を得る.
   結果となる配列の長さが膨大になる可能性があるため引数の配列の長さに注意すること.
@@ -2429,6 +2425,14 @@ module RegularExpression =
     matcher @"*** abc"   patternTitle |> should equal "*** abc"
     matcher @"**** abc"  patternTitle |> should equal "**** abc"
     matcher @"***** abc" patternTitle |> should equal "***** abc"
+
+module ResizeArray =
+  @"https://github.com/fsharp/fsharp/blob/master/src/utils/ResizeArray.fs
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-compilerservices-arraycollector-1.html#ResizeArray"
+
+  @"Addメソッド, ResizeArray
+  可変配列に対して破壊的に値を追加する."
+  let xa = ResizeArray<int>() in xa.Add(1); xa.Add(2); xa |> should equal (seq {1;2})
 
 module Sequence =
   @"docs

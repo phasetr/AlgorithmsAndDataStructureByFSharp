@@ -27,3 +27,5 @@
 - [93 D - Transit Tree Path](093/index.md)
 - [94 D - Blue and Red Balls](094/index.md)
 - [95 D - Xor Sum 4](095/index.md)
+- [96 D - Make Them Even](096/index.md)
+- [97 C - Base -2 Number](097/index.md)
