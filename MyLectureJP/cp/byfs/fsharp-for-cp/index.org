@@ -8,6 +8,7 @@
 
 - [Arithmetics.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Arithmetics.fsx)
     - 競プロ用の`mod`つき階乗・順列・組み合わせの例を収録している.
+    - その他`n`進展開とその復元などお役立ち関数も収録.
 - [Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Reference.fsx)
     - 基本は[公式リファレンス](https://fsharp.github.io/fsharp-core-docs/reference/)の参照用まとめ.
     - サンプルが即実行できるように一緒に載せている.

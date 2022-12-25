@@ -1,4 +1,4 @@
-* 80 C - Remainder Reminder
+* 080 C - Remainder Reminder
 - created: 2022-12-14 wed
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)

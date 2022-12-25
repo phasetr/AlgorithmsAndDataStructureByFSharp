@@ -1,4 +1,4 @@
-* 90 D - Even Relation
+* 090 D - Even Relation
 - created: 2022-12-20 tue
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)

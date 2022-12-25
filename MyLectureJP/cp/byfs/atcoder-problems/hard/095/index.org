@@ -1,4 +1,4 @@
-* 95 D - Xor Sum 4
+* 095 D - Xor Sum 4
 - created: 2022-12-23 fri
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)

@@ -1,4 +1,4 @@
-* 74 D - Harlequin
+* 074 D - Harlequin
 - created: 2022-12-03 sat
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)

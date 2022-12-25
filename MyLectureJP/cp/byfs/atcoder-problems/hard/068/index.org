@@ -1,4 +1,4 @@
-* 68 D - String Equivalence
+* 068 D - String Equivalence
 - created: 2022-11-30
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)

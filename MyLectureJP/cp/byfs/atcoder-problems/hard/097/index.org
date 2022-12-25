@@ -1,16 +1,20 @@
-* 97 C - Base -2 Number
+* 097 C - Base -2 Number
 - created: 2022-12-24 sat
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC105)
 - [公式ページ](https://atcoder.jp/contests/abc105/tasks/abc105_c)
 - 要点: アルゴリズムの検討
-** 解説
-*** 入出力
+** 入出力
 ```fsharp
 let N = stdin.ReadLine() |> int
 solve N |> stdout.WriteLine
 ```
+** 参考
+正の`n`に対する`n`進展開と`n`進展開を十進展開に直す関数をライブラリに記録しています.
+具体的には[Arithmetics.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Arithmetics.fsx)の`decimalToNary`と`naryToDecimal`関数です.
+必要に応じて参照してください.
+** 解説1: 再帰関数
 *** 大枠
 うまく実装すれば処理できると思いますが,
 ここでは単純に`N=0`かどうかで場合わけします.
@@ -45,3 +49,18 @@ F#の`%`は負の数に対して負の値を返すため,
 次に`frec`に食わせる値は`(k-n)/2`にしています.
 もちろんここは`(n-k)/(-2)`でいいのですが,
 符号分を手計算で処理しています.
+** 解説2: `unfold`による処理
+同じ処理を`unfold`で書きます.
+こちらは結論だけにします.
+
+```fsharp
+let solve N =
+  if N=0 then [|0|]
+  else N |> Array.unfold (fun k -> if k=0 then None else let m = abs(k%(-2)) in Some (m, (m-k)/2)) |> Array.rev
+  |> Array.map string |> String.concat ""
+
+let N = stdin.ReadLine() |> int
+solve N |> stdout.WriteLine
+```
+
+`unfold`は[公式リファレンス](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#unfold)または[Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/References.fsx)を参照してください.

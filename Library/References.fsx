@@ -795,6 +795,9 @@ module Array =
   Array.last [|3;1;2|] |> should equal 2
 
   @"Array.unfold
+  Array.unfold generator state,
+  generator: 'State -> ('T * 'State) option: 'Tは積まれる値, 'Stateは次の状態
+  state : 'State
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#unfold
   初期値を元に関数を累積的に実行して列をつくる.
   関数の引数は初期値および前回の結果とし,
@@ -813,9 +816,8 @@ module Array =
     fibs 10 |> should equal [|1;1;2;3;5;8;13;21;34;55|]
 
     @"フィボナッチ数 (Array.fold)"
-    let fib n =
-      fst
-      <| Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [|1..n|] // fib 10 = 55
+    let fib n = Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [|1..n|] |> fst
+    fib 10 |> should equal 55
 
   @"Array.where
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#where
@@ -1628,6 +1630,17 @@ module List =
   @"List.tryItem"
   List.tryItem 1 [0..3] |> should equal (Some 1)
   List.tryItem 4 [0..3] |> should equal None
+
+  @"List.unfold
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#unfold"
+  1 |> List.unfold (fun state -> if state > 50 then None else Some (state, state * 2)) |> should equal [1;2;4;8;16;32]
+
+  @"List.unzip
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#unzip"
+  [(1,"one");(2,"two")] |> List.unzip |> should equal ([1;2],["one";"two"])
+
+  @"List.unzip3
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#unzip3"
 
   @"Haskell until
   https://hackage.haskell.org/package/base-4.16.0.0/docs/Prelude.html#v:until"

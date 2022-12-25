@@ -278,7 +278,35 @@ module Arithmetics =
   10 % 2 |> should equal 0
   10 % 7 |> should equal 3
 
-  @"n進法 n-ary notation
+  @"n進法, (nary) n-ary expansion ver1
+  ver1は各桁を10進数の数値の配列で表す
+  cf. https://sirocco.hatenadiary.org/entry/20130416/1366121105"
+  @"10進数のNをn進展開する"
+  let decimalToNary n N = if N=0 then [|0|] else N |> Array.unfold (fun k -> if k=0 then None else Some (k%n, k/n)) |> Array.rev
+  let naryToDecimal n Na = (Na,(0,0)) ||> Array.foldBack (fun x (acc,i) -> (acc + x * pown n i, i+1)) |> fst
+  @"下から1ずつ増えているか確認すればよい"
+  let n = 2 in [|0..8|] |> Array.map (decimalToNary n) |> should equal [|[|0|];[|1|];[|1;0|];[|1;1|];[|1;0;0|];[|1;0;1|];[|1;1;0|];[|1;1;1|];[|1;0;0;0|]|]
+  let n = 3 in [|0..8|] |> Array.map (decimalToNary n) |> should equal [|[|0|];[|1|];[|2|];[|1;0|];[|1;1|];[|1;2|];[|2;0|];[|2;1|];[|2;2|]|]
+  let n = 4 in [|0..8|] |> Array.map (decimalToNary n) |> should equal [|[|0|];[|1|];[|2|];[|3|];[|1;0|];[|1;1|];[|1;2|];[|1;3|];[|2;0|]|]
+
+  let n = 2 in [|0..8|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|0..8|]
+  let n = 3 in [|0..8|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|0..8|]
+  let n = 4 in [|0..8|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|0..8|]
+
+  @"展開だけ見ると変な形だが負の数でも展開できて戻せる"
+  let n = 2 in [|-9..-1|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|-9..-1|]
+  let n = 3 in [|-9..-1|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|-9..-1|]
+  let n = 4 in [|-9..-1|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|-9..-1|]
+
+  @"負のnに対するn進展開, n=-2の場合
+  他のnだとそもそも展開の一意性からして問題?
+  cf. ../AtCoder/ABC105/C.md"
+  let decimalToNary n N = if N=0 then [|0|] else N |> Array.unfold (fun k -> if k=0 then None else let m = abs(k%n) in Some (m, (k-m)/n)) |> Array.rev
+  let n = -2 in [|0..8|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|0..8|]
+  let n = -2 in [|-9..0|] |> Array.map (decimalToNary n >> naryToDecimal n) |> should equal [|-9..0|]
+
+  @"n進法 n-ary notation ver2
+  ver2は各桁を1文字のアルファベットによる文字列で表す.
   使える文字の都合で n < 26 を仮定するが本質的ではない
   参考：https://webbibouroku.com/Blog/Article/haskell-nstring
   AtCoderで出てきた「26進数」：AtCoder/ABC171/C1.fsx"
