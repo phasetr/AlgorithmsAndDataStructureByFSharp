@@ -1,0 +1,128 @@
+* A03 - Two Cards
+- created: 2022-12-26 mon
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A03)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_c)
+- 要点: なし
+** 入出力
+```fsharp
+let N,K = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1])
+let Pa = stdin.ReadLine().Split() |> Array.map int
+let Qa = stdin.ReadLine().Split() |> Array.map int
+solve N K Pa Qa |> stdout.WriteLine
+```
+** 方針
+素直に全探索します.
+見つかり次第打ち切るタイプの`for`ループ(再帰関数)を回しても構いません.
+ここではもう少しF#らしい書き方にします.
+入力をフルスキャンするため必ずしも効率はよくありません.
+** 解説1: 関数型らしい(?)実装
+*** シンプルに関数をつなげる
+何はともあれ全探索用の全ての和を取ります.
+
+```fsharp
+Pa
+|> Array.map (fun p -> Qa |> Array.map (fun q -> p+q))
+```
+
+これで配列の配列(`int array array`)として和が取れます.
+これを`Array.concat`で整数の配列(`int array`)にします.
+
+```fsharp
+Pa
+|> Array.map (fun p -> Qa |> Array.map (fun q -> p+q))
+|> Array.concat
+```
+
+あとは`K`と一致する値があるか`filter`で確認したあと,
+配列が空であれば`"No"`,
+空でなければ`"Yes"`で処理すれば終わりです.
+まとめると次のように書けます.
+
+```fsharp
+Pa
+|> Array.map (fun p -> Qa |> Array.map (fun q -> p+q))
+|> Array.concat
+|> Array.filter (fun x -> x=K)
+|> Array.isEmpty
+|> fun b -> if b then "No" else "Yes"
+```
+*** 少し凝った関数を使う
+`collect`と`choose`を使って短くします.
+特に`map >> concat`が`collect`,
+`map >> filter`が`choose`です.
+実際に挙動を確認するのが一番です.
+上記リンクからREPLですぐに実行できるようなコードを準備しているため,
+必要に応じてそちらから確認してください.
+
+一応こちらにも入力値を用意します.
+
+```
+let N,K,Pa,Qa = 3,100,[|17;57;99|],[|10;36;53|]
+let N,K,Pa,Qa = 5,53,[|10;20;30;40;50|],[|1;2;3;4;5|]
+```
+
+具体的に書き換えましょう.
+まずは`map >> concat`を`collect`にします.
+
+```fsharp
+Pa
+|> Array.collect (fun p -> Qa |> Array.map (fun q -> p+q))
+|> Array.filter (fun x -> x=K)
+|> Array.isEmpty
+|> fun b -> if b then "No" else "Yes"
+```
+
+次は`map >> filter`を`choose`にします.
+慣れていないとすぐに自力で書き換えられないかもしれません.
+これを見て参考にしてください.
+
+```fsharp
+Pa
+|> Array.collect (fun p -> Qa |> Array.choose (fun q ->
+   let s = p+q
+   if s=K then Some s else None))
+|> Array.isEmpty
+|> fun b -> if b then "No" else "Yes"
+```
+
+`choose`の中の関数は`filter`で残したい値は条件分岐で`Some x`を返し,
+排除したい値は`None`を返すようにします.
+
+見づらくなると思うならやる必要はありませんが,
+`choose`に与えるラムダを一行にまとめたければ`let in`が使えます.
+
+```fsharp
+Pa
+|> Array.collect (fun p -> Qa |> Array.choose (fun q -> let s = p+q in if s=K then Some s else None))
+|> Array.isEmpty
+|> fun b -> if b then "No" else "Yes"
+```
+** 解説2: 先に添字の配列を作る
+内包表記の使い方を説明するだけです.
+先の処理は本質的に`map`を二つ使います.
+必ずしも見やすくありません.
+どうせ全探索するなら命令型的に配列の添字を作っておく手法もあります.
+
+次の内包表記で走査したい全添字の組のタプルからなる配列(`(int*int)[]`)が作れます.
+
+```fsharp
+  [| for i in 0..N-1 do for j in 0..N-1 do (i,j) |]
+```
+
+これに対して`Array.choose`で`map >> filter`します.
+
+```fsharp
+  [| for i in 0..N-1 do for j in 0..N-1 do (i,j) |]
+  |> Array.choose (fun (i,j) -> let s = Pa.[i]+Qa.[j] in if s=K then Some s else None)
+```
+
+あとは配列が空かどうかで判定します.
+
+```fsharp
+let solve N K (Pa:int[]) (Qa:int[]) =
+  [| for i in 0..N-1 do for j in 0..N-1 do (i,j) |]
+  |> Array.choose (fun (i,j) -> let s = Pa.[i]+Qa.[j] in if s=K then Some s else None)
+  |> fun Xa -> if Array.isEmpty Xa then "No" else "Yes"
+```

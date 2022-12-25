@@ -1,3 +1,5 @@
 * 競技プログラミングの鉄則 演習問題集への解説
 - [A01 - The First Problem](A01/index.md)
 - [A02 - Linear Search](A02/index.md)
+- [A03 - Two Cards](A03/index.md)
+- [A04 - Binary Representation 1](A04/index.md)

@@ -2355,6 +2355,31 @@ module PriorityQueue =
   pq.Dequeue() |> should equal 1
   pq.Dequeue() |> should equal 0
 
+  @"基本的な挙動のテスト, 優先度設定がどう動くか: 優先度は第二引数"
+  module PQTest =
+    let pq = PriorityQueue<int, int>()
+    for i in 1..5 do pq.Enqueue(i,1)
+    pq.Dequeue() |> should equal 1
+    pq.Dequeue() |> should equal 5
+    pq.Dequeue() |> should equal 4
+    pq.Dequeue() |> should equal 3
+    pq.Dequeue() |> should equal 2
+
+  @"プロパティ: Comparer"
+  @"プロパティ: Count"
+  @"プロパティ: UnorderedItems"
+
+  @"メソッド Clear"
+  @"メソッド Dequeue"
+  @"メソッド Enqueue"
+  @"メソッド EnqueueDequeue"
+  @"メソッド EnqueueRange"
+  @"メソッド EnsureCapacity"
+  @"メソッド Peek"
+  @"メソッド TrimExcess"
+  @"メソッド TryDequeue"
+  @"メソッド TryPeek"
+
 module Queue =
   @".NET Queue, FIFO
   https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1?view=net-6.0"
@@ -3316,8 +3341,18 @@ module String =
     let a = "TEST"
     $"{a}" |> should equal "TEST"
 
-    @"ゼロパディング"
+    @"数値を直接ゼロパディング
+    cf. https://ichiroku11.hatenablog.jp/entry/2016/12/08/231032"
     sprintf "%04i" 42 |> should equal "0042"
+    @"標準の数値書式指定"
+    let number = 123
+    System.String.Format($"{number:d5}") |> should equal "00123"
+    @"ToString"
+    number.ToString("d5") |> should equal "00123"
+    @"カスタム数値書式指定: 動かない?"
+    // System.String.Format($"{number:00000}")
+    @"https://atmarkit.itmedia.co.jp/ait/articles/0909/17/news134.html"
+    let n = 123 in n.ToString().PadLeft(5,'0') |> should equal "00123"
 
   @"System.String.StartsWith
   文字列の先頭文字列を判定するメソッド.
