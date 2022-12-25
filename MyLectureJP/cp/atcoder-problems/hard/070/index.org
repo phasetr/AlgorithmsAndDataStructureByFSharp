@@ -1,7 +1,7 @@
 * 070 C - Snuke Festival
 - created: 2022-12-01
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ARC084)
 - [公式ページ, ABC 077 C - Snuke Festival](https://atcoder.jp/contests/abc077/tasks/arc084_a)
 - [公式解説](https://atcoder.jp/contests/abc077/editorial), [PDF](https://img.atcoder.jp/arc084/editorial.pdf)

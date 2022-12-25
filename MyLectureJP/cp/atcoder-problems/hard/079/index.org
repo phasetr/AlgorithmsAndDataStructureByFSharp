@@ -1,7 +1,7 @@
 * 079 D Handstand
 - created: 2022-12-13 tue
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC124)
 - [公式ページ](https://atcoder.jp/contests/abc124/tasks/abc124_d)
 - [公式解説](https://atcoder.jp/contests/abc124/editorial)

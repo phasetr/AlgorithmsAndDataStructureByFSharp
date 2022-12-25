@@ -1,7 +1,7 @@
 * 084 C - Shopping Street
 - created: 2022-12-16 fri
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC080)
 - [公式ページ](https://atcoder.jp/contests/abc080/tasks/abc080_c)
 - [ユーザー解説](https://blog.hamayanhamayan.com/entry/2017/12/03/234250)

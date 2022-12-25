@@ -1,7 +1,7 @@
 * 091 D - Coloring Edges on Tree
 - created: 2022-12-21 wed
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC146)
 - [公式ページ](https://atcoder.jp/contests/abc146/tasks/abc146_d)
 - 要点: アルゴリズムの検討・実装

@@ -1,7 +1,7 @@
 * 068 D - String Equivalence
 - created: 2022-11-30
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/PANASONIC2020)
 - [公式ページ, Panasonic 2020 D - String Equivalence](https://atcoder.jp/contests/panasonic2020/tasks/panasonic2020_d)
 - [公式解説](https://atcoder.jp/contests/panasonic2020/editorial), [PDF](https://img.atcoder.jp/panasonic2020/editorial.pdf)

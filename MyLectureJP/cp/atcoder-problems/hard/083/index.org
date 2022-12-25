@@ -1,7 +1,7 @@
 * 083 A - Darker and Darker
 - created: 2022-12-15 thu
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/AGC033)
 - [公式ページ](https://atcoder.jp/contests/agc033/tasks/agc033_a)
 ** 参考

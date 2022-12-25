@@ -1,7 +1,7 @@
 * 073 C - Strange Bank
 - created: 2022-12-03 sat
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC099)
 - [公式ページ, ABC099](https://atcoder.jp/contests/abc099/tasks/abc099_c)
 - [公式解説](https://atcoder.jp/contests/abc099/editorial), [PDF](https://img.atcoder.jp/abc099/editorial.pdf)

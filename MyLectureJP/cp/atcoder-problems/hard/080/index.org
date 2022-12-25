@@ -1,7 +1,7 @@
 * 080 C - Remainder Reminder
 - created: 2022-12-14 wed
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ARC091)
 - [公式ページ](https://atcoder.jp/contests/abc090/tasks/arc091_b)
 ** 解説

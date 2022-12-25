@@ -1,0 +1,3 @@
+* 競技プログラミングの鉄則 演習問題集への解説
+- [A01 - The First Problem](A01/index.md)
+- [A02 - Linear Search](A02/index.md)

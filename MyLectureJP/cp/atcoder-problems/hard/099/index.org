@@ -1,7 +1,7 @@
 * 099 B - Simplified mahjong
 - created: 2022-12-25 sun
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/AGC003)
 - [公式ページ](https://atcoder.jp/contests/agc003/tasks/agc003_b)
 - 要点: アルゴリズムの検討

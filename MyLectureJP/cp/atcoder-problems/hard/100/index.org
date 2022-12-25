@@ -1,7 +1,7 @@
 * 100 C - Vacant Seat
 - created: 2022-12-25 sun
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/APC001)
 - [公式ページ](https://atcoder.jp/contests/apc001/tasks/apc001_c)
 - 要点: アルゴリズムの検討, `for break`の処理

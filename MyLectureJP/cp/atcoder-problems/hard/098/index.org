@@ -1,7 +1,7 @@
 * 098 C - Palindromic Matrix
 - created: 2022-12-24 sat
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
-- [競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)
+- [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/CODEFESTIVAL2017qualA)
 - [公式ページ](https://atcoder.jp/contests/code-festival-2017-quala/tasks/code_festival_2017_quala_c)
 - 要点: アルゴリズムの検討
