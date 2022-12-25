@@ -3,22 +3,9 @@
 ** 記事群の目次
 - [はじめに](intro/index.md)
 - [競技プログラミングのためのF#入門](fsharp-for-cp/index.md)
-- [AtCoder Problems](atcoder-problems/index.md)
-** TODO
-- [競技プログラミングの鉄則 演習問題集](https://atcoder.jp/contests/tessoku-book)
-- [レッドコーダーが教える、競プロ・AtCoder上達のガイドライン【上級編：目指せレッドコーダー！】](https://qiita.com/e869120/items/acba3dd8649d913102b5)
-    - [3-3. 分野別 上級者が解くべき過去問精選 100 + 50 問](https://qiita.com/e869120/items/acba3dd8649d913102b5#3-3-分野別上級者が解くべき過去問精選-100--50-問)
-    - [3-4. 「競プロ典型 90 問」のすすめ（2021/7/12 追記）](https://qiita.com/e869120/items/acba3dd8649d913102b5#3-4-競プロ典型-90-問のすすめ2021712-追記)
+- [AtCoder Problems解説集](../atcoder-problems/index.md)
 ** 参考記事・サイト
-- [AtCoder](https://atcoder.jp/)
-- [AtCoder Problems, kenkoooo](https://kenkoooo.com/atcoder/)
-    - [入門者向け300題](https://kenkoooo.com/atcoder/#/training)
-- [Haskell, arithmoi, Efficient basic number-theoretic functions](https://hackage.haskell.org/package/arithmoi)
-    - TODO F#に移植したい
+- [競プロ用メインページ](../index.md)
 - [cannorin, F#を知ってほしい](https://qiita.com/cannorin/items/59d79cc9a3b64c761cd4)
-- [phasetr, AlgorithmsAndDataStructureByFSharp](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp)
-    - [Arithmetics.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Arithmetics.fsx)
-    - [Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Reference.fsx)
-- [phasetr, mathcodes](https://github.com/phasetr/mathcodes)
-- [AOJ, Aizu Online Judge](https://onlinejudge.u-aizu.ac.jp/home)
-- [アルゴ式](https://algo-method.com/)
+- [AtCoder に登録したら次にやること ～ これだけ解けば十分闘える！過去問精選 10 問 ～](https://qiita.com/drken/items/fd4e5e3630d0f5859067)
+    - [F#編](https://qiita.com/kuuso1/items/606b75c172cafa1d07f6)

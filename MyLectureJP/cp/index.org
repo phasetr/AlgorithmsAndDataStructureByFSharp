@@ -3,6 +3,29 @@
 - [issue・プルリク用のGitHubへのリンク](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)
 ** 配下の記事一覧
 - [F#による関数競技プログラミングへの道](byfs/index.md)
+- [AtCoder Problems解説集](atcoder-problems/index.md)
+** (主に)F#による学習ログ
+- [GitHub, AlgorithmsAndDataStructureByFSharp](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp)
+    - [Arithmetics.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Arithmetics.fsx)
+    - [Reference.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Reference.fsx)
+- [phasetr, mathcodes](https://github.com/phasetr/mathcodes)
+** オンラインジャッジサイト
+- [AtCoder](https://atcoder.jp/)
+- [Aizu Online Judge, AOJ](https://onlinejudge.u-aizu.ac.jp/home)
+- [アルゴ式](https://algo-method.com/)
+** TODO 取り組みたい・F#版解説を作りたいオンライン教材
+- [競技プログラミングの鉄則 演習問題集](https://atcoder.jp/contests/tessoku-book)
+- [Educational DP Contest / DP まとめコンテスト](https://atcoder.jp/contests/dp)
+- [Typical DP Contest](https://atcoder.jp/contests/tdpc)
+- [AtCoder Tags](https://atcoder-tags.herokuapp.com/)
+- [レッドコーダーが教える、競プロ・AtCoder上達のガイドライン【上級編：目指せレッドコーダー！】](https://qiita.com/e869120/items/acba3dd8649d913102b5)
+    - [3-3. 分野別 上級者が解くべき過去問精選 100 + 50 問](https://qiita.com/e869120/items/acba3dd8649d913102b5#3-3-分野別上級者が解くべき過去問精選-100--50-問)
+    - [3-4. 「競プロ典型 90 問」のすすめ（2021/7/12 追記）](https://qiita.com/e869120/items/acba3dd8649d913102b5#3-4-競プロ典型-90-問のすすめ2021712-追記)
+- [AtCoder Problems, kenkoooo](https://kenkoooo.com/atcoder)
+    - [AtCoder Problems Training, 入門者向け300題](https://kenkoooo.com/atcoder/#/training)
+    - 復習がてら解説を作っていない分を作る
+- [Haskell, arithmoi, Efficient basic number-theoretic functions](https://hackage.haskell.org/package/arithmoi)
+    - TODO F#に移植したい
 ** 学習メモ: 特に初学時
 - AtCoderなど解答・解説がある状況を前提にする.
 - まずは適当な時間を決めて自力で考える.

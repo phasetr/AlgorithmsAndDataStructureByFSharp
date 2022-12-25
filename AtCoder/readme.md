@@ -9,25 +9,13 @@
   - Haskell GHC 7.10.3: 3014
   - Haskell GHC 8.8.3: 4027
 - [Test cases in contents](https://atcoder.jp/posts/20)
-- [AtCoder に登録したら次にやること ～ これだけ解けば十分闘える！過去問精選 10 問 ～](https://qiita.com/drken/items/fd4e5e3630d0f5859067)
-  - [F# 編](https://qiita.com/kuuso1/items/606b75c172cafa1d07f6)
-- [C++: 解説放送で作ったライブラリ集](https://github.com/atcoder-live/library)
-- [AtCoder testcases](https://www.dropbox.com/sh/nx3tnilzqz7df8a/AAAYlTq2tiEHl5hsESw6-yfLa?dl=0)
+  - [AtCoder testcases (Dropbox)](https://www.dropbox.com/sh/nx3tnilzqz7df8a/AAAYlTq2tiEHl5hsESw6-yfLa?dl=0)
 - [atcoder-tools](https://github.com/kyuridenamida/atcoder-tools)
-- [AtCoder Problems](https://kenkoooo.com/atcoder)
-  - [AtCoder Problems Training](https://kenkoooo.com/atcoder/#/training)
-- [Educational DP Contest / DP まとめコンテスト](https://atcoder.jp/contests/dp)
-- [Typical DP Contest](https://atcoder.jp/contests/tdpc)
-- [AtCoder Tags](https://atcoder-tags.herokuapp.com/)
-- [競技プログラミングの鉄則 演習問題集](https://atcoder.jp/contests/tessoku-book)
+- [C++: 解説放送で作ったライブラリ集](https://github.com/atcoder-live/library)
 
-## Project making
+## For study
 
-```sh
-mkdir "dirname"
-cd "dirname"
-dotnet new console -n "run" -lang F#
-```
+- [競技プログラミング (in Japanese)](https://phasetr.com/archive/fc/pg/cp/)
 
 ## Benchmark (people)
 
