@@ -1675,6 +1675,13 @@ module Loop =
   for i = 1 to 10 do printf "%d " i done
   for i = 10 downto 1 do printf "%d " i done
 
+  @"for+ifでループと同時にフィルターする
+  cf. ../AtCoder/tessoku-book/A05/A05_fs_00_02.fsx"
+  module ForPlusIf =
+    let N,K = 3000,4000
+    [| for i in 1..N do for j in 1..N do let x=K-i-j in if 0<x && x<=N then x |] |> Array.length
+    |> should equal 6498498
+
   @"二重ループとforによる内包表記
   https://stackoverflow.com/questions/1888451/list-comprehension-in-f"
   let evens n = seq { for x in 1 .. n do if x%2=0 then yield x }

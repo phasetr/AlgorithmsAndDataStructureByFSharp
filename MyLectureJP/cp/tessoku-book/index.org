@@ -3,3 +3,4 @@
 - [A02 - Linear Search](A02/index.md)
 - [A03 - Two Cards](A03/index.md)
 - [A04 - Binary Representation 1](A04/index.md)
+- [A05 - Three Cards](A05/index.md)

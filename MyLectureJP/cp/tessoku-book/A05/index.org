@@ -1,0 +1,59 @@
+* A05 - Three Cards
+- created: 2022-12-26 mon
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A05)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_e)
+- 要点: アルゴリズム, ループを減らす
+** 入出力
+```fsharp
+let N,K = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1])
+solve N K |> stdout.WriteLine
+```
+** 方針
+これもよく出てくる処理です.
+単純に三重ループを回すとTLEで時間内に終わりません.
+時間内に終わらせる工夫が必要です.
+** 解説
+*** 単純な処理の累積
+三つ目のループをどうにかして回避する必要があります.
+発想を転換して二つ目までのループで次のような和を作りましょう.
+
+```fsharp
+  [| for i in 1..N do for j in 1..N do yield K-i-j |]
+```
+
+この配列は`N^2`個の要素を持っています.
+仮に三つ目のループを回すとしてその変数を`x`とすると,
+`x = K-i-j`が所定の範囲である`1`から`N`におさまっていれば条件をみたします.
+そこで`filter`を使ってチェックしましょう.
+
+```fsharp
+  [| for i in 1..N do for j in 1..N do yield K-i-j |]
+  |> Array.filter (fun x -> 1<=x && x<=N)
+```
+
+これで条件をみたす要素だけが抜き出せました.
+あとはこの配列の長さを取れば終わりです.
+
+```fsharp
+  [| for i in 1..N do for j in 1..N do yield K-i-j |]
+  |> Array.filter (fun x -> 1<=x && x<=N)
+  |> Array.length
+```
+*** `for`の中でフィルターする
+他の言語と同じく`for`の内包表記の中で次のようにフィルターできます.
+
+```fsharp
+  [| for i in 1..N do for j in 1..N do let x=K-i-j in if 1<=x && x<=N then x |]
+```
+
+あとは同じく配列の長さを取れば終わりです.
+
+```fsharp
+let solve N K =
+  [| for i in 1..N do for j in 1..N do let x=K-i-j in if 1<=x && x<=N then x |] |> Array.length
+```
+
+`filter`で`N^2`個の配列を再びチェックしなくていい分,
+こちらの方が二割ほど速いです.
