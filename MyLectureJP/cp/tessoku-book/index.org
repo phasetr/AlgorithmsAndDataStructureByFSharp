@@ -3,4 +3,6 @@
 - [A02 - Linear Search](A02/index.md)
 - [A03 - Two Cards](A03/index.md)
 - [A04 - Binary Representation 1](A04/index.md)
-- [A05 - Three Cards](A05/index.md)
+- [A06 - How Many Guests?](A06/index.md)
+- [A07 - Event Attendance](A07/index.md)
+- [A08 - Two Dimensional Sum](A08/index.md)

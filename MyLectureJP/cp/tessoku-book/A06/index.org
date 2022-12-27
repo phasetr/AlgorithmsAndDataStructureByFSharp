@@ -1,0 +1,106 @@
+* A06 - How Many Guests?
+- created: 2022-12-27 tue
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A06)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/math_and_algorithm_ai)
+- 要点: アルゴリズム, ループを減らす
+** 入出力
+```fsharp
+let N,Q = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1])
+let Aa = stdin.ReadLine().Split() |> Array.map int
+let Ia = Array.init Q (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1])
+solve N Q Aa Ia |> Array.iter stdout.WriteLine
+```
+** 方針
+都度入場者数を計算していたら間に合わないため先に計算します.
+あとの処理を綺麗に書くための計算法もポイントです.
+** 解説
+*** `i`日目までの入場者数の計算
+累積的な計算が必要です.
+もちろん`Ai`から素直に計算すれば問題ありません.
+例えば次のように書けます.
+
+```fsharp
+let Na0 = Array.create N 0
+for i in 0..N-1 do
+  if i=0 then Na0.[i] <- Aa.[i]
+  else Na0.[i] <- Aa.[i]+Na0.[i-1]
+```
+
+`for`で破壊的に書きました.
+もう少し関数型らしく書きたければ次のように`fold`で書けます.
+
+```fsharp
+let Na0 =
+  (Array.zeroCreate N, [|0..N-1|])
+  ||> Array.fold (fun Na0 i ->
+    if i=0 then Na0.[i] <- Aa.[i]; Na0
+    else Na0.[i] <- Aa.[i]+Na0.[i-1]; Na0)
+```
+
+ここで`Na0.[i] <- Aa.[i]`などは`unit`を返すだけで配列を返さないため,
+明示的に配列`Na0`を返す必要があります.
+
+少し余談を挟みます.
+ちなみに`fold`の内部で破壊的な計算をしています.
+しかしこれは`fold`の外部には漏れません.
+関数プログラミングでもパフォーマンスを求める場合は破壊的な処理を使いますし,
+破壊的な操作はできる限り外に漏れないようにします.
+いまは必ずしもパフォーマンスを求める場面ではないものの,
+F#の配列に対する仕様によって破壊的な処理が便利な部分です.
+Haskellでは明示的にモナド環境下で作業するように強制されます.
+
+さて, これを使って計算しても構いません.
+ただ後の処理がやや面倒になるため,
+次のように`scan`を使って累積和を計算しましょう.
+
+```fsharp
+  let Na = (0,Aa) ||> Array.scan (+)
+```
+
+これと先の`Na0`が何が違うかは実行するとわかります.
+問題で出てきた入力例で確認しましょう.
+
+```fsharp
+#r "nuget: FsUnit"
+open FsUnit
+
+let N,Q,Aa,Ia = 10,5,[|8;6;9;1;2;1;10;100;1000;10000|],[|(2,3);(1,4);(3,9);(6,8);(1,10)|]
+
+(Array.zeroCreate N, [|0..N-1|])
+||> Array.fold (fun Na0 i ->
+  if i=0 then Na0.[i] <- Aa.[i]; Na0
+  else Na0.[i] <- Aa.[i]+Na0.[i-1]; Na0)
+|> should equal [|8; 14; 23; 24; 26; 27; 37; 137; 1137; 11137|]
+
+(0,Aa) ||> Array.scan (+) |> should equal [|0; 8; 14; 23; 24; 26; 27; 37; 137; 1137; 11137|]
+```
+
+後者は先頭に`0`がはさまっています.
+`(0,Aa)`とした`0`です.
+今回はこれを使いますが,
+もし先頭の`0`がほしくない場合は例えば次のように書くといいでしょう.
+
+```fsharp
+(Array.head Aa, Array.tail Aa) ||> Array.scan (+)
+|> should equal [|8; 14; 23; 24; 26; 27; 37; 137; 1137; 11137|]
+```
+*** クエリへの対応
+先の`Na`を使えば素直に計算できます.
+
+```fsharp
+  let Na = (0,Aa) ||> Array.scan (+)
+  Ia |> Array.map (fun (l,r) -> Na.[r]-Na.[l-1])
+```
+
+ここでのポイントは`Na.[r] - Na.[l-1]`です.
+`Li`には`1`が来る場合もあり,
+この場合は`Ri`日目までの全ての入場者を計算する必要があります.
+特に`Na.[l-1]`の減算なしで`Na.[r]`だけを返す必要があって条件分岐が入ります.
+さらに条件分岐で適切な対処をしなければ,
+`Na.[l-1]`は`l-1 = -1`に対する配列外参照の実行時エラーまで起こり得ます.
+これが先の`scan`での初項`0`の意義です.
+
+コードがわかりにくくなるためわざわざ書きませんが,
+`scan`による初項`0`がなくてももちろん正しいコードは書けます.
