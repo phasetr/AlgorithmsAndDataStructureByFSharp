@@ -6,3 +6,4 @@
 - [A06 - How Many Guests?](A06/index.md)
 - [A07 - Event Attendance](A07/index.md)
 - [A08 - Two Dimensional Sum](A08/index.md)
+- [A09 - Winter in ALGO Kingdom](A09/index.md)
