@@ -1,0 +1,60 @@
+* A10 - Resort Hotel
+- created: 2022-12-28 wed
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A10)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_j)
+- 要点: アルゴリズム, ループを減らす
+** 入出力
+```fsharp
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int
+let D = stdin.ReadLine() |> int
+let Ia = Array.init D (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1])
+solve N Aa D Ia |> Array.iter stdout.WriteLine
+```
+** 方針
+ふつうに都度計算していたら凄まじい時間がかかるため,
+やはりクエリ処理の前の事前計算が重要です.
+真ん中を抜いた配列に対する最大値の計算は,
+左から`Li-1`番目までの最大値と,
+右から`Ri+1`番目からの最大値を計算すればよいです.
+特に左から`i`番目までの最大値と,
+右から`i`番目までの最大値を比較すればよいため,
+これを事前に計算しておけば十分です.
+
+この方針さえ立てばあとは素直に実装できます.
+** 解説
+命令型的に`for`を回す計算でも対応できます.
+ここでは関数プログラミングらしい処理として`scan max`を使います.
+
+```fsharp
+  let La = Array.scan max 0 Aa
+  let Ra = Array.scanBack max Aa 0
+```
+
+`La`が左からの最大値で`Ra`が右からの最大値です.
+それぞれ左右の端からはじめるには`scan`と`scanBack`と使えばよいです.
+気分として`scanBack`は`Array.rev >> Array.scan`だと思ってください.
+上のコードを見ればわかるように初期値`0`と`Aa`の引数の順番が入れ替わっています.
+ちなみに`scan`と`scanBack`はHaskellだと`foldl`と`foldr`で,
+この`l`と`r`は`left`と`right`に由来します.
+
+あとはクエリごとに最大値を比較すれば終わりです.
+
+```fsharp
+  Ia |> Array.map (fun (l,r) -> max La.[l-1] Ra.[r])
+```
+
+`scan`と`scanBack`は初期値`0`に由来する「余計な項」が入っている点に注意して添字を指定してください.
+公式の入力例で`La`と`Ra`は次のようになっています.
+
+```fsharp
+Array.scan max 0 Aa |> should equal [|0; 1; 2; 5; 5; 5; 5; 5|]
+Array.scanBack max Aa 0 |> should equal [|5; 5; 5; 5; 3; 3; 1; 0|]
+```
+
+`scan`では最初に`0`が,
+`scanBack`では最後に`0`が入ります.
+REPLを使うと簡単に確認できます.
+

@@ -7,3 +7,6 @@
 - [A07 - Event Attendance](A07/index.md)
 - [A08 - Two Dimensional Sum](A08/index.md)
 - [A09 - Winter in ALGO Kingdom](A09/index.md)
+- [A10 - Resort Hotel](A10/index.md)
+- [A11 - Binary Search 1](A11/index.md)
+- [A12 - Printer](A11/index.md)

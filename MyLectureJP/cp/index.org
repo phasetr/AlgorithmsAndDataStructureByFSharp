@@ -4,6 +4,7 @@
 ** 配下の記事一覧
 - [F#による関数競技プログラミングへの道](byfs/index.md)
 - [AtCoder Problems解説集](atcoder-problems/index.md)
+- [競技プログラミングの鉄則 演習問題集への解説](tessoku-book/index.md)
 ** (主に)F#による競技プログラミングの学習ログ
 - [GitHub, AlgorithmsAndDataStructureByFSharp](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp)
     - [Arithmetics.fsx](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/blob/master/Library/Arithmetics.fsx)
