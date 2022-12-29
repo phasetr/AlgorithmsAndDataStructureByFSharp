@@ -1,0 +1,97 @@
+* A13 - Close Pairs
+- created: 2022-12-29 thu
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A13)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_m)
+- 要点: アルゴリズム
+** 入出力
+```fsharp
+let N,K = stdin.ReadLine().Split() |> (fun x -> int x.[0], int64 x.[1])
+let Ia = stdin.ReadLine().Split() |> Array.map int64
+solve N K Ia |> stdout.WriteLine
+```
+** 方針
+尺取り法で対処します.
+ここでは尺取り法は解説しません.
+オンライン上の資料としては例えば[ここ](https://qiita.com/drken/items/ecd1a472d3a0e7db8dce)を参考にしてください.
+
+C/C++/Rustなど速い言語,
+またはHaskellでは問題ないようですが,
+AtCoder上のF#では単純な探索でTLEしてしまったため,
+尺取り法の探索部分を二分探索で書く必要がありました.
+
+2022/12時点の私の実装力だと,
+二分探索ではまり倒したために力づくの部分があり,
+あまり綺麗なコードになっていません.
+いつかもう少しすっきり書き直したいです.
+** 解説
+*** 前処理
+今回は親切に入力の配列がソートされているため不要です.
+実際には必要に応じてソートします.
+*** 大枠
+配列の各添字に対して条件をみたす最長の添字を取ればよいため,
+各`i`ごとに最長の添字を探す関数を`search`とすれば実装の本体は次のように書けます.
+
+```fsharp
+  [|0..N-1|] |> Array.sumBy (fun i -> search i |> function | Some j -> (j-i |> int64) | None -> 0L)
+```
+
+条件をみたす添字がない可能性があるため,
+`search`の返り値は`Option`にしています.
+特に条件をみたす添字`j`に対して`j-i`を積み,
+そうでない場合は`0`にして和を取れば求める組み合わせの総和が得られます.
+ここで一般に総和の値は`int`の範囲を越えるため,
+`j-i`に`int64`をかませる必要があります.
+実際これで`RE`をくらって原因がわからず30分ほどはまり倒しました.
+
+何はともあれあとは`search`を実装すれば終わりです.
+*** `search`の実装
+二分探索に入る前にまずは条件をみたす添字があるかどうかを判定します.
+ここでは次のように書きます.
+
+```fsharp
+  let search i = if i=N-1 || K<Ia.[i+1]-Ia.[i] then None else Some "二分探索"
+```
+
+`i=N-1`の場合は後続がありません.
+また既にソートされているため,
+配列の次の添字との差が既に`K`を越えていれば条件をみたす添字がありません.
+したがってこの二者の場合は`None`を返します.
+あとは探索値が必ず存在する仮定のもとで二分探索します.
+*** 二分探索の実装
+まず真偽計算用の関数を用意します.
+
+```fsharp
+  let p i j = Ia.[j] - Ia.[i] <= K
+```
+
+各`i`ごとにこれを使って次のように計算します.
+
+
+```fsharp
+  let search i = if i=N-1 || K<Ia.[i+1]-Ia.[i] then None else Some (bsearch (p i) i (N-1))
+```
+
+あとは`p`または`p i`を使って次のように二分探索を書きます.
+
+```fsharp
+  let rec bsearch pi l r =
+    if r<=l+1 then if pi r then r else r-1
+    else
+      let m = (l+r)/2
+      if pi m then bsearch pi m r
+      else bsearch pi l (m-1)
+```
+
+いつも通り終了条件は`r <= l + 1`です.
+実際に実行してみるとわかるように,
+上記の実装では`r`が適切な添字の値になるとは限りません.
+そこで`pi r = p i r`を判定して条件をみたすなら`r`を,
+みたさない場合は`1`を引いた`r-1`にします.
+(TODO: ここでスカっと`r`を返したい.)
+
+次は再帰部分です.
+これもいつも通りまずは中点を取るべく`m = (l+r)/2`を取ります.
+もし`Ia.[m]`が条件をみたすなら`m`以上`r`以下から新たに添字を探します.
+もし`Ia.[m]`が条件をみたさないから`l`以上`m-1`以下から新たに添字を探します.

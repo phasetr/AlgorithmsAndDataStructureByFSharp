@@ -1,0 +1,85 @@
+* A14 - Four Boxes
+- created: 2022-12-29 thu
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A14)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_n)
+- 要点: アルゴリズム
+** 入出力
+```fsharp
+let N,K = stdin.ReadLine().Split() |> fun x -> int x.[0], int64 x.[1]
+let Aa = stdin.ReadLine().Split() |> Array.map int64
+let Ba = stdin.ReadLine().Split() |> Array.map int64
+let Ca = stdin.ReadLine().Split() |> Array.map int64
+let Da = stdin.ReadLine().Split() |> Array.map int64
+solve N K Aa Ba Ca Da |> stdout.WriteLine
+```
+** 方針
+全て正の数に対する状況下で和を考える前提では`K`以下の要素だけ考えればよいと言ったところで,
+データによっては全探索が必要です.
+もちろん単純な計算では`O(N^4)`で全く間に合いません.
+今回は`N <= 1000`であるため`O(N^3)`程度まで計算量を減らす必要があります.
+
+そこで豪快な手に打って出ます.
+まとめ方は何でも構いませんが,
+例えば`Aa`と`Ba`,
+`Ca`と`Da`に対してそれぞれ和を取ってまとめて要素が`N^2`個ある配列を二つ作り,
+一方に対しては全探索,
+他方に対しては二分探索して計算量を減らします.
+これで計算量が`N^2 * log N`程度にまで落とせます.
+** 解説
+*** 前処理
+ここでは和を取ってまとめた配列を二つ作ります.
+二分探索用のソートが必要です.
+さらに全ての要素は`1`以上であるため,
+`K`以上の項を見る必要はないためそれもフィルターして外しましょう.
+つまり次のような量を用意します.
+
+```fsharp
+  let Xa = [| for a in Aa do for b in Ba do let s=a+b in if s<K then yield s |] |> Array.sort
+  let L1 = Xa.Length-1
+  let Ya = [| for c in Ca do for d in Da do let s=c+d in if s<K then yield s |] |> Array.sort
+  let L2 = Ya.Length-1
+```
+
+どちらか一方だけソートすれば十分です.
+ここではデバッグしやすいように両方ソートしました.
+処理速度を求めるなら余計な処理は削りましょう.
+
+ここでフィルター処理の結果,
+どちらかの配列が空になっている可能性があります.
+全ての要素が`1`以上である前提下で既に二項の和で`K`を越えている以上,
+どちらかの配列が空なら問答無用で`No`です.
+*** 大枠
+今回のデータの範囲では上記前処理の上で全探索してもそれほど時間は変わりませんでしたが,
+命令型言語での`while`ループのように見つかり次第すぐに打ち切るべく今回は再帰で書きます.
+処理のメインは次のように書けます.
+
+```fsharp
+  // Xaに関して全探索
+  let rec frec i =
+    if i=L1 then "No"
+    elif "各`i`ごとに`Ya`に対して二分探索" then "Yes"
+    else frec (i+1)
+  if L1=(-1) || L2=(-1) then "No" else frec 0
+```
+
+あとは二分探索を書けば終わりです.
+*** 二分探索の実装
+これはもはや定型処理です.
+
+```fsharp
+  let rec bsearch x l r =
+    if r<=l+1 then if Ya.[r]+x=K then true else false
+    else let m = (l+r+1)/2 in if Ya.[m]+x<K then bsearch x (m+1) r else bsearch x l m
+```
+
+この二分探索に対して再帰関数を正確に書くと次のようになります.
+
+```fsharp
+  let rec frec i =
+    if i=L1 then "No"
+    elif bsearch Xa.[i] 0 L2 then "Yes"
+    else frec (i+1)
+  if L1=(-1) || L2=(-1) then "No" else frec 0
+```

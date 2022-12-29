@@ -9,4 +9,7 @@
 - [A09 - Winter in ALGO Kingdom](A09/index.md)
 - [A10 - Resort Hotel](A10/index.md)
 - [A11 - Binary Search 1](A11/index.md)
-- [A12 - Printer](A11/index.md)
+- [A12 - Printer](A12/index.md)
+- [A13 - Close Pairs](A13/index.md)
+- [A14 - Four Boxes](A14/index.md)
+- [A15 - Compression](A15/index.md)
