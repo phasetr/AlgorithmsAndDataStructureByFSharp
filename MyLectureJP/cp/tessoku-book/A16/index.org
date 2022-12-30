@@ -1,0 +1,107 @@
+* A16 - Dungeon 2
+- created: 2022-12-30 fri
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A16)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_p)
+- 要点: アルゴリズム
+** 入出力
+```fsharp
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int
+let Ba = stdin.ReadLine().Split() |> Array.map int
+solve N Aa Ba |> stdout.WriteLine
+```
+** 方針
+ごく単純な動的計画法で対応できます.
+** 解説1: 配列と`fold`
+問題の通りに前から決めます.
+はじめは一部屋しか進めないため`A`から選ぶしかなく,
+あとは一部屋前から来るか二部屋前から来るかのどちらかです.
+最短時間を取るには`min`を取ります.
+最終的には次のように計算できます.
+
+```fsharp
+  (Array.create N 0, [|1..(N-1)|])
+  ||> Array.fold (fun Xa i ->
+    if i=1 then Xa.[i] <- Aa.[i-1] else Xa.[i] <- min (Aa.[i-1]+Xa.[i-1]) (Ba.[i-2]+Xa.[i-2])
+    Xa)
+  |> Array.last
+```
+** 解説2: メモ化再帰
+*** 注意
+メモ化再帰による動的計画法も有名です.
+試したところ,
+[F#のデータ型である`Map`で実装したTLEしてしまいました](https://atcoder.jp/contests/tessoku-book/submissions/37623926).
+一方[.NETの`System.Collections.Generic.Dictionary`では問題なく通ります](https://atcoder.jp/contests/tessoku-book/submissions/37623947).
+ここでは後者の実装を紹介します.
+*** テンプレート
+まずメモ化再帰用の次の関数はテンプレートとして自作ライブラリに収録するとよいでしょう.
+以下で説明する実装自体も完全にパターンです.
+
+```fsharp
+  let memorec f =
+    let memo = System.Collections.Generic.Dictionary<_,_>()
+    let rec frec j =
+      match memo.TryGetValue j with
+        | exist, value when exist -> value
+        | _ -> let value = f frec j in memo.Add(j, value); value
+    frec
+```
+
+この関数の中の`Dictionary`として定めた`memo`が値をためるメモです.
+この関数の中で再帰関数の`frec`を定義します.
+`TryGetValue`で既にメモ化された値があるか確認します.
+既にあればメモ化された値を返し,
+そうでなければ別途引数として与えた関数`f`で値を計算し,
+メモに積んで計算された値を返します.
+最後に返すのもこの再帰関数です.
+*** 関数`f`の処理
+F#入門記事で再帰はループで書け,
+典型的な処理は`map`や`fold`で書けると説明しました.
+ここでは`fold`に食わせた関数をほぼそのまま`f`として採用すればよいです.
+具体的には次のように書きます.
+
+```fsharp
+  let f frec j =
+    if j<=0 then 0 elif j=1 then Aa.[j-1]
+    else min (Aa.[j-1] + frec (j-1)) (Ba.[j-2] + frec (j-2))
+  memorec f (N-1)
+```
+
+解説を読みやすくするため`f`の呼び出し部分まで書いておきました.
+上記のテンプレートの`memorec`に`f`を食わせ,
+配列+`fold`で`Array.last`として得た「最後の項」を得るために`N-1`を食わせています.
+解説1の配列と`fold`は添字が小さい方から順に計算した一方,
+メモ化再帰ではほしい`N-1`を食わせて添字が小さい方の降りる形になっています.
+
+さて`f`を解説します.
+これは`if j <= 0`を追加した分が解説1の`f`と変わっているだけで,
+`fold`版と本質的には同じ関数です.
+`fold`では添字が小さい方から計算していたため`Xa.[j-1]`, `Xa.[j-2]`などとした分が,
+メモから呼び出すために再帰関数の呼び出しに変わっています.
+ちなみにこの`frec`は`memorec`の内部で作っている`frec`が入る部分です.
+慣れないとこの`frec`がどこから来るのかと混乱するかもしれません.
+上記コードのように関数の名前や引数名をきちんと揃えておくと参照しやすいでしょう.
+*** まとめ
+コードの全体は次のように書けます.
+
+```fsharp
+let solve N (Aa:int[]) (Ba:int[]) =
+  let memorec f =
+    let memo = System.Collections.Generic.Dictionary<_,_>()
+    let rec frec j =
+      match memo.TryGetValue j with
+        | exist, value when exist -> value
+        | _ -> let value = f frec j in memo.Add(j, value); value
+    frec
+  let f frec j =
+    if j<=0 then 0 elif j=1 then Aa.[j-1]
+    else min (Aa.[j-1] + frec (j-1)) (Ba.[j-2] + frec (j-2))
+  memorec f (N-1)
+
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int
+let Ba = stdin.ReadLine().Split() |> Array.map int
+solve N Aa Ba |> stdout.WriteLine
+```

@@ -819,6 +819,18 @@ module Array =
     let fib n = Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [|1..n|] |> fst
     fib 10 |> should equal 55
 
+  @"Array.unzip
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#unzip"
+  [|(1,"one");(2,"two")|] |> Array.unzip |> should equal ([|1;2|],[|"one";"two"|])
+
+  @"Array.unzip3
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#unzip3"
+  [|(1,"one","I"); (2,"two","II")|] |> Array.unzip3 |> should equal ([|1;2|],[|"one";"two"|],[|"I";"II"|])
+
+  @"Array.updateAt
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#updateAt"
+  [|0..2|] |> Array.updateAt 1 9 |> should equal [|0;9;2|]
+
   @"Array.where
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#where
   Array.filter と同じく配列の各要素で実行した関数の結果が true となるものをすべて取り出す.
@@ -857,6 +869,7 @@ module Array =
 
   @"Array.zip3
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#zip3"
+  ([|1;2|],[|"one";"two"|],[|"I";"II"|]) |||> Array.zip3 |> should equal [|(1, "one", "I"); (2, "two", "II")|]. 
 
 module Array2D =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html"
@@ -1085,7 +1098,9 @@ module Function =
 
   @"CPS変換: See CpsTr.fsx"
 
-  @"TODO: memoized recursion, メモ化再帰, Map版"
+  @"memoized recursion, メモ化再帰, Map版
+  AtCoderで試して動いたものの, TLEする.
+  これは遅い? 要検証."
   module MemoRec =
     let memorec f =
       let memo = Map.empty<_,_>

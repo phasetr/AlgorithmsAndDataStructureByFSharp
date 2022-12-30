@@ -1,9 +1,9 @@
-* A14 - Four Boxes
+* A15 - Compression
 - created: 2022-12-29 thu
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
-- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A14)
-- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_n)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A15)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_o)
 - 要点: アルゴリズム
 ** 入出力
 ```fsharp

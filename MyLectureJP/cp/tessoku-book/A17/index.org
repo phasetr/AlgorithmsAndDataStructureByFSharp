@@ -1,0 +1,43 @@
+* A17 - Dungeon 2
+- created: 2022-12-30 fri
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A17)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_q)
+- 要点: アルゴリズム
+** 入出力
+```fsharp
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int
+let Ba = stdin.ReadLine().Split() |> Array.map int
+solve N Aa Ba |> stdout.WriteLine
+```
+** 方針
+これもA16と同じ動的計画法を少し修正すれば対応できます.
+** 解説1: 配列と`fold`
+単純に時間の計算に加えて経路の情報を積むだけです.
+コードを読みやすくするために変数を用意しただけで,
+本質的にはA16と変わりません.
+
+具体的にはリターンする配列の各要素をタプルにして,
+`fst`は経路のリスト,
+`snd`は時間にしているだけです.
+
+```fsharp
+let solve N (Aa:int[]) (Ba:int[]) =
+  Array.create N ([],0)
+  |> fun Xa -> Xa.[0] <- ([1],0); Xa.[1] <- ([2;1],Aa.[0]); Xa
+  |> fun Xa -> (Xa, [|2..N-1|]) ||> Array.fold (fun Ia i ->
+    let (xs,x) = Ia.[i-1]
+    let (ys,y) = Ia.[i-2]
+    let (a,b) = (Aa.[i-1],Ba.[i-2])
+    Ia.[i] <- if y+b<x+a then ((i+1)::ys, y+b) else ((i+1)::xs, x+a)
+    Ia)
+  |> (Array.last >> fst >> List.rev)
+  |> fun Xs -> sprintf "%d\n%s" (Xs.Length) (Xs |> List.map string |> String.concat " ")
+
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int
+let Ba = stdin.ReadLine().Split() |> Array.map int
+solve N Aa Ba |> stdout.WriteLine
+```

@@ -13,3 +13,5 @@
 - [A13 - Close Pairs](A13/index.md)
 - [A14 - Four Boxes](A14/index.md)
 - [A15 - Compression](A15/index.md)
+- [A16 - Dungeon 1](A16/index.md)
+- [A17 - Dungeon 2](A17/index.md)
