@@ -8,15 +8,22 @@ let N,Aa,Ba = 3,[|16;56|],[|67|]
 let N,Aa,Ba = 5,[|13;45;14;45|],[|22;39;25|]
 *)
 let solve N (Aa:int[]) (Ba:int[]) =
-  Array.create N ([],0)
-  |> fun Xa -> Xa.[0] <- ([1],0); Xa.[1] <- ([2;1],Aa.[0]); Xa
-  |> fun Xa -> (Xa, [|2..N-1|]) ||> Array.fold (fun Xa i ->
-    let (xs,x) = Xa.[i-1]
-    let (ys,y) = Xa.[i-2]
-    let (a,b) = (Aa.[i-1],Ba.[i-2])
-    Xa.[i] <- if y+b<x+a then ((i+1)::ys, y+b) else ((i+1)::xs, x+a)
-    Xa)
-  |> (Array.last >> fst >> List.rev)
+  let memorec f =
+    let memo = System.Collections.Generic.Dictionary<_,_>()
+    let rec frec k =
+      match memo.TryGetValue(k) with
+        | true, v -> v
+        | _ -> let v = f frec k in memo.Add(k,v); v
+    frec
+  let f frec k =
+    if k=0 then ([1],0)
+    elif k=1 then ([2;1],Aa.[0])
+    else
+      let (xs,x) = frec (k-1)
+      let (ys,y) = frec (k-2)
+      let (a,b) = (Aa.[k-1],Ba.[k-2])
+      if y+b<x+a then ((k+1)::ys, y+b) else ((k+1)::xs, x+a)
+  memorec f (N-1) |> (fst >> List.rev)
   |> fun Xs -> sprintf "%d\n%s" (Xs.Length) (Xs |> List.map string |> String.concat " ")
 
 let N = stdin.ReadLine() |> int

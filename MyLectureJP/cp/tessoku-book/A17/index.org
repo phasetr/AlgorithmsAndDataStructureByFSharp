@@ -14,6 +14,7 @@ solve N Aa Ba |> stdout.WriteLine
 ```
 ** 方針
 これもA16と同じ動的計画法を少し修正すれば対応できます.
+経路を積む処理を明確にするため配列の初期化法が少し変えました.
 ** 解説1: 配列と`fold`
 単純に時間の計算に加えて経路の情報を積むだけです.
 コードを読みやすくするために変数を用意しただけで,
@@ -26,14 +27,48 @@ solve N Aa Ba |> stdout.WriteLine
 ```fsharp
 let solve N (Aa:int[]) (Ba:int[]) =
   Array.create N ([],0)
-  |> fun Xa -> Xa.[0] <- ([1],0); Xa.[1] <- ([2;1],Aa.[0]); Xa
-  |> fun Xa -> (Xa, [|2..N-1|]) ||> Array.fold (fun Ia i ->
-    let (xs,x) = Ia.[i-1]
-    let (ys,y) = Ia.[i-2]
+  |> fun Xa ->
+    Xa.[0] <- ([1],0)
+    Xa.[1] <- ([2;1],Aa.[0])
+    Xa
+  |> Array.fold (fun Xa i ->
+    let (xs,x) = Xa.[i-1]
+    let (ys,y) = Xa.[i-2]
     let (a,b) = (Aa.[i-1],Ba.[i-2])
-    Ia.[i] <- if y+b<x+a then ((i+1)::ys, y+b) else ((i+1)::xs, x+a)
-    Ia)
+    Xa.[i] <- if y+b<x+a then ((i+1)::ys, y+b) else ((i+1)::xs, x+a)
+    Xa) [|2..N-1|]
   |> (Array.last >> fst >> List.rev)
+  |> fun Xs -> sprintf "%d\n%s" (Xs.Length) (Xs |> List.map string |> String.concat " ")
+
+let N = stdin.ReadLine() |> int
+let Aa = stdin.ReadLine().Split() |> Array.map int
+let Ba = stdin.ReadLine().Split() |> Array.map int
+solve N Aa Ba |> stdout.WriteLine
+```
+** 解説2: メモ化再帰
+これも関数の返り値が変わるだけです.
+このくらい簡単な内容ならどちらも完全に定型処理にはめるだけです.
+読み書きしやすい方で対処してください.
+
+
+```fsharp
+let solve N (Aa:int[]) (Ba:int[]) =
+  let memorec f =
+    let memo = System.Collections.Generic.Dictionary<_,_>()
+    let rec frec k =
+      match memo.TryGetValue(k) with
+        | true, v -> v
+        | _ -> let v = f frec k in memo.Add(k,v); v
+    frec
+  let f frec k =
+    if k=0 then ([1],0)
+    elif k=1 then ([2;1],Aa.[0])
+    else
+      let (xs,x) = frec (k-1)
+      let (ys,y) = frec (k-2)
+      let (a,b) = (Aa.[k-1],Ba.[k-2])
+      if y+b<x+a then ((k+1)::ys, y+b) else ((k+1)::xs, x+a)
+  memorec f (N-1) |> (fst >> List.rev)
   |> fun Xs -> sprintf "%d\n%s" (Xs.Length) (Xs |> List.map string |> String.concat " ")
 
 let N = stdin.ReadLine() |> int

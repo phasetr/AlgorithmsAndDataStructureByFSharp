@@ -1115,14 +1115,14 @@ module Function =
     (memorec fact) 20L
 
   @"memoized recursion, メモ化再帰, System.Collections.Generic.Dictionary版
-  AtCoder上でMapが使えるためMapを使おう "
+  AtCoder上での(?)Mapは遅いのでこちらを使おう."
   module MemoRec =
     let memorec f =
       let memo = System.Collections.Generic.Dictionary<_,_>()
       let rec frec j =
         match memo.TryGetValue j with
-          | exist, value when exist -> value
-          | _ -> let value = f frec j in memo.Add(j, value); value
+          | true, v -> v
+          | _ -> let v = f frec j in memo.Add(j, v); v
       frec
     let fact frec i =
       if i = 1L then 1L
