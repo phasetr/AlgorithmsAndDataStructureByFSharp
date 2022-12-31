@@ -1,0 +1,47 @@
+* A19 - Knapsack 1
+- created: 2022-12-30 fri
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A19)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_s)
+- 要点: アルゴリズム
+** 入出力
+```fsharp
+let N,W = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1])
+let Ia = Array.init N (fun _ -> stdin.ReadLine().Split() |> fun x -> int x.[0],int64 x.[1])
+solve Ia |> stdout.WriteLine
+```
+** 方針
+典型的な動的計画法で処理する問題です.
+重さを添字`w`にした配列を作り,
+各`w`ごとに価値を格納します.
+あとはこれをひたすらに計算して書き換えます.
+** 解説
+配列を書き換え続ける処理は積み上げ系の処理で,
+特に`fold`で次のように実現できます.
+
+```fsharp
+  (Array.create (W+1) 0L, Ia)
+  ||> Array.fold (動的計画法の処理)
+  |> Array.last
+```
+
+書き換える配列で`W+1`個作るのは重さ`w`をそのまま解釈できるようにするためです.
+
+次に`fold`処理の関数を考えます.
+動的計画法を考えるとき配列はよく`dp`(dynamic programming)で表します.
+ここでもその慣習を踏襲します.
+この`dp[w]`は重さ`w`まで荷物を積んだときの価値を表します.
+ひたすらな書き換えは次のように実現します.
+
+```fsharp
+  ||> Array.fold (fun dp (w,v) ->
+    [|0..W|] |> Array.map (fun w0 -> if w0<w then dp.[w0] else max (dp.[w0-w]+v) dp.[w0]))
+```
+
+`fold`の内部では`Ia`の各要素`(w,v)`で更新します.
+入力の`Array.create (W+1) 0L`と揃えた添字の配列を`[|0..W|]`とします.
+この配列の値を重さ(に関する添字)とみなして`w0`とします.
+もし`w0`が`w`より小さい場合,
+`dp[w0]`に重さ`w`のモノを積めないため`dp.[w0]`で素通りします.
+逆に`w<=w0`のときは価値が大きい方で置き換えます.

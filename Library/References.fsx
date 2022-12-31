@@ -523,6 +523,12 @@ module Array =
   [|1..10|] |> Array.partition (fun elem -> elem > 3 && elem < 7)
   |> should equal ([|4;5;6|], [|1;2;3;7;8;9;10|])
 
+  @"Haskell postscanl = tail . scanl
+  https://hackage.haskell.org/package/vector-0.13.0.0/docs/Data-Vector.html#v:postscanl"
+
+  @"Haskell prescanl = init . scanl
+  https://hackage.haskell.org/package/vector-0.13.0.0/docs/Data-Vector.html#v:prescanl"
+
   @"Array.reduce, 初項を設定したいならArray.fold
   第一引数がaccumulater.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#reduce"
@@ -804,20 +810,30 @@ module Array =
   戻り値は次回も関数を実行するときは Some (結果となる配列の要素, 次回実行時の引数),
   関数の実行を終了するときは None とする."
   Array.unfold (fun n -> if n > 5 then None else Some(n, n + 1)) 1 |> should equal [|1;2;3;4;5|]
-  module Fib =
+
+  @"Haskell unfoldr
+  https://kseo.github.io/posts/2016-12-12-unfold-and-fold.html"
+  let rec unfold f b =
+    match f b with
+      | Some (a, b') -> Array.append [|a|] (unfold f b')
+      | None -> Array.empty
+  1 |> unfold (fun n -> if n > 5 then None else Some(n, n + 1)) |> should equal [|1..5|]
+
+    module Fib =
     @"フィボナッチ数列の配列 (Array.unfold)"
     let fibs n =
       Array.unfold (fun (x, y, z) ->
-        if z > 0 then
-          Some(x, (y, x + y, z - 1))
-        else
-          None)
+        if z > 0 then Some(x, (y, x + y, z - 1)) else None)
       <| (1, 1, n)
     fibs 10 |> should equal [|1;1;2;3;5;8;13;21;34;55|]
 
     @"フィボナッチ数 (Array.fold)"
     let fib n = Array.fold (fun (x, y) _ -> (x + y, x)) (0, 1) [|1..n|] |> fst
     fib 10 |> should equal 55
+
+  @"Haskell unfoldrN, fst (unfoldrN n f s) == take n (unfoldr f s)cf. https://hackage.haskell.org/package/filepath-1.4.100.0/docs/src/System.OsPath.Data.ByteString.Short.Word16.html#unfoldrN
+  unfoldrN :: Vector v a => Int -> (b -> Maybe (a, b)) -> b -> v a
+  https://hackage.haskell.org/package/vector-0.13.0.0/docs/Data-Vector-Generic.html#t:Vector"
 
   @"Array.unzip
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#unzip"
@@ -869,7 +885,7 @@ module Array =
 
   @"Array.zip3
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#zip3"
-  ([|1;2|],[|"one";"two"|],[|"I";"II"|]) |||> Array.zip3 |> should equal [|(1, "one", "I"); (2, "two", "II")|]. 
+  ([|1;2|],[|"one";"two"|],[|"I";"II"|]) |||> Array.zip3 |> should equal [|(1, "one", "I"); (2, "two", "II")|].
 
 module Array2D =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html"
@@ -901,6 +917,10 @@ module Array2D =
   @"Array2D.create
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#create"
   Array2D.create 2 3 1 |> should equal (array2D [[1;1;1];[1;1;1]])
+
+  @"Array2D.get
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#get"
+  array2D [[1.0;2.0];[3.0;4.0]] |> fun a -> Array2D.get a 0 1 |> should equal 2.0
 
   @"Array2D.init
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-array2dmodule.html#inite"
@@ -1403,6 +1423,10 @@ module List =
   let inits xs = [ 0..(List.length xs) ] |> List.map (fun i -> List.take i xs)
   inits [1..3] |> should equal [[];[1];[1;2];[1;2;3]]
 
+  @"List.isEmpty, Haskell null
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#isEmpty"
+  ["pear";"banana"] |> List.isEmpty |> should be False
+
   @"Haskell isSomethingOf
   https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isInfixOf
   https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isPrefixOf
@@ -1649,6 +1673,13 @@ module List =
   @"List.unfold
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#unfold"
   1 |> List.unfold (fun state -> if state > 50 then None else Some (state, state * 2)) |> should equal [1;2;4;8;16;32]
+  @"Haskell unfoldr
+  https://kseo.github.io/posts/2016-12-12-unfold-and-fold.html"
+  let rec unfold f b =
+    match f b with
+      | Some (a, b') -> a :: unfold f b'
+      | None -> []
+  1 |> unfold (fun state -> if state > 50 then None else Some (state, state * 2)) |> should equal [1;2;4;8;16;32]
 
   @"List.unzip
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#unzip"
@@ -2738,6 +2769,22 @@ module Sequence =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#indexed"
   Seq.indexed "abc" |> should equal (seq [(0, 'a');(1, 'b');(2, 'c')])
 
+  module Infinite =
+    @"Haskellの無限リスト系関数, 個別の関数の項目も参照すること.
+    https://qiita.com/TTsurutani/items/2ec2824bb4ccc120a69c"
+    @"Haskell, repeat"
+    let repeat x = x |> Seq.unfold (fun x -> Some (x,x))
+    repeat 'a' |> Seq.take 2 |> should equal (seq ['a';'a'])
+    @"Haskell, replicate"
+    let replicate n x = x |> Seq.unfold (fun x -> Some (x,x)) |> Seq.take n
+    replicate 3 'a' |> should equal (seq ['a';'a';'a'])
+    @"Haskell cycle"
+    let cycle xs = xs |> Seq.unfold (fun xs -> Some(xs,xs)) |> Seq.concat
+    cycle "ab" |> Seq.take 3 |> should equal (seq ['a';'b';'a'])
+    @"Haskell iterate"
+    let iterate f x = x |> Seq.unfold (fun x -> Some (x, f x))
+    iterate (fun x -> pown x 2) 2 |> Seq.take 3 |> should equal (seq [2;4;16])
+
   @"Seq.init
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-seqmodule.html#init"
   Seq.init 4 (fun v -> v + 5) |> should equal (seq [5..8])
@@ -3083,7 +3130,7 @@ module Set =
   Set.add 1 (set [2..4]) |> should equal (set [1..4])
   Set.add 1 (set [1..4]) |> should equal (set [1..4])
 
-  @"Set.contains
+  @"Set.contains, Haskell Data.Set.member
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#contains"
   set [2;3] |> Set.contains 2 |> should be True
 

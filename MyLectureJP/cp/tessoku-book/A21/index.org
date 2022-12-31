@@ -1,0 +1,83 @@
+* A21 - Block Game
+- created: 2022-12-31 sat
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A21)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_u)
+** 入出力
+```fsharp
+let N = stdin.ReadLine() |> int
+let Ia = Array.init N (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1])
+solve N Ia |> stdout.WriteLine
+```
+** 方針
+いわゆる区間DPです.
+改めてHaskellコードもあさったところ,
+やはり命令型の方が読み書きしやすいように思います.
+
+** 解説
+*** 結果コード
+```fsharp
+let solve N (Ia:(int*int)[]) =
+  let score l r (p,a) = if l<=p-1 && p-1<r then a else 0
+  (Array2D.create (N+1) (N+1) 0, [|N..(-1)..0|])
+  ||> Array.fold (fun dp r ->
+    [|0..r-1|] |> Array.iter (fun l ->
+      dp.[l+1,r] <- max dp.[l+1,r] (dp.[l,r] + score l r Ia.[l])
+      dp.[l,r-1] <- max dp.[l,r-1] (dp.[l,r] + score l r Ia.[r-1]))
+    dp)
+  |> fun dp -> [|0..N|] |> Array.map (fun i -> dp.[i,i]) |> Array.max
+
+let N = stdin.ReadLine() |> int
+let Ia = Array.init N (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1])
+solve N Ia |> stdout.WriteLine
+```
+
+`Array.iter`を使った部分を`Array.fold`に変えたり,
+もう少し関数型らしく書ける部分はあります.
+今の私にとっての読み書きしやすさ,
+そして多少のパフォーマンスのバランスを取って現状はこのコードを採用しました.
+
+ここで紹介したコードは最終的に対角成分に結果の候補が積まれるため,
+その中で最大値を取ります.
+
+```
+[[50; 50; 50; 10;  0]
+ [ 0; 60; 60; 20; 20]
+ [ 0;  0; 60; 50; 50]
+ [ 0;  0;  0; 50; 50]
+ [ 0;  0;  0;  0; 50]]
+```
+*** メモ
+**** `score l r Ia.[l]`, `score l r Ia.[r-1]`
+- score 0 1 Ia[0]: 0
+- score 0 1 Ia[0]: 0
+- score 0 2 Ia[0]: 0
+- score 0 2 Ia[1]: 0
+- score 0 3 Ia[0]: 0
+- score 0 3 Ia[2]: 40
+- score 0 4 Ia[0]: 20
+- score 0 4 Ia[3]: 10
+- score 1 2 Ia[1]: 0
+- score 1 2 Ia[1]: 0
+- score 1 3 Ia[1]: 30
+- score 1 3 Ia[2]: 40
+- score 1 4 Ia[1]: 30
+- score 1 4 Ia[3]: 0
+- score 2 3 Ia[2]: 0
+- score 2 3 Ia[2]: 0
+- score 2 4 Ia[2]: 0
+- score 2 4 Ia[3]: 0
+- score 3 4 Ia[3]: 0
+- score 3 4 Ia[3]: 0
+**** ありうる特典
+| 取り除く順番 | 得点     |
+|--------------+----------|
+| `1,2,3,4`    | 20+30+0+0=50 |
+| `1,2,4,3`    | 20+30+0+0=50 |
+| `1,4,2,3`    | 20+40+0+0=60 |
+| `1,4,3,2`    | 20+30+0+0=50 |
+| `4,3,2,1`    | 10+40+0+0=50 |
+| `4,3,1,2`    | 10+40+0+0=50 |
+| `4,1,2,3`    | 10+30+0+0=40 |
+| `4,1,3,2`    | 10+40+0+0=50 |

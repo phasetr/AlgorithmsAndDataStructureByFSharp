@@ -1,0 +1,89 @@
+* A18 - Subset Sum
+- created: 2022-12-30 fri
+- ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
+- [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
+- [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/tessoku-book/A18)
+- [公式ページ](https://atcoder.jp/contests/tessoku-book/tasks/tessoku_book_r)
+- 要点: アルゴリズム
+** 入出力
+```fsharp
+let N,S = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1])
+let Aa = stdin.ReadLine().Split() |> Array.map int
+solve N S Aa |> stdout.WriteLine
+```
+** 方針
+完全一致する選び方の存在・非存在を調べるために全探索が必要です.
+全ての組み合わせを取ると`2^{60}`個の組み合わせを確認する必要があるため,
+この組み合わせの量を減らしつつ,
+効率よく適合する要素があるか確認する方法も考える必要があります.
+
+ここでは要素の追加と検索に強いデータ構造として集合(`Set`)を採用します.
+適合する組み合わせが見つかり次第早期リターンするべく,
+ここでは再帰で実装します.
+** 解説
+*** 前処理
+結論から言えば今回は不要ではあったものの,
+考えなくてもよい要素ははじめから削りましょう.
+再帰関数には入力の配列と値をためる集合を食わせるとすれば,
+再帰関数に食わせる前に次のように書いておけばよいでしょう.
+
+```fsharp
+  Aa
+  |> Array.filter (fun a -> a<=S)
+  |> fun Aa ->
+    if Array.isEmpty Aa then "No"
+    else frec "配列" "集合"
+```
+
+和が`S`になるように考える以上,
+フィルターで`S`以下の要素だけ取ってきます.
+フィルターした結果, 配列から要素がなくなる可能性があるため,
+その条件分岐も入れておきます.
+あとは再帰に注力すれば十分です.
+*** 再帰関数
+再帰的に処理するためはじめに終了条件を書く必要があります.
+要素を追加した集合が求める`S`を含んでいればそこで`Yes`を返して終わりです.
+一方で入力の配列を食い尽くしてなお適切な値がなければ`No`を返して終わりです.
+したがって大枠は次のように書けます.
+
+```fsharp
+  let rec frec Aa St =
+    if Set.contains S St then "Yes"
+    elif Array.isEmpty Aa then "No"
+    else "再帰の本体"
+```
+
+`else`部分を考えましょう.
+まず入力から一つ食べて残りを再帰で回すと思えば次の大枠が作れます.
+
+```fsharp
+      let a = Array.head Aa
+      "新たな集合を作る処理"
+      |> frec (Array.tail Aa)
+```
+
+あとは新たな集合を作る処理を考えれば十分です.
+`frec Aa St`の`St`にはそこまでに貯めた組み合わせが入れる必要があります.
+いまは組み合わせそのものではなく総和だけが問題だから和を積めば十分です.
+集合の積まれた各数値に対して新たなに配列から取り出した`a`を和で積めば十分です.
+ここで欲しい和の値である`S`より大きい値を積む必要はないため,
+その振り分け処理が入ります.
+つまりループは`St`で回して処理も`St`に積む必要があります.
+ここでは次のような`fold`で対応できます.
+
+```fsharp
+      (St,St) ||> Set.fold (fun st0 v ->
+        let st = if S<a then st0 else (Set.add a st0)
+        if S<a+v then st else (Set.add (a+v) st))
+      |> frec (Array.tail Aa)
+```
+
+念のため書いておくと`(St,St)`の左が値を積んでいく集合で,
+右の`St`がループ用の`St`です.
+`fold`の内部で値を積みましょう.
+まず配列から取った値`a`が`S`より大きければ積む必要がないためその条件分岐があります.
+次に配列から取った値と積んだ値の和`a+v`が`S`より小さければ値を積む中で適合した和を構成する可能性があるため,
+集合に積みます.
+これが`if S<a+v`の行です.
+あとはこれで更新した集合を再帰関数に食わせて終わりです.
+配列も一つ減らしておきましょう.

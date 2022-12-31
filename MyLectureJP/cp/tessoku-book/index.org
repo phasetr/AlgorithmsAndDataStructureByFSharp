@@ -15,3 +15,7 @@
 - [A15 - Compression](A15/index.md)
 - [A16 - Dungeon 1](A16/index.md)
 - [A17 - Dungeon 2](A17/index.md)
+- [A18 - Subset Sum](A18/index.md)
+- [A19 - Knapsack 1](A19/index.md)
+- [A20 - LCS](A20/index.md)
+- [A21 - Block Game](A21/index.md)
