@@ -16,8 +16,8 @@ let solveTLE N K (Ia:int64[]) =
 let solve N K (Ia:int64[]) =
   let p i j = Ia.[j] - Ia.[i] <= K
   let rec bsearch pi l r =
-    if r<=l+1 then if pi r then r else r-1
-    else let m = (l+r)/2 in if pi m then bsearch pi m r else bsearch pi l (m-1)
+    if r<=l then if pi l then l else l-1
+    else let m = (l+r)/2 in if pi m then bsearch pi (m+1) r else bsearch pi l m
   let search i = if i=N-1 || K<Ia.[i+1]-Ia.[i] then None else Some (bsearch (p i) i (N-1))
   [|0..N-1|] |> Array.sumBy (fun i -> search i |> function | Some j -> (j-i |> int64) | None -> 0L)
 

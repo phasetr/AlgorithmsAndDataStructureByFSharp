@@ -8,7 +8,7 @@ open FsUnit
 module Arithmetics =
   """
   Literal Types: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/literals
-  Math functions: https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html
+  Math functions or Operators: https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html
   """
 
   @"1, 0x1, 0o1, 0b1,
@@ -42,6 +42,51 @@ module Arithmetics =
   https://docs.microsoft.com/ja-jp/dotnet/api/system.int32.maxvalue?view=net-6.0"
   System.Int32.MaxValue |> should equal 2_147_483_647
   System.Int64.MaxValue |> should equal 9_223_372_036_854_775_807L
+
+  @"除算演算子: `/`, 切り捨て除算, floor div
+  切上げ除算, ceil div
+  https://stackoverflow.com/questions/17944/how-to-round-up-the-result-of-integer-division"
+  let (./) a b = let q = a/b in if a%b=0 then q else q+1
+  [| for i in 1..10 do for j in 1..3 do (i,j) |] |> Array.map (fun (i,j) -> (i, j, i/j, i./j))
+  |> should equal   [| ( 1, 1,  1,  1);
+                       ( 1, 2,  0,  1);
+                       ( 1, 3,  0,  1);
+                       ( 2, 1,  2,  2);
+                       ( 2, 2,  1,  1);
+                       ( 2, 3,  0,  1);
+                       ( 3, 1,  3,  3);
+                       ( 3, 2,  1,  2);
+                       ( 3, 3,  1,  1);
+                       ( 4, 1,  4,  4);
+                       ( 4, 2,  2,  2);
+                       ( 4, 3,  1,  2);
+                       ( 5, 1,  5,  5);
+                       ( 5, 2,  2,  3);
+                       ( 5, 3,  1,  2);
+                       ( 6, 1,  6,  6);
+                       ( 6, 2,  3,  3);
+                       ( 6, 3,  2,  2);
+                       ( 7, 1,  7,  7);
+                       ( 7, 2,  3,  4);
+                       ( 7, 3,  2,  3);
+                       ( 8, 1,  8,  8);
+                       ( 8, 2,  4,  4);
+                       ( 8, 3,  2,  3);
+                       ( 9, 1,  9,  9);
+                       ( 9, 2,  4,  5);
+                       ( 9, 3,  3,  3);
+                       (10, 1, 10, 10);
+                       (10, 2,  5,  5);
+                       (10, 3,  3,  4) |]
+
+  @"ceil
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#ceil"
+  ceil 12.1 |> should equal 13.0
+  ceil -1.9 |> should equal -1.0
+  @"floor
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#floor"
+  floor 12.1 |> should equal 12.0
+  floor -1.9 |> should equal -2.0
 
   @"abs
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#abs"
@@ -425,10 +470,22 @@ module Bit =
   https://smdn.jp/programming/dotnet-samplecodes/bitwise_operations/14b0b0560fb111eb8931d93b9158057a/"
   [|0..5|] |> Array.map (fun i -> System.Convert.ToString(i, 2)) |> should equal [|"0";"1";"10";"11";"100";"101"|]
   [|0..5|] |> Array.map (fun i -> System.Convert.ToString(i, 2).PadLeft(3,'0')) |> should equal [|"000";"001";"010";"011";"100";"101"|]
-  @"二進展開から十進展開の文字列へ変換, binary expansion todecimal expansion,
+  @"二進展開から十進展開の文字列へ変換, binary expansion to decimal expansion,
   System.Convert.ToString(n,2)
   https://stackoverflow.com/questions/9742777/binary-to-decimal-conversion-formula"
   10L |> fun n -> System.Convert.ToString(n, 2) |> fun s -> System.Convert.ToInt64(s,2) |> should equal 10L
+  @"`0,1`の配列を二進展開とみなして十進数に変換, binary expansion to decimal expansion"
+  let toDec Aa = ((0,0),Array.rev Aa) ||> Array.fold (fun (i,acc) a -> (i+1, acc + if a=0 then 0 else pown 2 i)) |> snd
+  [|0;0;1|] |> toDec |> should equal 1
+  [|0;1;0|] |> toDec |> should equal 2
+  [|1;0;0|] |> toDec |> should equal 4
+  [|1;1;0|] |> toDec |> should equal 6
+  @"`0,1`の配列を二進展開とみなして十進数に変換, 入力の`Aa`を反転させない, binary expansion to decimal expansion"
+  let toDecRev Aa = ((0,0),Aa) ||> Array.fold (fun (i,acc) a -> (i+1, acc + if a=0 then 0 else pown 2 i)) |> snd
+  [|1;0;0|] |> toDecRev |> should equal 1
+  [|0;1;0|] |> toDecRev |> should equal 2
+  [|0;0;1|] |> toDecRev |> should equal 4
+  [|0;1;1|] |> toDecRev |> should equal 6
 
   // https://midoliy.com/content/fsharp/text/operator/2_bit.html
   0xFF |> should equal 255

@@ -13,8 +13,8 @@ let solve N (K:int64) Aa Ba Ca Da =
   let Ya = [| for c in Ca do for d in Da do let s=c+d in if s<K then yield s |] |> Array.sort
   let L2 = Ya.Length-1
   let rec bsearch x l r =
-    if r<=l+1 then if Ya.[r]+x=K then true else false
-    else let m = (l+r+1)/2 in if Ya.[m]+x<K then bsearch x (m+1) r else bsearch x l m
+    if r<=l then if Ya.[l]+x=K then true else false
+    else let m = (l+r)/2 in if Ya.[m]+x<K then bsearch x (m+1) r else bsearch x l m
   if L1=(-1) || L2=(-1) then "No"
   else Xa |> Array.exists (fun x -> bsearch x 0 L2) |> fun b -> if b then "Yes" else "No"
 

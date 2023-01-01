@@ -13,8 +13,8 @@ let solve N K (Aa:int64[]) (Ba:int64[]) Ca Da =
   let Ya = [| for c in Ca do for d in Da do let s=c+d in if s<K then yield s |] |> Array.sort
   let L2 = Ya.Length-1
   let rec bsearch x l r =
-    if r<=l+1 then if Ya.[r]+x=K then true else false
-    else let m = (l+r+1)/2 in if Ya.[m]+x<K then bsearch x (m+1) r else bsearch x l m
+    if r<=l then if Ya.[l]+x=K then true else false
+    else let m = (l+r)/2 in if Ya.[m]+x<K then bsearch x (m+1) r else bsearch x l m
   let rec frec i =
     if i=L1 then "No"
     elif bsearch Xa.[i] 0 L2 then "Yes"

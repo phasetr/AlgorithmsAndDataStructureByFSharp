@@ -1,4 +1,4 @@
-* A01 - The First Problem
+* A02 - Linear Search
 - created: 2022-12-25 sun
 - ご意見・ご要望は[issue・プルリク用のGitHub](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/MyLectureJP/cp)まで
 - [競技プログラミングのためのF#入門](../../byfs/fsharp-for-cp/index.md)
@@ -19,11 +19,11 @@ F#でもほぼ同じように書けるものの`break`がありません.
 
 ```fsharp
 let solve N X Ia =
-  let rec linSearch i =
+  let rec lsearch i =
     if i = N-1 then "No"
     elif Array.get Ia i = X then "Yes"
-    else linSearch (i+1)
-  linSearch 0
+    else lsearch (i+1)
+  lsearch 0
 ```
 
 最後まで見つからなかったら`"No"`を返すのを忘れないようにしましょう.
