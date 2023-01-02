@@ -2,7 +2,7 @@
 open FsUnit
 
 @"cf.
-./math.fsx
+./Math.fsx
 ./References.fsx, module Operator"
 
 module Arithmetics =
@@ -123,10 +123,14 @@ module Arithmetics =
   powmod MOD 2L 3L |> should equal 8L
   powmod MOD 2L 4L |> should equal 16L
 
-  @"https://atcoder.jp/contests/abc156/submissions/11167232"
-  let rec powmod m x n = ((if (n&&&1L)=1L then x%m else 1L) * (if n=0L then 1L else (powmod m ((x*x)%m) (n>>>1))%m))%m
-  powmod MOD 2L 3L |> should equal 8L
-  powmod MOD 2L 4L |> should equal 16L
+  @"上記の関数と本質的に同じ処理だが別途演算子を定義
+  ../AtCoder/tessoku-book/A29/A29_fs_00_01.fsx
+  https://atcoder.jp/contests/abc156/submissions/11167232"
+  let MOD = 1_000_000_007L
+  let (.*) a b = (a*b)%MOD
+  let rec powmod x n = if n=0 then 1L elif n&&&1=0 then powmod (x.*x) (n>>>1) else x .* powmod x (n-1)
+  powmod 2L 3 |> should equal 8L
+  powmod 2L 4 |> should equal 16L
 
   @"順列の場合の数, permutation, powmodを使った計算
   順列そのものについては`module Combinatrics`の`permutations`を参照すること.
@@ -494,13 +498,13 @@ module Bit =
   ~~~0xFF |> should equal -256
   (~~~0,~~~1) |> should equal (-1,-2)
   [|0..10|] |> Array.map (fun i -> ~~~i) |> should equal [|-1;-2;-3;-4;-5;-6;-7;-8;-9;-10;-11|]
-  @"bit論理積"
+  @"bit or, bit論理和"
   (0|||0,0|||1,1|||1) |> should equal (0,1,1)
   0xFF ||| 0x80 |> should equal 255
   [|0..10|] |> Array.map (fun i -> i ||| 1) |> should equal [|1;1;3;3;5;5;7;7;9;9;11|]
   [|0..10|] |> Array.map (fun i -> i ||| 2) |> should equal [|2;3;2;3;6;7;6;7;10;11;10|]
   [|0..10|] |> Array.map (fun i -> i ||| 3) |> should equal [|3;3;3;3;7;7;7;7;11;11;11|]
-  @"bit論理和"
+  @"bit and, bit論理積"
   (0&&&0,0&&&1,1&&&1) |> should equal (0,0,1)
   0xFF &&& 0x80 |> should equal 128
   [|0..10|] |> Array.map (fun i -> i &&& 1) |> should equal [|0;1;0;1;0;1;0;1;0;1;0|]
@@ -713,6 +717,13 @@ module Primes =
       |> List.countBy id
       |> List.fold (fun acc (p,e) -> acc * (pown p e - pown p (e-1))) 1
 
+      @"素数判定: (比較的)速い"
+      let isPrime x =
+        if x=0||x=1 then false
+        else let sq = (float >> sqrt >> int) x in [|2..sq|] |> Array.forall (fun n -> x%n<>0)
+      [|0..100|] |> Array.choose (fun x -> if isPrime x then Some x else None)
+      |> should equal [|2;3;5;7;11;13;17;19;23;29;31;37;41;43;47;53;59;61;67;71;73;79;83;89;97|]
+
       @"素数判定: 遅い
       https://atcoder.jp/contests/arc017/tasks/arc017_1
       https://qiita.com/drken/items/a14e9af0ca2d857dad23#問題-1-素数判定"
@@ -800,8 +811,8 @@ module Primes =
     @"http://www.fssnip.net/3X"
     module FsSnip =
       let isPrime n =
-        let sqrtn = (float >> sqrt >> int) n
-        [|2..sqrtn|] |> Array.forall (fun x -> n % x <> 0)
+        if n=0||n=1 then false
+        else let sqn = n |> (float >> sqrt >> int) in [|2..sqn|] |> Array.forall (fun x -> n % x <> 0)
 
       let allPrimes =
         let rec f n = seq {
