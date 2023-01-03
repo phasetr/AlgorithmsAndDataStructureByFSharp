@@ -4,7 +4,6 @@
 - [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/TENKA1-2017)
 - [公式ページ, TENKA1 2017 C - 4/N](https://atcoder.jp/contests/tenka1-2017/tasks/tenka1_2017_c)
-- [公式解説](https://atcoder.jp/contests/tenka1-2017/editorial), [PDF](https://img.atcoder.jp/tenka1-2017/editorial.pdf)
 ** 数学から決まる議論
 特に小さい`N`に対して大学受験でもよくある問題です.
 数学の話でもあって数学系学習と並行した議論を目指す私のスタンスからは大事なため,
@@ -89,7 +88,7 @@ solve N |> Array.map string |> String.concat " " |> stdout.WriteLine
 solve N |> fun (h,n,k) -> printfn "%d %d %d" h n k
 ```
 ** 解説2: 再帰
-[競技プログラミングのためのF#入門](../../../fsharp-for-cp/index.md)で無限ループを含めてループは再帰で書けると書きました.
+「競技プログラミングのためのF#入門」で無限ループを含めてループは再帰で書けると書きました.
 実際ここでも再帰で書けます.
 [提出結果](https://atcoder.jp/contests/tenka1-2017/submissions/me)を見ると再帰の方がメモリを食っています.
 2022-12時点では効率を求めるよりも通るコードを書く,

@@ -4,7 +4,6 @@
 - [競技プログラミングのためのF#入門](../../../byfs/fsharp-for-cp/index.md)
 - [GitHub上の対応ディレクトリ](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC099)
 - [公式ページ, ABC099](https://atcoder.jp/contests/abc099/tasks/abc099_c)
-- [公式解説](https://atcoder.jp/contests/abc099/editorial), [PDF](https://img.atcoder.jp/abc099/editorial.pdf)
 ** 解答1: 公式解説, シンプルなループ処理
 公式解説の処理をF#で単純に書き直すなら[このコード](https://github.com/phasetr/AlgorithmsAndDataStructureByFSharp/tree/master/AtCoder/ABC099/C_fs_02.fsx)のようになるでしょう.
 
@@ -32,7 +31,7 @@ printfn "%d" res
 最初の`while i <=n do`は`for`で簡単に書き換えられるとして,
 可変変数を不変変数に置き換えつつ,
 内部の`while t > 0 do`をどう関数型らしく書き換えるかがまず問題です.
-[F#解説](../../../fsharp-for-cp/index.md)に書いたように再帰で書き換えます.
+[F#解説](../../../byfs/fsharp-for-cp/index.md)に書いたように再帰で書き換えます.
 
 `t`は各`while`の直前で設定し直していて最終的に`cc`を返せばよいため,
 `t`は単純に関数の入力パラメータにすればよいでしょう.
