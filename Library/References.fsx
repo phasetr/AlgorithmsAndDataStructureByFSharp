@@ -1242,6 +1242,16 @@ module IO =
   |> fun p -> p.StandardOutput.ReadToEnd()
   |> fun s -> s.Split("\n")
 
+  @"https://midoliy.com/content/fsharp/text/various/2_use-keyword.html
+  use を使うと自動的にファイルハンドルを閉じてくれる
+  using関数もある"
+  module Use =
+    let writeToFile fileName =
+      use sw = System.IO.StreamWriter(fileName: string)
+      sw.Write("Hello ")
+      sw.Write("World!")
+    writeToFile "1.tmp.txt"
+
 module List =
   @"docs for List
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html

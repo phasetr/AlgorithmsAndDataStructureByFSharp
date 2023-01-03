@@ -17,4 +17,6 @@ solve N A B |> stdout.WriteLine
 
 solve 8 2 3 |> should equal "First"
 solve 6 2 3 |> should equal "Second"
-
+solve 14 2 3 |> should equal "First"
+solve 15 2 3 |> should equal "Second"
+solve 16 2 3 |> should equal "Second"

@@ -14,7 +14,6 @@ solve N Ia |> stdout.WriteLine
 いわゆる区間DPです.
 改めてHaskellコードもあさったところ,
 やはり命令型の方が読み書きしやすいように思います.
-
 ** 解説
 *** 結果コード
 ```fsharp

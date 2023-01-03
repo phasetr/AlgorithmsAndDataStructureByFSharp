@@ -19,3 +19,4 @@
 - [A19 - Knapsack 1](A19/index.md)
 - [A20 - LCS](A20/index.md)
 - [A21 - Block Game](A21/index.md)
+- [A32 - Game 1](A32/index.md)
