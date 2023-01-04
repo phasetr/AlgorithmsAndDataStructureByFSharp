@@ -1,3 +1,4 @@
+*.tmp.txt
 .ionide
 packages
 paket-files/

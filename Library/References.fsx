@@ -1221,7 +1221,13 @@ module IO =
     @"ファイル書き込み"
     System.IO.File.WriteAllLines ("1.tmp.txt", xa)
     System.IO.File.WriteAllText("1.tmp.txt", "test")
-    System.IO.File.WriteAllText("1.tmp.txt", "あいうえお")
+    System.IO.File.WriteAllText("1.tmp.txt", """あいうえお
+abc""")
+    @"ファイル追記
+    https://learn.microsoft.com/en-us/dotnet/api/system.io.file.appendalllines?view=net-6.0"
+    System.IO.File.AppendAllLines ("1.tmp.txt", xa)
+    System.IO.File.AppendAllText("1.tmp.txt", "test")
+    System.IO.File.AppendAllText("1.tmp.txt", "あいうえお")
     @"ファイル読み込み
     https://docs.microsoft.com/en-us/dotnet/api/system.io.file.readalltext?view=net-6.0"
     System.IO.File.ReadAllText("1.tmp.txt") |> fun s -> s.Split("\r\n")
