@@ -3312,7 +3312,7 @@ module String =
     ['1';'2';'3'] |> System.String.Concat |> should equal "123"
 
   module Contains =
-    @"String.Containsメソッド: 部分文字列の検索, ブールで返してくれる
+    @"String.Containsメソッド: 部分文字列の検索・文字列のマッチ, ブールで返してくれる
     https://atmarkit.itmedia.co.jp/ait/articles/0602/17/news119.html"
     "fish frog dog".Contains("frog") |> should be True
     "fish frog dog".Contains("bird") |> should be False
@@ -3323,7 +3323,7 @@ module String =
     words.IndexOf("frog") |> should equal 5
     words.IndexOf("bird") |> should equal -1
 
-    @"ある文字を含むかどうか: `Seq.contains`を使おう"
+    @"ある文字を含むかどうか, 文字の検索: `Seq.contains`を使おう"
     "`3`を含む数かどうかを判定"
     [|20..41|] |> Array.filter (string >> Seq.contains '3') |> should equal [|23;30;31;32;33;34;35;36;37;38;39|]
 
