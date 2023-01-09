@@ -1784,6 +1784,9 @@ module Map =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html"
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-fsharpmap-2.html"
 
+  @"要素の取得"
+  let m = Map [(1,"a");(2,"b")] in m.[1] |> should equal "a"
+
   @"Map.Add
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-fsharpmap-2.html#Add"
   module MethodAdd =
@@ -1898,6 +1901,7 @@ module Map =
 
   @"Map.map
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#map"
+  Map [(1,"a");(2,"b")] |> Map.map (fun k v -> sprintf "%i %s" k v) |> should equal (Map [(1,"1 a");(2,"2 b")])
 
   @"Map.maxKeyValue
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-mapmodule.html#maxKeyValue"
