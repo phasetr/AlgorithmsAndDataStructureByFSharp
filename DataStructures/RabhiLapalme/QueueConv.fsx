@@ -2,24 +2,24 @@
 #r "nuget: FsUnit"
 open FsUnit
 
-type 'a Queue = { Front: 'a List; Rear: 'a List }
+type Queue<'a> = { Front: list<'a>; Rear: list<'a> }
 
-let queueEmpty = function
+let queueEmpty: Queue<'a> -> bool = function
   | { Front = []; Rear = [] } -> true
   | _ -> false
 
-let emptyQueue = { Front = []; Rear = [] }
+let emptyQueue: Queue<'a> = { Front = []; Rear = [] }
 
-let enqueue x q = match q with
+let enqueue: 'a -> Queue<'a> -> Queue<'a>  = fun x -> function
   | { Front = []; Rear = [] } -> { Front = [ x ]; Rear = [] }
   | { Front = f; Rear = r } -> { Front = f; Rear = x :: r }
 
-let dequeue = function
+let dequeue: Queue<'a> -> Queue<'a> = function
   | { Front = []; Rear = [] } -> failwith "dequeue: empty queue."
   | { Front = []; Rear = r } -> { Front = r |> List.rev |> List.tail; Rear = [] }
   | { Front = f :: fs; Rear = r } -> { Front = fs; Rear = r }
 
-let front = function
+let front: Queue<'a> -> 'a = function
   | { Front = []; Rear = [] } -> failwith "front: empty queue."
   | { Front = []; Rear = r } -> List.last r
   | { Front = f :: _; Rear = _ } -> f

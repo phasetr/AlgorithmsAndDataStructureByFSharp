@@ -21,7 +21,7 @@ let pqEmpty x =
 let rec insert x q =
   match x, q with
     | x, [] -> [ x ]
-    | x, (e :: r' as r) -> if x <= e then x :: r else e :: insert x r'
+    | x, (e :: r') -> if x <= e then x :: q else e :: insert x r'
 
 let enPQ x (PQ q) = PQ (insert x q)
 
