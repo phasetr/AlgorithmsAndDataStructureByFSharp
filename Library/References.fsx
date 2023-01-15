@@ -155,7 +155,7 @@ module Array =
   blit2 |> should equal [|0; 0; 0; 0; 0; 4; 5; 6; 7; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]
 
   @"Array.choose, `if`の結果`Option`を取る関数を与えて`Some(x)`だけを取ってくる
-  filterd map, Haskell mapMaybe, OCaml filtered_map
+  filtered map, Haskell mapMaybe, OCaml filtered_map
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#choose
   https://stackoverflow.com/questions/55674656/how-to-combine-filter-and-mapping-in-haskell"
   Array.choose
