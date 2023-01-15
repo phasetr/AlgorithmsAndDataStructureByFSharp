@@ -14,7 +14,7 @@ let solve N W Ia =
 
 let N,W = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1])
 let Ia = Array.init N (fun _ -> stdin.ReadLine().Split() |> fun x -> int x.[0],int64 x.[1])
-solve Ia |> stdout.WriteLine
+solve N W Ia |> stdout.WriteLine
 
 solve 4 7 [|(3,13L);(3,17L);(5,29L);(1,10L)|] |> should equal 40
 solve 4 100 [|(25,47L);(25,53L);(25,62L);(25,88L)|] |> should equal 250

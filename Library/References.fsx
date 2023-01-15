@@ -2566,7 +2566,9 @@ module RegularExpression =
     matcher @"***** abc" patternTitle |> should equal "***** abc"
 
 module ResizeArray =
-  @"https://github.com/fsharp/fsharp/blob/master/src/utils/ResizeArray.fs
+  @"https://github.com/dotnet/fsharp/blob/575d5e7519fda9621730a0fceeb5334b9bc7c584/src/Compiler/Utilities/ResizeArray.fs
+  cf. C#のリストはF#のResizeArray(?) https://rksoftware.wordpress.com/2017/03/20/001-88/
+  cf. (public archive) https://github.com/fsharp/fsharp/blob/master/src/utils/ResizeArray.fs
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-compilerservices-arraycollector-1.html#ResizeArray"
 
   @"Addメソッド, ResizeArray
@@ -3228,7 +3230,8 @@ module Set =
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#partition"
   set [1..4] |> Set.partition (fun x -> x%2 = 0) |> should equal (set [2;4],set [1;3])
 
-  @"Set.remove
+  @"Set.remove, delete
+  集合からの削除
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#remove"
   set [1..3] |> Set.remove 1 |> should equal (set [2;3])
 
@@ -3499,6 +3502,28 @@ module Struct =
   type Coupon = { B: int;Discount: int }
   let coupon1 = {B=1;Discount=2}
   let coupon2 = {B=2;Discount=3}
+
+module SystemCollectionsGenericList =
+  @"https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.list-1?view=net-7.0"
+  @"C#のリスト"
+
+  @"List.Add
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.list-1.add?view=net-7.0"
+  let ls = System.Collections.Generic.List<int>()
+  ls.Add(1)
+  ls |> should equal (seq [1])
+
+  @"List.BinarySearch
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.list-1.binarysearch?view=net-7.0"
+  let ls = System.Collections.Generic.List<int>()
+  for i in 0..10 do ls.Add(i)
+  for i in 0..10 do (ls.BinarySearch(i) |> should equal i)
+
+  @"List.Insert
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.list-1.insert?view=net-7.0"
+  let ls = System.Collections.Generic.List<int>()
+  ls.Insert(0,1)
+  ls |> should equal (seq [1])
 
 module SystemIoDirectory =
   @".NET

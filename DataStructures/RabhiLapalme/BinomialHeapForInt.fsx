@@ -1,7 +1,6 @@
 #r "nuget: FsUnit"
 open FsUnit
 
-"""TODO: うまくいかずに`Tree`と`Heap`から`'a`を抜いてしまったのでその復元'"""
 type Tree = Node of int * int * Tree list
 type Heap = BH of Tree list
 
