@@ -43,6 +43,18 @@ module Arithmetics =
   System.Int32.MaxValue |> should equal 2_147_483_647
   System.Int64.MaxValue |> should equal 9_223_372_036_854_775_807L
 
+  @":> キャストと変換
+  https://learn.microsoft.com/ja-jp/dotnet/fsharp/language-reference/symbol-and-operator-reference/"
+
+  @"`:?` 型テスト演算子
+  値が指定した型と一致する場合(サブタイプを含む)は`true`"
+  @"`:?>` 型を階層の下位にある型に変換"
+  @"`#` 型で使用されている場合はフレキシブル型を示す.
+  型またはその派生型のいずれかを指す"
+  @"`'` ジェネリック型パラメーターを示す"
+  @"`{}` type キーワードと一緒に使うとクラスまたはレコードを区切る"
+  @"{||} 匿名レコードを表す"
+
   @"除算演算子: `/`, 切り捨て除算, floor div
   切上げ除算, ceil div
   https://stackoverflow.com/questions/17944/how-to-round-up-the-result-of-integer-division"

@@ -904,7 +904,9 @@ module Array =
 
   @"Array.zeroCreate
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#zeroCreate"
+  Array.zeroCreate<int> 4 |> should equal [|0;0;0;0|]
   (Array.zeroCreate 4 : int[]) |> should equal [|0;0;0;0|]
+  Array.zeroCreate<int64> 4 |> should equal [|0L;0L;0L;0L|]
   (Array.zeroCreate 4 : int64[]) |> should equal [|0L;0L;0L;0L|]
 
   @"Array.zip
