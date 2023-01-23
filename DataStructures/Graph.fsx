@@ -1,4 +1,5 @@
 // https://stevehorsfield.wordpress.com/2009/07/27/f-a-data-structure-for-modelling-directional-graphs/
+// See also ../Library/Graph.fsx
 type VertexData<'V> =
   int (* identifier *) *
   'V (* vertex data *)

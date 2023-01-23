@@ -1085,6 +1085,20 @@ module Dictionary =
   d.Add(1,2)
   d |> should equal (dict [(1,2)])
 
+  @"ContainsKey, キーの存在確認
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.dictionary-2.containskey?view=net-6.0"
+  let d = System.Collections.Generic.Dictionary<int,int>()
+  d.Add(1,2); d.ContainsKey(1) |> should be True
+  let d = System.Collections.Generic.Dictionary<int,int>()
+  d.Add(1,2); d.ContainsKey(2) |> should be False
+
+  @"ContainsValue, 値の存在確認
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.dictionary-2.containsvalue?view=net-6.0"
+  let d = System.Collections.Generic.Dictionary<int,int>()
+  d.Add(1,2); d.ContainsValue(2) |> should be True
+  let d = System.Collections.Generic.Dictionary<int,int>()
+  d.Add(1,2); d.ContainsValue(1) |> should be False
+
   @"要素の更新, Haskell insert
   https://hackage.haskell.org/package/containers-0.6.6/docs/Data-IntMap-Lazy.html#v:insertWith"
   open System.Collections.Generic
@@ -1209,6 +1223,20 @@ module Function =
     | [] -> []
     | x::xs -> f x :: map f xs
   map (fun x -> x+1) [1;2;3] |> should equal [2;3;4]
+
+module HashSet =
+  @"C# https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1?view=net-6.0"
+
+  @"Add, https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.add?view=net-6.0"
+  open System.Collections.Generic
+  let s = HashSet<int>() in s.Add(1); s.Contains(1) |> should be True
+
+  @"Contains, https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.contains?view=net-6.0"
+  open System.Collections.Generic
+  let s = HashSet<int>()
+  s.Add(0)
+  s.Contains(0) |> should be True
+  s.Contains(1) |> should be False
 
 module IO =
   @"何行あるかわからない標準入力の全取得, readAll
@@ -3177,7 +3205,7 @@ module Set =
   @"set itself"
   set [1..5] |> should equal (set [1..5])
 
-  @"Set.add
+  @"Set.add, Haskell Set.insert
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-setmodule.html#add"
   Set.add 1 (set [2..4]) |> should equal (set [1..4])
   Set.add 1 (set [1..4]) |> should equal (set [1..4])
