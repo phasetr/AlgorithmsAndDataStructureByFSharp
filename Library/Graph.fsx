@@ -19,8 +19,18 @@ module AdjacencyList =
   toAdjacencyList 5 [|(1,2);(2,3);(3,4);(3,5)|] |> should equal [|[1];[2;0];[4;3;1];[2];[2]|]
   toAdjacencyList 15 [|(6,9);(9,10);(2,9);(9,12);(2,14);(1,4);(4,6);(1,3);(4,14);(1,6);(9,11);(2,6);(3,9);(5,9);(4,9);(11,15);(1,13);(4,13);(8,9);(9,13);(5,15);(3,5);(8,10);(2,4);(9,14);(1,9);(2,8);(6,13);(7,9);(9,15)|] |> should equal [|[8;12;5;2;3];[7;3;5;13;8];[4;8;0];[1;12;8;13;5;0];[2;14;8];[12;1;0;3;8];[8];[1;9;8];[14;6;0;13;12;7;3;4;2;10;11;1;9;5];[7;8];[14;8];[8];[5;8;3;0];[8;3;1];[8;4;10]|]
 
+module BreadthFirstSearch =
+  @"BFS: キューで再帰的に確認する"
+  /// Imperative breadth-first search
+  // Ex. ../AtCoder/tessoku-book/A63/A63_fs_00_01.fsx
+
+  /// Functional depth-first search as a fold
+  // Ex. ../AtCoder/tessoku-book/A63/A63_fs_00_02.fsx
+
 module DepthFirstSearch =
-  @"DFS"
+  @"DFS: スタック(リスト)で再帰的に確認する"
+  // Ex. ../AtCoder/tessoku-book/A62/A62_fs_00_01.fsx
+
   // https://gist.github.com/jdh30/512962cb29b96787c29964b2a7080db3
   /// Imperative depth-first search
   let dfs (V, E) =

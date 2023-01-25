@@ -2513,6 +2513,7 @@ module PriorityQueue =
 
 module Queue =
   @".NET Queue, FIFO
+  cf. スタックがFIL0
   https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.queue-1?view=net-6.0"
   open System.Collections.Generic
 
