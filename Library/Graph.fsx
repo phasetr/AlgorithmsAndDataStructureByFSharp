@@ -62,12 +62,31 @@ module DepthFirstSearch =
   Array.zeroCreate N |> dfs 0 0 1 |> should equal [|0;0;1|]
 
 module Dijkstra =
+  @"cf. AtCoder tessoku-book, A64 ../AtCoder/tessoku-book/A64/A64_fs_00_01.fsx
+  到達経路がない場合`-1`を返す仕様."
+  let N,M,Ma = 6,7,[|[];[(1,4,20L);(1,2,15L)];[(2,5,4L);(2,3,65L);(2,1,15L)];[(3,6,50L);(3,2,65L)];[(4,5,30L);(4,1,20L)];[(5,6,8L);(5,4,30L);(5,2,4L)];[(6,5,8L);(6,3,50L)]|]
+  let dijkstra (Ma:(int*int*int64)list[]) =
+    let n = Array.length Ma
+    let Ca = Array.create n System.Int64.MaxValue |> fun c -> c.[1] <- 0L; c
+    let q = System.Collections.Generic.SortedSet<int64*int>() |> fun q -> q.Add(0L,1) |> ignore; q
+    while q.Count > 0 do
+      let (c0,v0) = q.Min
+      q.Remove((c0,v0)) |> ignore
+      if v0<>(-1) then
+        Ma.[v0] |> List.iter (fun (a,b,c) ->
+          let (nv,nc) = (b,c+c0)
+          if nc < Ca.[nv] then
+            if Ca.[nv] <> System.Int64.MaxValue then q.Remove((Ca.[nv],nv)) |> ignore
+            q.Add((nc,nv)) |> ignore
+            Ca.[nv] <- nc)
+    Ca |> Array.map (fun x -> if x=System.Int64.MaxValue then -1L else x)
+  dijkstra Ma |> Array.tail |> should equal [|0L;15L;77L;20L;19L;27L|]
+
   @"cf. AtCoder ABC070_D, ../AtCoder/ABC070/D_fs_00_02.fsx
   `PriorityQueue`の代わりに`Set`を利用"
   let N,K,Ga = 5,1,[|[];[(3,1L);(2,1L)];[(4,1L);(1,1L)];[(5,1L);(1,1L)];[(2,1L)];[(3,1L)]|]
   let dijkstra N K (Ga: (int * int64) list []) =
-    let Da = Array.create (N+1) System.Int64.MaxValue
-    Da.[K] <- 0L
+    let Da = Array.create (N+1) System.Int64.MaxValue |> fun d -> d.[K] <- 0L; d
     let rec loop (Da:int64[]) q =
       if Set.isEmpty q then (Da,q)
       else
@@ -79,8 +98,8 @@ module Dijkstra =
             if s < Da.[bi] then Da.[bi] <- s; (Da, Set.add (s,bi) q) else (Da,q))
         else (Da,q0)
         |> fun (Da,q) -> loop Da q
-    loop Da (Set.singleton (0L,K)) |> fst
-  dijkstra N K Ga |> should equal [|9223372036854775807L;0L;1L;1L;2L;2L|]
+    loop Da (Set.singleton (0L,K)) |> fst |> Array.tail
+  dijkstra N K Ga |> should equal [|0L;1L;1L;2L;2L|]
 
 module FloydWarshall =
   @"Floyd-Warshall for int[][]"

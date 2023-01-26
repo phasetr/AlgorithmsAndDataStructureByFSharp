@@ -3280,6 +3280,32 @@ module Set =
 
   @"Set.unionMany"
 
+module SortedSet =
+  @"https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.sortedset-1?view=net-7.0"
+  @"Add"
+  @"Clear"
+  @"Contains"
+  @"CopyTo"
+  @"CreateSetComparer"
+  @"ExceptWith"
+  @"GetEnumerator"
+  @"GetObjectData"
+  @"GetViewBetween"
+  @"IntersectWith"
+  @"IsProperSubsetOf"
+  @"IsProperSupersetOf"
+  @"IsSubsetOf"
+  @"IsSupersetOf"
+  @"OnDeserialization"
+  @"Overlaps"
+  @"Remove"
+  @"RemoveWhere"
+  @"Reverse"
+  @"SetEquals"
+  @"SymmetricExceptWith"
+  @"TryGetValue"
+  @"UnionWith"
+
 module Stack =
   @".NET Stack module
   https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.stack-1?view=net-6.0"
