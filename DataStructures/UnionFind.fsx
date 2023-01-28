@@ -58,3 +58,7 @@ module UnionFind1 =
       uf.size.[small] <- 0
       true
   let size x = let rx = root x in uf.size.[rx]
+
+@"最小全域木, MST (Minimum Spanning Tree)
+対象をソートしてから`Union-Find`すればよい.
+cf. ../AtCoder/tessoku-book/A67/A67_fs_00_01.fsx"
