@@ -42,6 +42,7 @@ module DepthFirstSearch =
         for v in E u do stack.Push v
         visited.Add u |> ignore
 
+  // https://gist.github.com/jdh30/512962cb29b96787c29964b2a7080db3
   /// Functional depth-first search as a fold
   let dfs f a (V, E) =
     let rec loop visited a = function
