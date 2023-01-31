@@ -19,6 +19,68 @@ module AdjacencyList =
   toAdjacencyList 5 [|(1,2);(2,3);(3,4);(3,5)|] |> should equal [|[1];[2;0];[4;3;1];[2];[2]|]
   toAdjacencyList 15 [|(6,9);(9,10);(2,9);(9,12);(2,14);(1,4);(4,6);(1,3);(4,14);(1,6);(9,11);(2,6);(3,9);(5,9);(4,9);(11,15);(1,13);(4,13);(8,9);(9,13);(5,15);(3,5);(8,10);(2,4);(9,14);(1,9);(2,8);(6,13);(7,9);(9,15)|] |> should equal [|[8;12;5;2;3];[7;3;5;13;8];[4;8;0];[1;12;8;13;5;0];[2;14;8];[12;1;0;3;8];[8];[1;9;8];[14;6;0;13;12;7;3;4;2;10;11;1;9;5];[7;8];[14;8];[8];[5;8;3;0];[8;3;1];[8;4;10]|]
 
+module BipartiteMatching =
+  @"cf. ../AtCoder/tessoku-book/A69/A69_fs_00_01.fsx"
+  let bn1 N Ca =
+    let caps =
+      let caps = Array2D.create (2*N+2) (2*N+2) 0
+      let a = 2*N
+      let b = 2*N+1
+      Ca |> array2D |> Array2D.iteri (fun i j c ->
+        if c='#' then caps.[i,N+j] <- 1
+        caps.[a,i] <- 1
+        caps.[N+i,b] <- 1)
+      caps
+    let searchPath s g =
+      let srch = System.Collections.Generic.Queue<int>() |> fun q -> q.Enqueue(s); q
+      let bfr = Array.create (2*N+2) (-1) |> fun bfr -> bfr.[s] <- 0; bfr
+      let rec frec b =
+        if srch.Count = 0 then false
+        else
+          let i = srch.Dequeue()
+          if i=g then true
+          else
+            for j in 0..(2*N+1) do if bfr.[j]<0 && 0<caps.[i,j] then srch.Enqueue(j); bfr.[j] <- i
+            frec b
+      (frec false, bfr)
+    let updateFlow s g (bfr:int[]) =
+      let rec frec c j =
+        if j=s then c
+        else let i = bfr.[j] in frec (min caps.[i,j] c) i
+      let c = frec System.Int32.MaxValue g
+      let rec grec j =
+        if j<>s then let i = bfr.[j] in caps.[i,j] <- caps.[i,j]-c; caps.[j,i] <- caps.[j,i]+c; grec i
+      grec g
+      c
+    let maxFlow s g =
+      let rec frec acc =
+        let (b, bfr) = searchPath s g
+        if b then frec (acc + updateFlow s g bfr) else acc
+      frec 0
+    maxFlow (2*N) (2*N+1)
+
+  @"cf. ../AtCoder/tessoku-book/A69/A69_fs_00_02.fsx"
+  let bn2 N Ca =
+    let es =
+      let es = Array.init (2*N) (fun _ -> [])
+      Ca |> array2D |> Array2D.iteri (fun i j c ->
+        if c='#' then es.[i] <- (j+N)::es.[i]; es.[j+N] <- i::es.[j+N])
+      es
+    let matched = Array.create (2*N) (-1)
+    let rec dfs v (used:bool[]) =
+      used.[v] <- true
+      let rec frec = function
+        | [] -> false
+        | u::t ->
+          let w = matched.[u]
+          if w<0 || not used.[w] && dfs w used then matched.[v] <- u; matched.[u] <- v; true
+          else frec t
+      frec es.[v]
+    (0,[|0..2*N-1|]) ||> Array.fold (fun x v ->
+      let used = Array.create (2*N) false
+      if matched.[v]<0 && (dfs v used) then x+1 else x)
+
+
 module BreadthFirstSearch =
   @"BFS: キューで再帰的に確認する"
   /// Imperative breadth-first search
@@ -119,5 +181,41 @@ module FloydWarshall =
   let fw3 iN jN kN (Ga:System.Collections.Generic.Dictionary<(int*int), int>) =
     for k in 0..kN-1 do for i in 0..iN-1 do for j in 0..jN-1 do Ga.[(i,j)] <- min Ga.[(i,j)] (Ga.[(i,k)]+Ga.[(k,j)])
     Ga
+
+module FordFulkerson =
+  @"Maximum Flow
+  破壞的な実装
+  cf. ../AtCoder/tessoku-book/A68/A68_fs_00_02.fsx"
+  let ff1 N Ia =
+    let caps =
+      (Array2D.create N N 0, Ia)
+      ||> Array.fold (fun caps (a,b,c) -> caps.[a-1,b-1] <- c; caps)
+    let searchPath s g =
+      let srch = System.Collections.Generic.Queue<int>() |> fun q -> q.Enqueue(s); q
+      let bfr = Array.create N (-1) |> fun bfr -> bfr.[s] <- 0; bfr
+      let rec frec b =
+        if srch.Count = 0 then false
+        else
+          let i = srch.Dequeue()
+          if i=g then true
+          else
+            for j in 0..(N-1) do if bfr.[j]<0 && 0<caps.[i,j] then srch.Enqueue(j); bfr.[j] <- i
+            frec b
+      (frec false, bfr)
+    let updateFlow s g (bfr:int[]) =
+      let rec frec c j =
+        if j=s then c
+        else let i = bfr.[j] in frec (min caps.[i,j] c) i
+      let c = frec System.Int32.MaxValue g
+      let rec grec j =
+        if j<>s then let i = bfr.[j] in caps.[i,j] <- caps.[i,j]-c; caps.[j,i] <- caps.[j,i]+c; grec i
+      grec g
+      c
+    let maxFlow s g =
+      let rec frec acc =
+        let (b, bfr) = searchPath s g
+        if b then frec (acc + updateFlow s g bfr) else acc
+      frec 0
+    maxFlow 0 (N-1)
 
 @"UnionFind -> ../DataStructures/UnionFind.fsx"

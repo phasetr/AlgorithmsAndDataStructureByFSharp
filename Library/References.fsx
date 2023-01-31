@@ -2602,9 +2602,12 @@ module ResizeArray =
   cf. (public archive) https://github.com/fsharp/fsharp/blob/master/src/utils/ResizeArray.fs
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-compilerservices-arraycollector-1.html#ResizeArray"
 
-  @"Addメソッド, ResizeArray
+  @"`Add`メソッド, ResizeArray
   可変配列に対して破壊的に値を追加する."
   let xa = ResizeArray<int>() in xa.Add(1); xa.Add(2); xa |> should equal (seq {1;2})
+
+  @"`Count`プロパティ, ResizeArray"
+  let xa = ResizeArray<int>() in xa.Add(1); xa.Add(2); xa.Count |> should equal 2
 
 module Sequence =
   @"docs
