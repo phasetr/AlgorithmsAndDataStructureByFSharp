@@ -85,9 +85,11 @@ module BreadthFirstSearch =
   @"BFS: キューで再帰的に確認する"
   /// Imperative breadth-first search
   // Ex. ../AtCoder/tessoku-book/A63/A63_fs_00_01.fsx
+  // Ex  ../AtCoder/tessoku-book/A70/A70_fs_00_01.fsx
 
   /// Functional depth-first search as a fold
   // Ex. ../AtCoder/tessoku-book/A63/A63_fs_00_02.fsx
+  // Ex  ../AtCoder/tessoku-book/A70/A70_fs_00_02.fsx
 
 module DepthFirstSearch =
   @"DFS: スタック(リスト)で再帰的に確認する"
