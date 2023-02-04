@@ -18,7 +18,7 @@ type PriorityQueue<'T>(compare: 'T -> 'T -> int) =
   member self.Enque(x: 'T) =
     let size = _heap.Count
     _heap.Add(x)
-    // 親と値を入れ替えていく
+    // 親と値を入れ替える
     let rec loop k =
       match k > 0 with
       | true ->
@@ -38,7 +38,7 @@ type PriorityQueue<'T>(compare: 'T -> 'T -> int) =
     let size = _heap.Count - 1
     _heap.[0] <- _heap.[size]
     _heap.RemoveAt(size)
-    // 葉ノードに達するまで子と値を入れ替えていく
+    // 葉ノードに達するまで子と値を入れ替える
     let rec loop k =
       let left = leftChild k
       match left < size with

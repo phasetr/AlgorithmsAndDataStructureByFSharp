@@ -127,6 +127,13 @@ module DepthFirstSearch =
   Array.zeroCreate N |> dfs 0 0 1 |> should equal [|0;0;1|]
 
 module Dijkstra =
+  @"cf. ../AOJ/ALDS1/12C_fs_00.fsx
+  自前実装の配列による`PriorityQueue`利用"
+  @"cf. ../AtCoder/tessoku-book/A73/A73_fs_00_01.fsx
+  自前実装の関数型木構造`PriorityQueue`利用: (.NET Core 3では)遅い?"
+  @"cf. ../AtCoder/tessoku-book/A73/A73_fs_00_03.fsx
+  自前実装の配列による`PriorityQueue`利用"
+
   @"cf. AtCoder tessoku-book, A64 ../AtCoder/tessoku-book/A64/A64_fs_00_01.fsx
   到達経路がない場合`-1`を返す仕様."
   let N,M,Ma = 6,7,[|[];[(1,4,20L);(1,2,15L)];[(2,5,4L);(2,3,65L);(2,1,15L)];[(3,6,50L);(3,2,65L)];[(4,5,30L);(4,1,20L)];[(5,6,8L);(5,4,30L);(5,2,4L)];[(6,5,8L);(6,3,50L)]|]

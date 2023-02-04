@@ -12,7 +12,6 @@ module Pqueue =
     pq.cnt <- pq.cnt + 1
     pq.hp.[pq.cnt] <- k
     iter (pq.cnt)
-
   let maxHeapify pq n =
     let swap i j = let t = pq.hp.[i] in pq.hp.[i] <- pq.hp.[j]; pq.hp.[j] <- t
     let rec iter i =
@@ -33,9 +32,8 @@ module Pqueue =
   let isEmpty pq = pq.cnt = 0
 
 let solve N (Aa: int list[]) =
-  let maxInt = System.Int32.MaxValue
   let dijkstra N s (g: ((int*int) list)[]) =
-    let d = Array.create N maxInt
+    let d = Array.create N System.Int32.MaxValue
     let av = Array.create N true
     let pq = Pqueue.create 1000000 (0,0) (fun x y -> compare y x)
     let rec loop () =
