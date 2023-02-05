@@ -309,6 +309,18 @@ module Arithmetics =
       gcd 147L 105L |> should equal 21L
       lcm 147L 105L |> should equal 735L
 
+  @"inversion, 転倒数
+  ../AtCoder/tessoku-book/A74/A74_fs_00_01.fsx
+  順序関係が逆転しているペアの個数を数える"
+  module Inversion =
+    let count xa =
+      let n = Array.length xa
+      let mutable c = 0
+      for i in 0..n-1 do for j in (1+1)..n-1 do if xa.[j]<xa.[i] then c<-c+1
+      c
+    [|2;3;4;1|] |> count |> should equal 3
+    [|3;1;2;4|] |> count |> should equal 2
+
   @"log, 自然対数
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#log"
   module Log =
@@ -651,7 +663,7 @@ module Primes =
   phi 6 |> should equal 2
   phi 1000000 |> should equal 400000
 
-  "@Prime factorization, 素因数分解
+  "@Prime factorization, prime decomposition, 素因数分解
   https://atcoder.jp/contests/ABC169/tasks/abc169_d"
   module PrimeFactorization =
     @"自然数の`リスト`の素因数分解: 階乗の素因数分解などで役に立つ.
