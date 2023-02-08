@@ -490,6 +490,25 @@ module Arithmetics =
   let near0 x y = (abs (x-y)) < 0.0000001
   near0 (sin System.Math.PI) 0 |> should be True
 
+module ArraySum =
+  @"積の総和1
+  配列の全ての二項の総和, \sum_{i=0}^{N-1} \sum_{j=0}^{N-1} a_i a_j
+  cf. https://algo-method.com/tasks/1019"
+  let prodSum1 Aa = let s = Array.sum Aa in s*s
+  prodSum1 [|1;2|] |> should equal 9
+  prodSum1 [|1;10;100|] |> should equal 12321
+
+  @"積の総和2
+  配列から重複を除いた二項の総和, \sum_{i=0}^{N-1} \sum_{j=i+1}^{N-1} a_i a_j
+  cf. https://algo-method.com/tasks/1021
+  対称性を考えて高速化する."
+  let prodSum2 Aa =
+    let s1 = Aa |> Array.sum
+    let s2 = Aa |> Array.sumBy (fun a -> pown a 2)
+    (pown s1 2 - s2)/2
+  prodSum2 [|1;2|] |> should equal 2
+  prodSum2 [|1;10;100|] |> should equal 1110
+
 module Bit =
   @"十進展開から二進展開の文字列へ変換, decimal expansion to binary expansion
   System.Convert.ToString(i,2)
