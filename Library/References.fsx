@@ -118,33 +118,9 @@ module Array =
   Array.average [|1.0..10.0|] |> should equal 5.5
   Array.averageBy float [|1..10|] |> should equal 5.5
 
-  @"Python bisect_left, Rust lower_bound
-  ソートされた順序を保ったまま`x`を`Xa`に挿入できる点を探す.
-  全ての`Xa.[0..i-1]`が`x`より厳密に小さい`i`を探す.
-  https://amateur-engineer-blog.com/python-bisect/
-  https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/solutions/702162/python-lets-implement-pythons-bisect-algorithm/"
-  let bisectLeft x (Xa:'a[]) =
-    let rec bsearch l r =
-      if r<=l then l
-      else let m = l+(r-l)/2 in if Xa.[m] < x then bsearch (m+1) r else bsearch l m
-    Xa |> Array.length |> bsearch 0
-  [|2;5;8;13;13;18;25;30|] |> bisectLeft 10 |> should equal 3
-  [|2;5;8;13;13;18;25;30|] |> bisectLeft 13 |> should equal 3
-  [|0..10|] |> Array.map (fun i -> [|0..10|] |> bisectLeft i) |> should equal [|0..10|]
-  [|0..10|] |> bisectLeft 3 |> should equal 3
-  [|0..10|] |> bisectLeft 4 |> should equal 4
-
-  @"Python bisect right"
-  let bisectRight x (Xa:'a[]) =
-    let rec bsearch l r =
-      if r<=l then l
-      else let m = l+(r-l)/2 in if x < Xa.[m] then bsearch l m else bsearch (m+1) r
-    Xa |> Array.length |> bsearch 0
-  [|2;5;8;13;13;18;25;30|] |> bisectRight 10 |> should equal 3
-  [|2;5;8;13;13;18;25;30|] |> bisectRight 13 |> should equal 5
-  [|0..9|] |> Array.map (fun i -> [|0..10|] |> bisectRight i) |> should equal [|1..10|]
-  [|0..10|] |> bisectRight 3 |> should equal 4
-  [|0..10|] |> bisectRight 4 |> should equal 5
+  @"Python bisect_left, C++/Rust lower_bound
+  Python bisect right
+  cf Search/LowerBound.fsx"
 
   @"Array.blit, CopyTo, 一つ目の配列の一部を二つ目の配列こコピーする
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#blit"
