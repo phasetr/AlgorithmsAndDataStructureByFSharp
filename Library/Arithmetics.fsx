@@ -641,6 +641,11 @@ module Combinatorics =
       |> List.collect (fun (y, ys) -> List.map (fun zs -> y::zs) (permutations ys))
   permutations [1;2;3] |> should equal [[1;2;3];[1;3;2];[2;1;3];[2;3;1];[3;1;2];[3;2;1]]
 
+module CumulativeSum =
+  @"尺取り法, two pointers"
+  @"cf. ../AtCoder/tessoku-book/B13/B13_fs_00_01.fsx"
+  @"cf. ../AtCoder/tessoku-book/B13/B13_fs_00_02.fsx"
+
 @"Large Numbers
 巨大な数を扱うとき
 cf: https://atcoder.jp/contests/abc169/tasks/abc169_b
