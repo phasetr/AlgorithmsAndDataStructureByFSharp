@@ -1,7 +1,7 @@
 #r "nuget: FsUnit"
 open FsUnit
 
-@"Python bisect_left, C++/Rust lower_bound
+@"Python bisect_left, C++/Rust lower_bound, lowerBound
 ソートされた順序を保ったまま`x`を`Xa`に挿入できる点を探す.
 全ての`Xa.[0..i-1]`が`x`より厳密に小さい`i`を探す.
 https://amateur-engineer-blog.com/python-bisect/
