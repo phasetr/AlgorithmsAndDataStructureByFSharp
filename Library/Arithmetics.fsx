@@ -883,7 +883,7 @@ module Primes =
       let rec go i p = if i>=(N+1) then () else (primes.[i] <- false; go (i+p) p)
       [|0..N|] |> Array.iter (fun p -> if primes.[p] then go (2*p) p)
       primes
-    sieve 5 |> Array.indexed
+    sieve 5 |> Array.indexed |> Array.filter snd |> Array.map fst |> should equal [|2;3;5|]
     sieve 5 |> should equal [|false;false;true;true;false;true|]
 
     @"エラトステネスの篩: リストによる単純な実装"
