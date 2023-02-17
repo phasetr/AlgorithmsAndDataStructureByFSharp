@@ -134,15 +134,53 @@ module Arithmetics =
   let rec powmod m x n = if n=0L then 1L else if n%2L=0L then powmod m (x*x % m) (n/2L) else (x * (powmod m x (n-1L)) % m)
   powmod MOD 2L 3L |> should equal 8L
   powmod MOD 2L 4L |> should equal 16L
+  let MOD = 1_000_000_007L
+  powmod MOD 6L 3L |> should equal 216L
+  powmod MOD 123456789L 123456789012345678L |> should equal 3599437L
 
   @"上記の関数と本質的に同じ処理だが別途演算子を定義
+  ../AtCoder/tessoku-book/B29/B29_fs_00_02.fsx"
+  let MOD = 1_000_000_007L
+  let (.*) a b = ((a%MOD)*(b%MOD))%MOD
+  let rec powmod m x n = if n=0L then 1L else if n%2L=0L then powmod m (x.*x) (n/2L) else x .* (powmod m x (n-1L))
+  powmod MOD 2L 3L |> should equal 8L
+  powmod MOD 2L 4L |> should equal 16L
+  powmod MOD 6L 3L |> should equal 216L
+  powmod MOD 123456789L 123456789012345678L |> should equal 3599437L
+
+  @"引数から`MOD`を削除"
+  let MOD = 1_000_000_007L
+  let (.*) a b = ((a%MOD)*(b%MOD))%MOD
+  let rec powmod x n = if n=0L then 1L else if n%2L=0L then powmod (x.*x) (n/2L) else x .* (powmod x (n-1L))
+  powmod 2L 3L |> should equal 8L
+  powmod 2L 4L |> should equal 16L
+  powmod 6L 3L |> should equal 216L
+  powmod 123456789L 123456789012345678L |> should equal 3599437L
+
+  @"上記の関数と本質的に同じ処理だが, 途中計算でビット演算を利用: int32専用別途演算子を定義
   ../AtCoder/tessoku-book/A29/A29_fs_00_01.fsx
   https://atcoder.jp/contests/abc156/submissions/11167232"
   let MOD = 1_000_000_007L
-  let (.*) a b = (a*b)%MOD
+  let (.*) a b = ((a%MOD)*(b%MOD))%MOD
   let rec powmod x n = if n=0 then 1L elif n&&&1=0 then powmod (x.*x) (n>>>1) else x .* powmod x (n-1)
   powmod 2L 3 |> should equal 8L
   powmod 2L 4 |> should equal 16L
+  powmod 6L 3 |> should equal 216L
+
+  @"`while`による実装
+  ../Atcoder/tessoku-book/B29/B29_fs_00_01.fsx"
+  let MOD = 1_000_000_007L
+  let (.*) a b = (a*b)%MOD
+  let powmod x n =
+    let mutable a,b,r = x,n,1L
+    while 0L<b do
+      if b%2L=1L then r <- r.*a
+      a <- a.*a; b <- b/2L
+    r
+  powmod 2L 3L |> should equal 8L
+  powmod 2L 4L |> should equal 16L
+  powmod 6L 3L |> should equal 216L
+  powmod 123456789L 123456789012345678L |> should equal 3599437L
 
   @"順列の場合の数, permutation, powmodを使った計算
   順列そのものについては`module Combinatrics`の`permutations`を参照すること.
@@ -214,11 +252,39 @@ module Arithmetics =
     fibNoMemo 5I |> should equal 5I
     fibNoMemo 6I |> should equal 8I
 
-    @"メモ化したフィボナッチ"
+    @"`mutable`+`for`によるフィボナッチ, 速い
+    cf. ../AtCoder/tessoku-book/B28/B28_fs_00_02.fsx"
+    let fibLoop n =
+      if n=0I then 1I elif n=1I then 1I
+      else
+        let mutable n1,n2,ans = 1I,1I,0I
+        for _ in 2I..(n-1I) do ans <- n1+n2; n2 <- n1; n1 <- ans
+        ans
+    fibLoop 5I |> should equal 5I
+    fibLoop 6I |> should equal 8I
+
+    @"foldによるフィボナッチ
+    https://gist.github.com/rflechner/2b59e81381bc59306dff9cc4147d4f18"
+    let fibFold (n:bigint) =
+      ((0I,1I), Seq.init (int n) id)
+      ||> Seq.fold (fun (n1,n2) items -> (n1+n2,n1))
+      |> fst
+    fibFold 5I |> should equal 5I
+    fibFold 6I |> should equal 8I
+
+    @"末尾再帰によるフィボナッチ
+    https://gist.github.com/rflechner/2b59e81381bc59306dff9cc4147d4f18"
+    let fibTailRec n =
+      let rec loop (n1,n2) i = if i < n then loop (n1+n2,n1) (i+1I) else n1
+      loop (0I,1I) 0I
+    fibTailRec 5I |> should equal 5I
+    fibTailRec 6I |> should equal 8I
+
+    @"メモ化したフィボナッチ
+    TODO: 大きい数でStackOverflowするため改修必須"
     //#nowarn "40"
     let rec fibMemo =
-      let dict =
-        System.Collections.Generic.Dictionary<_, _>()
+      let dict = System.Collections.Generic.Dictionary<_, _>()
       fun n ->
         match dict.TryGetValue(n) with
         | true, v -> v
