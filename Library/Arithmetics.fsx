@@ -119,13 +119,22 @@ module Arithmetics =
   bottom 342 |> should equal 2
 
   @"DivRem, Haskell divMod: ただし負の数に対してHaskellの`divMod`とは挙動が違うため注意する.
-  http://www.fssnip.net/gH/title/DivRem-Operator
-
-  TODO Haskellの実装を確認して実装する
-  https://hackage.haskell.org/package/base-4.17.0.0/docs/src/GHC.Real.html#quotRem
-  https://hackage.haskell.org/package/base-4.17.0.0/docs/src/GHC.Real.html#divMod"
+  http://www.fssnip.net/gH/title/DivRem-Operator"
   System.Math.DivRem(7,3) |> should equal (2,1)
   System.Math.DivRem(-9,2) |> should equal (-4,-1) // Haskellでは (-5,1)
+  // quotRem 4 3 - (1,1)
+  System.Math.DivRem(4,3) |> should equal (struct (1,1))
+  // quotRem 22 8
+  System.Math.DivRem(2,6) |> should equal (struct (0,2))
+
+  @"TODO Haskellの実装を確認して実装する
+  https://hackage.haskell.org/package/base-4.17.0.0/docs/src/GHC.Real.html#quotRem
+  https://hackage.haskell.org/package/base-4.17.0.0/docs/src/GHC.Real.html#divMod"
+  let quotRem x y = (x/y,x%y)
+  quotRem 4 3 |> should equal (1,1)
+  quotRem 22 8 |> should equal (2,6)
+  quotRem 12 4 |> should equal (3,0)
+  quotRem (-12) 6 |> should equal (-2,0)
 
   @"power, powmod 競プロ用高速なべき乗の計算法: 途中でmodをはさみたい場合があるため.
   くり返し二乗法, iterative square method
