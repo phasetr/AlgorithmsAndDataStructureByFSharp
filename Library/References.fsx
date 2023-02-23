@@ -1520,11 +1520,16 @@ module List =
   [ "pear";"banana" ] |> List.last |> should equal "banana"
 
   @"List.map2
-  zipWith: FSharpPlusではZipList?"
+  zipWith: FSharpPlusではZipList?
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#map2"
   List.map2 (+) [1;2;3] [2;4;6] |> should equal [3;6;9]
   let zipWith f xs ys =
     List.zip xs ys |> List.map (fun (x, y) -> f x y)
   zipWith (+) [1;2;3] [2;4;6] |> should equal [3;6;9]
+
+  @"List.max
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#max"
+  [10;12;11] |> List.max |> should equal 12
 
   @"List.minBy
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#minBy"
