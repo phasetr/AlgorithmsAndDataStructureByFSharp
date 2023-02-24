@@ -1,9 +1,9 @@
 fn main() {
-    println!(27818)
+    println!("{}", 27182 % 818);
 }
 
 fn add(a: i32, b: i32) -> i32 {
-    a + b;
+    a + b
 }
 
 #[cfg(test)]

@@ -12,4 +12,7 @@ panic = "abort"
 
 [[bin]]
 name = "phasetr_sample"
-path = "src/phasetr.rs"
+path = "phasetr.rs"
+
+[dependencies]
+proconio = "0.4.3"

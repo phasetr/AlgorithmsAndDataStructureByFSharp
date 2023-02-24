@@ -5,3 +5,21 @@ version = 3
 [[package]]
 name = "AlgorithmsAndDataStructureByFSharp"
 version = "0.1.0"
+dependencies = [
+ "proconio",
+]
+
+[[package]]
+name = "lazy_static"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "proconio"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "91c333be3af2936f8e810300bc74fe4d0cc168ebc04ab02a28c5b1060fa1bd59"
+dependencies = [
+ "lazy_static",
+]
