@@ -12,6 +12,15 @@ F# https://fsharp.github.io/fsharp-core-docs/reference
 FsUnit: https://fsprojects.github.io/FsUnit/
 FTP: Use FluentFTP, https://github.com/robinrodricks/FluentFTP"
 
+module CSharpOperators =
+  @"MS公式: 演算子と式
+  https://learn.microsoft.com/ja-jp/dotnet/csharp/language-reference/operators/"
+  @"`~`: ビットごとの補数演算子"
+
+module CSharpList =
+  @"List<T>クラス
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.list-1?view=net-6.0"
+
 module SimpleBenchmark1 =
   @"https://dobon.net/vb/dotnet/system/stopwatch.html"
   let benchmark i =
@@ -376,6 +385,10 @@ module Array =
   https://msdn.microsoft.com/ja-jp/visualfsharpdocs/conceptual/array.init%5b't%5d-function-%5bfsharp%5d"
   Array.init 10 (fun i -> i * i)
   |> should equal [|0;1;4;9;16;25;36;49;64;81|]
+
+  @"Array.insertAt
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#insertAt"
+  [|0;1;2|] |> Array.insertAt 1 9 |> should equal [|0;9;1;2|]
 
   @"Array.isEmpty
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-arraymodule.html#isEmpty
@@ -1476,6 +1489,10 @@ module List =
   @"List.isEmpty, Haskell null
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#isEmpty"
   ["pear";"banana"] |> List.isEmpty |> should be False
+
+  @"List.insertAt
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html#insertAt"
+  [0..2] |> List.insertAt 1 9 |> should equal [0;9;1;2]
 
   @"Haskell isSomethingOf
   https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-List.html#v:isInfixOf
