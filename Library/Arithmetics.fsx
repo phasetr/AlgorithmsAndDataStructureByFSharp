@@ -43,6 +43,12 @@ module Arithmetics =
   System.Int32.MaxValue |> should equal 2_147_483_647
   System.Int64.MaxValue |> should equal 9_223_372_036_854_775_807L
 
+  @"各桁の和を取る関数"
+  let mysum n = n |> string |> Seq.sumBy (fun c -> int c - 48)
+  mysum 108 |> should equal 9
+  let rec mysum acc n = if n=0 then acc else mysum (acc+n%10) (n/10)
+  mysum 0 108
+
   @":> キャストと変換
   https://learn.microsoft.com/ja-jp/dotnet/fsharp/language-reference/symbol-and-operator-reference/"
 
