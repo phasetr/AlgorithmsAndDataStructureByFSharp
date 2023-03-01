@@ -40,3 +40,12 @@ let bisectRight x (Xa:'a[]) =
 [|0..9|] |> Array.map (fun i -> [|0..10|] |> bisectRight i) |> should equal [|1..10|]
 [|0..10|] |> bisectRight 3 |> should equal 4
 [|0..10|] |> bisectRight 4 |> should equal 5
+
+@"LowerBound
+cf. ../../AtCoder/tessoku-book/B58/B58_fs_00_01.fsx"
+let lowerBound x (Xa:'a[]) =
+  let mutable l = 0
+  let mutable r = N-1
+  while l<=r do let c = (l+r)/2 in if Xa.[c]<x then l <- c+1 else r <- c-1
+  l
+

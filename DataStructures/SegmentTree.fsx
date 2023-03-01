@@ -1,4 +1,5 @@
 // https://gist.github.com/taiseiKMC/c422618cca920bd1a8a5bcde54a7a802
+// cf. ../AtCoder/tessoku-book/B59/B59_js_01.js
 // Imperative, Destructive
 module SegmentTree =
   let length k =
@@ -14,7 +15,7 @@ module SegmentTree =
     while i>1 do i<-i/2; st.[i] <- f st.[2*i] st.[2*i+1]
     st
 
-  /// Destructive for st
+  /// query: Destructive for st
   let fold f l r v (st:int[]) =
     let left k = 2*k
     let right k = 2*k+1

@@ -112,9 +112,9 @@ module DepthFirstSearch =
     let rec loop visited a = function
       | [] -> a
       | u::us ->
-          if List.contains u visited
-          then loop visited a us
-          else loop (u::us) (f a u) (E u @ us)
+        if List.contains u visited
+        then loop visited a us
+        else loop (u::us) (f a u) (E u @ us)
     loop a V
 
   /// Ex: AtCoder ABC126 D, ../AtCoder/ABC126/D_fs_00_04.fsx
