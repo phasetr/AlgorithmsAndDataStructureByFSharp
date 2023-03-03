@@ -1216,16 +1216,33 @@ module Function =
 module HashSet =
   @"C# https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1?view=net-6.0"
 
-  @"Add, https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.add?view=net-6.0"
+  @"Add(), https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.add?view=net-6.0"
   open System.Collections.Generic
   let s = HashSet<int>() in s.Add(1); s.Contains(1) |> should be True
 
-  @"Contains, https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.contains?view=net-6.0"
+  @"Count, 空判定は`s.Count<>0`
+  メソッドではなくプロパティ.
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.count?view=net-6.0"
+  open System.Collections.Generic
+  let s = HashSet<int>() in s.Add(1) |> ignore; s.Count |> should equal 1
+
+  @"Contains(), https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.contains?view=net-6.0"
   open System.Collections.Generic
   let s = HashSet<int>()
   s.Add(0)
   s.Contains(0) |> should be True
   s.Contains(1) |> should be False
+
+  @"IntersectWith(), 共通部分
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.intersectwith?view=net-6.0"
+
+  @"UnionWith(), 和集合
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.unionwith?view=net-6.0"
+  open System.Collections.Generic
+  let s1 = HashSet<int>() |> fun s -> s.Add(0) |> ignore; s
+  let s2 = HashSet<int>() |> fun s -> s.Add(1) |> ignore; s
+  let s = HashSet<int>() |> fun s -> s.Add(0) |> ignore; s.Add(1) |> ignore; s
+  s1.UnionWith(s2); s1 |> should equal s
 
 module IO =
   @"何行あるかわからない標準入力の全取得, readAll
