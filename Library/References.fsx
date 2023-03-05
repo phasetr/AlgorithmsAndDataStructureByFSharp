@@ -1233,6 +1233,12 @@ module HashSet =
   s.Contains(0) |> should be True
   s.Contains(1) |> should be False
 
+  @"ExceptWith(), 集合の差
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.intersectwith?view=net-6.0"
+  let s1 = HashSet<int>([1;2;3])
+  let s2 = HashSet<int>([2;3])
+  s1.ExceptWith(s2); s1 |> should equal (HashSet<int>([1]))
+
   @"IntersectWith(), 共通部分
   https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.intersectwith?view=net-6.0"
 
