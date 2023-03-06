@@ -1235,12 +1235,18 @@ module HashSet =
 
   @"ExceptWith(), 集合の差
   https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.intersectwith?view=net-6.0"
+  open System.Collections.Generic
   let s1 = HashSet<int>([1;2;3])
   let s2 = HashSet<int>([2;3])
   s1.ExceptWith(s2); s1 |> should equal (HashSet<int>([1]))
 
   @"IntersectWith(), 共通部分
   https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.intersectwith?view=net-6.0"
+
+  @"Remove(), 要素の削除
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.remove?view=net-6.0"
+  open System.Collections.Generic
+  let s = HashSet<int>([1;2;3]) in s.Remove(3) |> ignore; s |> should equal (HashSet<int>([1;2]))
 
   @"UnionWith(), 和集合
   https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.hashset-1.unionwith?view=net-6.0"

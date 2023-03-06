@@ -15,4 +15,5 @@ name = "phasetr_sample"
 path = "phasetr.rs"
 
 [dependencies]
-proconio = "0.4.3"
+ctx = "0.2.0"
+proconio = { version = "=0.4.3", features = ["derive"] }
