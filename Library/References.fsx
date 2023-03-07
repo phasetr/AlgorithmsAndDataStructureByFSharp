@@ -2122,7 +2122,7 @@ module Option =
   @"Option.flatten, `Option (Option <'a>)`を`Option<'a>'にする.
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#flatten"
   (None: int option option) |> Option.flatten |> should equal None
-  (Some ((None: int option))) |> Option.flatten |> should equal None
+  (Some (None: int option)) |> Option.flatten |> should equal None
   (Some (Some 42)) |> Option.flatten |> should equal (Some 42)
 
   @"Option.fold

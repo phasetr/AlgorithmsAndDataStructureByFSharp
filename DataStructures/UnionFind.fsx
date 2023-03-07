@@ -40,7 +40,7 @@ type UnionFind =
 @"破壊的なUnion-Findの簡易実装
 cf. ../AtCoder/ABC157/D_fs_00_02.fsx"
 module UnionFind1 =
-  type UnionFind = { par: int[]; size: int[]}
+  type UnionFind = { par: int[]; size: int[] }
   let N = 100 // 値は適当に修正
   let uf = { par = Array.init N id; size = Array.create N 1 }
 
@@ -61,4 +61,5 @@ module UnionFind1 =
 
 @"最小全域木, MST (Minimum Spanning Tree)
 対象をソートしてから`Union-Find`すればよい.
-cf. ../AtCoder/tessoku-book/A67/A67_fs_00_01.fsx"
+cf. ../AtCoder/tessoku-book/A67/A67_fs_00_01.fsx
+cf. ../AtCoder/tessoku-book/A67/B67_fs_00_01.fsx"
