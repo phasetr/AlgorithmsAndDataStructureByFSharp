@@ -194,7 +194,8 @@ module FloydWarshall =
 module FordFulkerson =
   @"Maximum Flow
   破壞的な実装
-  cf. ../AtCoder/tessoku-book/A68/A68_fs_00_02.fsx"
+  cf. ../AtCoder/tessoku-book/A68/A68_fs_00_02.fsx
+  cf. ../AtCoder/tessoku-book/A68/B68_fs_00_02.fsx"
   let ff1 N Ia =
     let caps =
       (Array2D.create N N 0, Ia)
