@@ -16,7 +16,7 @@ class Program
     {
         var c = NList;
         var (n, t) = (c[0], c[1]);
-         var map = NArr(n - 1);
+        var map = NArr(n - 1);
         var tree = new List<int>[n];
         for (var i = 0; i < tree.Length; ++i) tree[i] = new List<int>();
         foreach (var edge in map)

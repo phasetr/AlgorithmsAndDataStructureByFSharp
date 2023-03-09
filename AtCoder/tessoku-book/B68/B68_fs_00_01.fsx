@@ -63,6 +63,6 @@ let solve N M (Pa:int[]) (Ia:(int*int)[]) =
 let N,M = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1])
 let Pa = stdin.ReadLine().Split() |> Array.map int
 let Ia = Array.init M (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1])
-solve N M Pa Ia |> stdout.WriteLine
+solve N M Pa Ia |> stdout.WriteLinen
 
 solve 5 2 [|3;4;-1;-5;5|] [|(1,3);(2,4)|] |> should equal 7
