@@ -2596,6 +2596,28 @@ module Record =
   p2 |> should equal {X=1.0; Y=2.0; Z=10.0}
 
 module RegularExpression =
+  @"https://learn.microsoft.com/ja-jp/dotnet/api/system.text.regularexpressions.regex?view=net-8.0"
+  open System.Text.RegularExpressions
+  @"Regex.Match: 一つだけ取る"
+  @"Regex.Matches: マッチした対象を全て取る"
+  open System.Text.RegularExpressions
+  let pat1 = @"x.*y"
+  let txt = """xenarthral xerically xenomorphically xebec xenomania
+  xenogenic xenogeny xenophobically xenon xenomenia
+  xylotomy xenogenies xenografts xeroxing xenons xanthous
+  xenoglossy xanthopterins xenoglossy xeroxed xenophoby
+  xenoglossies xanthoxyls xenoglossias xenomorphically
+  xeroxes xanthopterin xebecs xenodochiums xenodochium
+  xylopyrography xanthopterines xerochasy xenium xenic"""
+  let toString result = result |> Seq.toArray |> Array.map (fun m -> m.ToString())
+  Regex.Matches(txt, pat1) |> toString
+  |> should equal [|"xenarthral xerically xenomorphically";
+                   "xenogenic xenogeny xenophobically";
+                   "xylotomy";
+                   "xenoglossy xanthopterins xenoglossy xeroxed xenophoby";
+                   "xenoglossies xanthoxyls xenoglossias xenomorphically";
+                   "xylopyrography xanthopterines xerochasy"|]
+
   let input = @"\\contentsline a{bcd}{efg}{hij}{lmn}"
   let pattern = @"{(.*)}{(.*)}{(.*)}{(.*)}"
   let capture = System.Text.RegularExpressions.Regex.Match(input, pattern)
