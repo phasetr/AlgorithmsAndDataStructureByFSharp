@@ -2076,7 +2076,8 @@ module Operator =
   count.Value |> should equal 1
 
 module Option =
-  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html"
+  @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html
+  let mutable r: int option = None"
 
   @"Option.bind, Haskell >>=
   https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-optionmodule.html#bind"
@@ -3383,6 +3384,11 @@ module String =
   @"String.ToCharArray()メソッド.
   文字列を文字の配列にする."
   "abc".ToCharArray() |> should equal [|'a';'b';'c'|]
+
+  @"Int32.ToString()
+  数値をパディングつきで文字列に変換する"
+  (3).ToString("0000") |> should equal "0003"
+  (13).ToString("0000") |> should equal "0013"
 
   @"文字列結合
   https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/strings#string-operators"

@@ -336,6 +336,13 @@ module Arithmetics =
     xs |> Array.map (fun x -> 10 - x%10) |> should equal ys
     xs |> Array.map firstDigit |> should equal zs
 
+  @"n digit, 整数のn桁目を得る"
+  let nDigit n x = let k = pown 10 n in (x%(k*10))/k
+  nDigit 0 1234 |> should equal 4
+  nDigit 1 1234 |> should equal 3
+  nDigit 2 1234 |> should equal 2
+  nDigit 3 1234 |> should equal 1
+
   @"floor, 切り捨て"
   floor -1.4 |> should equal -2.0
   floor -1.5 |> should equal -2.0
