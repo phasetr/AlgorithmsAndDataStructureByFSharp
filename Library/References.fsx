@@ -1115,7 +1115,11 @@ module Dictionary =
   let d = dict [(1,"a");(2,"b");(3,"c")]
   d.Values |> should equal (seq ["a";"b";"c"])
 
-  @"Dictionary.TryGetValue"
+  @"Dictionary.TryAdd
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.dictionary-2.tryadd?view=net-6.0"
+
+  @"Dictionary.TryGetValue
+  https://learn.microsoft.com/ja-jp/dotnet/api/system.collections.generic.dictionary-2.trygetvalue?view=net-6.0"
   let d = dict [(1,"a");(2,"b");(3,"c")]
   d.TryGetValue(3) |> function | true,n -> Some n | false,_ -> None
 
@@ -2017,6 +2021,15 @@ module Map =
 module Operator =
   @"https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html"
   let near0 x y = (abs (x-y)) < 0.0000001
+
+  @"compare
+  https://fsharp.github.io/fsharp-core-docs/reference/fsharp-core-operators.html#compare"
+ compare 1 2 |> should equal -1
+ compare [1;2;3] [1;2;4] |> should equal -1
+ compare 2 2             |> should equal 0
+ compare [1;2;3] [1;2;3] |> should equal 0
+ compare 2 1             |> should equal 1
+ compare [1;2;4] [1;2;3] |> should equal 1
 
   @"self definition
   https://stackoverflow.com/questions/2210854/can-you-define-your-own-operators-in-f"
