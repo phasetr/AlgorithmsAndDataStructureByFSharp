@@ -1,9 +1,6 @@
 #r "nuget: FsUnit"
 open FsUnit
 
-(*
-let N,Aa,D,Ia = 7,[|1;2;5;5;2;3;1|],2,[|(3,5);(4,6)|]
-*)
 let solveTLE N (Aa:int[]) D Ia =
   let Na =
     [|0..N-1|]
@@ -22,7 +19,9 @@ let D = stdin.ReadLine() |> int
 let Ia = Array.init D (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1])
 solve N Aa D Ia |> Array.iter stdout.WriteLine
 
-solve 7 [|1;2;5;5;2;3;1|] 2 [|(3,5);(4,6)|] |> should equal [|3;5|]
+let () =
+  let N,Aa,D,Ia = 7,[|1;2;5;5;2;3;1|],2,[|(3,5);(4,6)|]
+  solve N Aa D Ia |> should equal [|3;5|]
 
 @"記事用コード"
 Array.scan max 0 Aa |> should equal [|0; 1; 2; 5; 5; 5; 5; 5|]

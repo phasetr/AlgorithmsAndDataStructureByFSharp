@@ -1,9 +1,6 @@
 #r "nuget: FsUnit"
 open FsUnit
 
-(*
-let H,W,N,Ia = 5,5,2,[|(1,1,3,3);(2,2,4,4)|]
-*)
 let solve H W N Ia =
   (Array.init (H+1) (fun _ -> Array.create (W+1) 0), Ia)
   ||> Array.fold (fun Xa (a,b,c,d) ->
@@ -20,7 +17,10 @@ let H,W,N = stdin.ReadLine().Split() |> Array.map int |> (fun x -> x.[0],x.[1],x
 let Ia = Array.init N (fun _ -> stdin.ReadLine().Split() |> Array.map int |> fun x -> x.[0],x.[1],x.[2],x.[3])
 solve H W N Ia |> Array.iter (Array.map string >> String.concat " " >> stdout.WriteLine)
 
-solve 5 5 2 [|(1,1,3,3);(2,2,4,4)|] |> should equal [|[|1;1;1;0;0|];[|1;2;2;1;0|];[|1;2;2;1;0|];[|0;1;1;1;0|];[|0;0;0;0;0|]|]
+let () =
+  let H,W,N,Ia = 5,5,2,[|(1,1,3,3);(2,2,4,4)|]
+  solve H W N Ia |> should equal [|[|1;1;1;0;0|];[|1;2;2;1;0|];[|1;2;2;1;0|];[|0;1;1;1;0|];[|0;0;0;0;0|]|]
+  ()
 
 (*
 1 1 1 0 0
