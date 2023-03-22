@@ -1,8 +1,8 @@
 // https://atcoder.jp/contests/tessoku-book/submissions/35918722
 use std::collections::HashSet;
-
 use proconio::input;
 
+#[proconio::fastout]
 fn main() {
     input! {
         n: usize, k: i32,
