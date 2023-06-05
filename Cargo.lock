@@ -6,9 +6,17 @@ version = 3
 name = "AlgorithmsAndDataStructureByFSharp"
 version = "0.1.0"
 dependencies = [
+ "bitset-fixed",
  "ctx",
+ "fixedbitset",
  "proconio",
 ]
+
+[[package]]
+name = "bitset-fixed"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8cc868e96ba5c32ffae4d42bf2940ca7fca317dcef3f19b6d7de66b6885abff"
 
 [[package]]
 name = "ctx"
@@ -19,6 +27,12 @@ dependencies = [
  "futures",
  "tokio-timer",
 ]
+
+[[package]]
+name = "fixedbitset"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37ab347416e802de484e4d03c7316c48f1ecb56574dfd4a46a80f173ce1de04d"
 
 [[package]]
 name = "futures"

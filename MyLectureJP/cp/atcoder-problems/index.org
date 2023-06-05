@@ -1,5 +1,0 @@
-* AtCoder Problems
-- [本家サイト: Training](https://kenkoooo.com/atcoder/#/training)
-- [Easy](easy/index.md)
-- [Medium](medium/index.md)
-- [Hard](hard/index.md)

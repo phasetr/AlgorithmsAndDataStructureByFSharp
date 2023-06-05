@@ -17,3 +17,5 @@ path = "phasetr.rs"
 [dependencies]
 ctx = "0.2.0"
 proconio = { version = "=0.4.3", features = ["derive"] }
+fixedbitset = "0.2"
+bitset-fixed = "0.1.0"
