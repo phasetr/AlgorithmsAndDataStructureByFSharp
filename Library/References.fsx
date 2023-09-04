@@ -1301,8 +1301,7 @@ abc""")
   |> fun s -> s.Split("\n")
 
   @"https://midoliy.com/content/fsharp/text/various/2_use-keyword.html
-  use を使うと自動的にファイルハンドルを閉じてくれる
-  using関数もある"
+  `use`を使うと自動的にファイルハンドルを閉じてくれるusing関数もある"
   module Use =
     let writeToFile fileName =
       use sw = System.IO.StreamWriter(fileName: string)
@@ -3393,6 +3392,10 @@ module String =
       let n = S.Length - 1
       [|0..n|] |> Array.collect (fun i -> [|i..(min n (i+K-1))|] |> Array.map (fun j -> S.[i..j]))
     "aba" |> substrings 4 |> should equal [|"a";"ab";"aba";"b";"ba";"a"|]
+
+  @"大文字化・小文字化: String.ToLower(), Strign.ToUpper()"
+  "abcde" |> fun s -> s.ToUpper() |> should equal "ABCDE"
+  "ABCDE" |> fun s -> s.ToLower() |> should equal "abcde"
 
   @"String.ToCharArray()メソッド.
   文字列を文字の配列にする."
