@@ -1,4 +1,6 @@
 /// 特定ディレクトリ配下の特定拡張子のファイル一覧を取得する
+open System.IO
+
 let rec getFilesWithExtensionRecursively directoryPath =
   let ext = ".md"
   let mutable matchingFiles =
